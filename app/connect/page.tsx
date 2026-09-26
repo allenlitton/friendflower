@@ -25,6 +25,7 @@ export default async function ConnectPage({ searchParams }: PageProps<"/connect"
         <ConnectClient
           welcome={welcome}
           inviteCode={profile.invite_code}
+          myName={profile.first_name}
           stats={stats ?? { uploaded: 0, matches: 0, has_phone: false }}
           suggestions={(inbox as Inbox | null)?.contact_suggestions ?? []}
         />

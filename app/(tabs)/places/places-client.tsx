@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { ChatSummary, Venue } from "@/lib/types";
-import { Avatar, Pill, ScreenTitle } from "@/components/ui";
+import type { ChatSummary, Neighbourhood, Venue } from "@/lib/types";
+import { Avatar, ErrorNote, Pill, PrimaryButton, ScreenTitle, SectionLabel } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { useRpc } from "@/components/person-actions";
 
@@ -23,13 +23,31 @@ const KIND_GRAD: Record<Venue["kind"], string> = {
   movement: "linear-gradient(135deg,#a8bcc0,#75919a)",
 };
 
-export function PlacesClient({ city, cities, venues, chats }: {
+const KINDS: { value: Venue["kind"]; label: string }[] = [
+  { value: "coffee", label: "Coffee" }, { value: "restaurant", label: "Restaurant" }, { value: "bar", label: "Bar" },
+  { value: "outdoors", label: "Outdoors" }, { value: "movement", label: "Movement" },
+];
+
+export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
   city: { id: string; name: string; short_name: string }; cities: { id: string; name: string; short_name: string }[];
-  venues: Venue[]; chats: ChatSummary[];
+  venues: Venue[]; neighbourhoods: Neighbourhood[]; chats: ChatSummary[];
 }) {
-  const { supabase, router, call } = useRpc();
+  const { supabase, router, call, busy, error } = useRpc();
   const [filter, setFilter] = useState("All");
   const [suggest, setSuggest] = useState<Venue | null>(null);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState({ name: "", kind: "coffee" as Venue["kind"], nb: "", note: "" });
+
+  async function addPlace() {
+    const id = await call<string>("add_place", {
+      p_city: city.id, p_neighbourhood: draft.nb, p_name: draft.name, p_kind: draft.kind, p_note: draft.note,
+    });
+    if (id) {
+      setAdding(false);
+      setDraft({ name: "", kind: "coffee", nb: "", note: "" });
+      router.refresh();
+    }
+  }
   const kinds = FILTERS.find((f) => f.label === filter)?.kinds;
   const shown = venues.filter((v) => !kinds || kinds.includes(v.kind));
 
@@ -49,7 +67,10 @@ export function PlacesClient({ city, cities, venues, chats }: {
 
   return (
     <>
-      <ScreenTitle sub={`${city.name} · vouched for by your circle`}>Places to meet</ScreenTitle>
+      <ScreenTitle sub={`${city.name} · vouched for by your circle`}
+        right={neighbourhoods.length > 0 && (
+          <button type="button" onClick={() => setAdding(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold whitespace-nowrap text-ink">+ Add a place</button>
+        )}>Places to meet</ScreenTitle>
       {cities.length > 1 && (
         <div className="flex flex-none gap-2 px-5 pt-1.5">
           {cities.map((c) => (
@@ -85,7 +106,17 @@ export function PlacesClient({ city, cities, venues, chats }: {
                     {v.walk_min != null ? (v.walk_min <= 45 ? `${Math.max(2, v.walk_min)} min walk` : v.neighbourhood) : v.neighbourhood}
                   </div>
                 </div>
-                <div className="mt-1 text-[13px] leading-snug text-muted">{v.note}</div>
+                {v.note && <div className="mt-1 text-[13px] leading-snug text-muted">{v.note}</div>}
+                {v.added_by && (
+                  <div className="mt-1.5 flex items-center gap-2 text-[11.5px] text-faint">
+                    <span>{v.mine ? "Added by you" : `Added by ${v.added_by.name}`}{v.neighbourhood ? ` · ${v.neighbourhood}` : ""}</span>
+                    {v.mine && (
+                      <button type="button" className="font-semibold text-pink" onClick={async () => {
+                        if (confirm(`Remove ${v.name}? Your circle won't see it any more.`)) { await call("remove_place", { p_id: v.id }); router.refresh(); }
+                      }}>Remove</button>
+                    )}
+                  </div>
+                )}
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex">
                     {v.regulars.slice(0, 3).map((r) => (
@@ -109,6 +140,29 @@ export function PlacesClient({ city, cities, venues, chats }: {
           <div className="mt-1 text-[12.5px] leading-snug text-muted">Booking a table from the app — and partner perks for first meets — are coming soon.</div>
         </div>
       </div>
+
+      <Sheet open={adding} onClose={() => setAdding(false)} title="Add a place">
+        <p className="mt-1.5 text-[13px] leading-normal text-muted">
+          Somewhere you&apos;d take a new friend in {city.name}. Your friends and friends of friends will see it here.
+        </p>
+        <SectionLabel className="mt-3.5">Name</SectionLabel>
+        <input className="field" placeholder="e.g. Blue Bottle, Hayes Valley" maxLength={80} value={draft.name}
+          onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+        <SectionLabel className="mt-3.5">What kind of place</SectionLabel>
+        <div className="flex flex-wrap gap-[7px]">
+          {KINDS.map((k) => <Pill key={k.value} on={draft.kind === k.value} onClick={() => setDraft({ ...draft, kind: k.value })}>{k.label}</Pill>)}
+        </div>
+        <SectionLabel className="mt-3.5">Neighbourhood</SectionLabel>
+        <select className="field" value={draft.nb} onChange={(e) => setDraft({ ...draft, nb: e.target.value })}>
+          <option value="">Where is it?</option>
+          {neighbourhoods.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
+        </select>
+        <SectionLabel className="mt-3.5">Why you like it (optional)</SectionLabel>
+        <textarea className="field !min-h-[70px] !text-[14px]" maxLength={280} placeholder="Best seats, what to order, when to go…"
+          value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} />
+        <ErrorNote>{error}</ErrorNote>
+        <PrimaryButton className="mt-4" disabled={busy || !draft.name.trim() || !draft.nb} onClick={addPlace}>add place</PrimaryButton>
+      </Sheet>
 
       <Sheet open={!!suggest} onClose={() => setSuggest(null)} title={`Suggest ${suggest?.name ?? ""}`}>
         <div className="mt-3 flex flex-col gap-1.5">

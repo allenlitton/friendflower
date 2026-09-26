@@ -47,11 +47,6 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer }
         </button>
       </div>
 
-      {!lens.isLaunched && (
-        <div className="mx-5 mt-2 rounded-xl border-[1.5px] border-gold-line bg-gold-bg px-3 py-2 text-[12px] leading-snug text-gold">
-          Friend Flower isn&apos;t officially live in {lens.cityName} yet — here&apos;s who you know there so far.
-        </div>
-      )}
 
       <div className="flex flex-none gap-[7px] overflow-x-auto px-5 pt-[11px] pb-[9px]">
         {FILTERS.map((f) => <Pill key={f} on={filter === f} onClick={() => setFilter(f)}>{f}</Pill>)}
@@ -135,7 +130,7 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer }
                   <div className="text-[14.5px] font-semibold">{l.cityName}</div>
                   <div className="text-[11.5px] text-muted">{l.kind === "home" ? "Where you live" : dateRange(l.from, l.to)}</div>
                 </div>
-                {!l.isLaunched && <span className="rounded-full bg-gold-bg px-2 py-0.5 text-[10.5px] font-bold text-gold">not live yet</span>}
+                {!l.isLaunched && <span className="rounded-full bg-gold-bg px-2 py-0.5 text-[10.5px] font-bold text-gold">no live map yet</span>}
               </button>
             );
           })}

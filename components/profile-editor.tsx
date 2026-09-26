@@ -55,8 +55,9 @@ export function ProfileEditor({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // Where you can say you live: the live-map cities, plus a short list of others.
   const launched = cities.filter((c) => c.is_launched);
-  const others = cities.filter((c) => !c.is_launched);
+  const others = cities.filter((c) => !c.is_launched && (c.is_home_option || c.id === profile.home_city_id));
   const cityNbs = neighbourhoods.filter((n) => n.city_id === homeCity);
   const canSave = firstName.trim() && homeCity && (avatarUrl || photo);
 
@@ -217,10 +218,10 @@ export function ProfileEditor({
       <div className="flex flex-col gap-2">
         <select className="field" value={homeCity} onChange={(e) => { setHomeCity(e.target.value); setHomeNb(""); }}>
           <option value="">Choose your city</option>
-          <optgroup label="Live now">
+          <optgroup label="Live map">
             {launched.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </optgroup>
-          <optgroup label="Coming soon">
+          <optgroup label="More cities">
             {others.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </optgroup>
         </select>
@@ -230,9 +231,12 @@ export function ProfileEditor({
             {cityNbs.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
           </select>
         )}
+        {homeCity && cityNbs.length > 0 && !homeNb && (
+          <div className="text-[11.5px] text-pink">Add a neighbourhood so friends can see roughly how far away you are.</div>
+        )}
         <div className="text-[11.5px] leading-snug text-faint">
           {homeCity && !launched.some((c) => c.id === homeCity)
-            ? "Friend Flower isn't live here yet — you'll still see friends' trips, and we'll let you know when it launches."
+            ? "The live map is only in San Francisco and New York for now. Friends will still see you're here on their World page, and you can add trips."
             : "We never use your live location. Your neighbourhood is only used to show a rough distance, like “~1.5 mi”."}
         </div>
       </div>

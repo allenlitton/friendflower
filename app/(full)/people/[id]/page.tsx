@@ -17,11 +17,16 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
   const nextTrip = p.trips.find((t) => t.starts_on > (p.now?.until ?? ""));
   const flightsTrip = p.trip_overlaps?.[0];
 
+  // Approximate distance: neighbourhood-to-neighbourhood in the same city,
+  // city-to-city otherwise. Never an exact location.
+  const where = p.now ? (p.now.neighbourhood ? `${p.now.neighbourhood}, ${p.now.short}` : p.now.city) : null;
   const distance =
-    p.distance_kind === "nearby" ? `${nearbyLabel(p.distance_mi)} away${p.now?.neighbourhood ? ` in ${p.now.neighbourhood}` : ""}`
-    : p.distance_kind === "far" ? `${farLabel(p.distance_mi)} away in ${p.now?.city}`
-    : p.distance_kind === "same_city" ? `In ${p.now?.city} too`
-    : p.now ? `${p.is_me ? "In" : "Based in"} ${p.now.neighbourhood ?? p.now.city}` : null;
+    p.distance_kind === "nearby" ? { icon: "📍", big: `${nearbyLabel(p.distance_mi)} away`, small: where }
+    : p.distance_kind === "far" ? { icon: "✈", big: `${farLabel(p.distance_mi)} away`, small: p.now?.city ?? null }
+    : p.distance_kind === "same_city" ? { icon: "📍", big: `Also in ${p.now?.city}`, small: "Add a neighbourhood to your profile to see how close" }
+    : where ? { icon: "📍", big: p.is_me ? `In ${where}` : where, small: null } : null;
+  const railDistance = p.distance_kind === "nearby" ? nearbyLabel(p.distance_mi)?.replace("~", "")
+    : p.distance_kind === "far" ? farLabel(p.distance_mi) : null;
 
   const mutualLine = p.degree === 1
     ? `${p.mutuals.length} mutual${p.mutuals.length === 1 ? "" : "s"} · you know each other directly`
@@ -44,7 +49,7 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
       <div className="flex w-16 flex-none flex-col items-center gap-3.5 border-r border-line-soft bg-card pt-3 pb-4">
         <Link href={p.is_me ? "/you" : "/nearby"} aria-label="Back"
           className="flex h-[34px] w-[34px] items-center justify-center rounded-full border-[1.5px] border-line bg-card text-[17px] text-soft">‹</Link>
-        <RailItem glyph="📍" label={p.now?.short ?? "—"} />
+        <RailItem glyph="📍" label={p.now?.short ?? "—"} sub={railDistance} />
         <RailItem glyph="✈" label={nextTrip?.city ?? "—"} />
         {!p.is_me && (
           <Link href={`/people/${p.id}/how`} className="flex flex-col items-center gap-[3px]">
@@ -85,11 +90,23 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
               <h1 className="font-display text-[32px] leading-[1.05]">{p.name}</h1>
               {p.verified && <Tag tone={p.verified.method === "self" ? "grey" : "leaf"}>✓ verified</Tag>}
             </div>
-            <div className="mt-1 text-[13px] leading-normal text-muted">
-              {[schoolLine, idLine].filter(Boolean).join(" · ")}
-              {distance && <><br />{distance}</>}
-            </div>
+            {(schoolLine || idLine) && (
+              <div className="mt-1 text-[13px] leading-normal text-muted">{[schoolLine, idLine].filter(Boolean).join(" · ")}</div>
+            )}
           </div>
+
+          {distance && (
+            <div className="flex items-center gap-2.5 rounded-[14px] border-[1.5px] border-line bg-card px-[13px] py-2.5">
+              <span className="text-[15px]">{distance.icon}</span>
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold">{distance.big}</div>
+                {distance.small && <div className="text-[11.5px] text-muted">{distance.small}</div>}
+              </div>
+              {p.now?.presence === "visiting" && !p.is_me && (
+                <span className="rounded-full bg-gold-bg px-2 py-0.5 text-[10.5px] font-bold whitespace-nowrap text-gold">until {shortDate(p.now.until)}</span>
+              )}
+            </div>
+          )}
 
           {flightsTrip && (
             <div className="flex items-center gap-2.5 rounded-[14px] border-[1.5px] border-plum-line bg-plum px-[13px] py-[11px]">
@@ -178,11 +195,12 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
   );
 }
 
-function RailItem({ glyph, label }: { glyph: string; label: string }) {
+function RailItem({ glyph, label, sub }: { glyph: string; label: string; sub?: string | null }) {
   return (
     <div className="flex flex-col items-center gap-[3px] px-1">
       <span className="text-[15px]">{glyph}</span>
       <span className="text-center text-[10px] leading-[1.15] font-bold text-soft">{label}</span>
+      {sub && <span className="text-center text-[9.5px] leading-[1.1] font-bold text-pink">{sub}</span>}
     </div>
   );
 }

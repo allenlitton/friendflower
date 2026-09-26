@@ -163,7 +163,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
         <SectionLabel className="mt-4">City</SectionLabel>
         <select className="field" value={f.city} onChange={(e) => setF({ ...f, city: e.target.value, nb: "" })}>
           <option value="">Where are you going?</option>
-          {cities.filter((c) => c.id !== homeCity).map((c) => <option key={c.id} value={c.id}>{c.name}{c.is_launched ? "" : " (not live yet)"}</option>)}
+          {cities.filter((c) => c.id !== homeCity).map((c) => <option key={c.id} value={c.id}>{c.name}{c.is_launched ? "" : " (no live map yet)"}</option>)}
         </select>
         {neighbourhoods.some((n) => n.city_id === f.city) && (
           <select className="field mt-2" value={f.nb} onChange={(e) => setF({ ...f, nb: e.target.value })}>

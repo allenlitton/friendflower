@@ -281,3 +281,39 @@ test("screen data functions run for a typical user", async () => {
   const inbox = await as(db, U.arren, () => rpc(db, "inbox"));
   assert.ok(Array.isArray(inbox.friend_requests));
 });
+
+test("places people add are shared with their circle only", async () => {
+  const id = await as(db, U.barbara, () => rpc(db, "add_place", {
+    p_city: "san-francisco", p_neighbourhood: "sf-hayes-valley", p_name: "Barbara's Secret Bakery", p_kind: "coffee", p_note: "Go early" }));
+  const seen = async (who) => (await as(db, who, () => rpc(db, "venues_in", { p_city: "san-francisco" }))).find((v) => v.id === id);
+  const mine = await seen(U.barbara);
+  assert.equal(mine.mine, true);
+  assert.equal(mine.i_go, true);
+  const arrens = await seen(U.arren);
+  assert.equal(arrens.added_by.first_name, "Barbara");
+  assert.equal(await seen(U.stranger), undefined, "strangers don't see circle places");
+  const direct = await as(db, U.stranger, () => db.query(`select id from public.venues where id = $1`, [id]));
+  assert.equal(direct.rows.length, 0, "and can't read them from the table either");
+  await as(db, U.arren, () => rpc(db, "remove_place", { p_id: id }));
+  assert.ok(await seen(U.barbara), "only the person who added it can remove it");
+  await as(db, U.barbara, () => rpc(db, "remove_place", { p_id: id }));
+  assert.equal(await seen(U.barbara), undefined);
+  await assert.rejects(as(db, U.barbara, () => rpc(db, "add_place", {
+    p_city: "san-francisco", p_neighbourhood: "ny-soho", p_name: "Wrong city", p_kind: "bar" })));
+});
+
+test("find a friend by email/phone: found, not found, self, blocked, and daily limit", async () => {
+  const find = (who, h) => asServer(db, () => rpc(db, "srv_find_person", { p_user: U[who], p_hash: h }));
+  const r = await find("stranger", hashOf("theo"));
+  assert.equal(r.status, "found");
+  assert.equal(r.person.first_name, "Theo");
+  assert.equal(await as(db, U.stranger, () => rpc(db, "add_friend", { p_other: U.theo })), "pending",
+    "finding someone lets you send them a friend request");
+  assert.equal((await find("stranger", "f".repeat(64))).status, "not_found");
+  assert.equal((await find("stranger", hashOf("stranger"))).status, "self");
+  await as(db, U.theo, () => rpc(db, "block_user", { p_other: U.stranger }));
+  assert.equal((await find("stranger", hashOf("theo"))).status, "not_found", "blocked people can't be found");
+  for (let i = 0; i < 30; i++) await find("kenji", "e".repeat(64));
+  assert.equal((await find("kenji", hashOf("priya"))).status, "limit");
+  await assert.rejects(as(db, U.kenji, () => rpc(db, "srv_find_person", { p_user: U.kenji, p_hash: hashOf("priya") })), /permission denied/);
+});

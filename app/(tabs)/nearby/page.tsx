@@ -22,6 +22,37 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
     );
   }
 
+  // The live map only runs in launched cities (San Francisco and New York for now).
+  if (!lens.isLaunched) {
+    const liveTrips = lenses.filter((l) => l.isLaunched && l.kind === "trip");
+    return (
+      <div className="flex flex-1 flex-col px-5 pt-2">
+        <div className="flex items-center gap-2">
+          <h1 className="font-display text-[30px] leading-[1.1]">{lens.cityName}</h1>
+        </div>
+        <div className="mt-4 rounded-[18px] border-[1.5px] border-gold-line bg-gold-bg p-[15px]">
+          <div className="text-[14.5px] font-semibold text-gold">The live map isn&apos;t in {lens.cityName} yet</div>
+          <p className="mt-1.5 text-[13px] leading-normal text-body">
+            For now it runs in San Francisco and New York. Your friends can still see you&apos;re in {lens.cityName} on their
+            World page, and you can see where your friends are on yours.
+          </p>
+        </div>
+        <div className="mt-3 flex flex-col gap-2">
+          <PrimaryButton href="/world">see who&apos;s where</PrimaryButton>
+          {liveTrips.map((t) => (
+            <Link key={t.tripId} href={`/nearby?trip=${t.tripId}`}
+              className="rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-3 text-[14px] font-semibold">
+              ✈ Your {t.cityName} trip · {dateRange(t.from, t.to)} <span className="float-right text-pink">›</span>
+            </Link>
+          ))}
+          <Link href="/trips?add=1" className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-3.5 py-3 text-center text-[13px] font-semibold text-pink">
+            + Add a trip to San Francisco or New York
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const { data, error } = await supabase.rpc("circle_in_city", { p_city: lens.cityId, p_from: lens.from, p_to: lens.to });
   const people = (data ?? []) as CirclePerson[];
   const isNow = lens.from <= todayISO() && lens.to >= todayISO();

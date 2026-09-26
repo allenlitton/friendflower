@@ -70,7 +70,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
       </div>
 
       <div className="flex flex-col gap-2">
-        <RowLink href="/connect" icon="☎" title="Find your friends" note={`${contactMatches} mutual contact match${contactMatches === 1 ? "" : "es"} · sync contacts`} />
+        <RowLink href="/connect" icon="☎" title="Find your friends" note={`Search by email or phone, sync contacts · ${contactMatches} contact match${contactMatches === 1 ? "" : "es"}`} />
         <InviteButton code={p.invite_code} />
       </div>
 

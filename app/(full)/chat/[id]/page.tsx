@@ -10,10 +10,19 @@ export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
   const chat = data as ChatDetail | null;
   if (!chat) notFound();
 
-  const [{ data: messages }, { data: venues }] = await Promise.all([
+  const home = profile.home_city_id ?? "";
+  const [{ data: messages }, { data: curated }, { data: circlePlaces }, { data: homeCity }] = await Promise.all([
     supabase.from("messages").select("*").eq("chat_id", id).order("created_at", { ascending: false }).limit(300),
     supabase.from("venues").select("id, name, kind, city_id, cities(short_name)").order("sort"),
+    supabase.rpc("venues_in", { p_city: home }),
+    supabase.from("cities").select("short_name").eq("id", home).maybeSingle(),
   ]);
+  // Curated places everywhere, plus places your circle has added in your city.
+  type Row = { id: string; name: string; kind: string; city_id: string; cities: { short_name: string } };
+  const venues = [...((curated ?? []) as unknown as Row[])];
+  for (const v of (circlePlaces ?? []) as { id: string; name: string; kind: string }[]) {
+    if (!venues.some((x) => x.id === v.id)) venues.push({ ...v, city_id: home, cities: { short_name: homeCity?.short_name ?? "" } });
+  }
   await supabase.rpc("mark_read", { p_chat: id });
 
   return (
@@ -22,7 +31,7 @@ export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
       meId={profile.id}
       homeCity={profile.home_city_id}
       initial={((messages ?? []) as Message[]).reverse()}
-      venues={(venues ?? []) as unknown as { id: string; name: string; kind: string; city_id: string; cities: { short_name: string } }[]}
+      venues={venues}
     />
   );
 }

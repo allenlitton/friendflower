@@ -20,7 +20,9 @@ export default async function WorldPage() {
 
   return (
     <>
-      <ScreenTitle sub={`Your friends, city by city · ${friendCount} friend${friendCount === 1 ? "" : "s"} in ${cities.length} cit${cities.length === 1 ? "y" : "ies"}`}>
+      <ScreenTitle right={
+        <Link href="/connect#find" className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold whitespace-nowrap text-ink">+ Add friend</Link>
+      } sub={`Your friends, city by city · ${friendCount} friend${friendCount === 1 ? "" : "s"} in ${cities.length} cit${cities.length === 1 ? "y" : "ies"}`}>
         Who&apos;s where
       </ScreenTitle>
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pt-2.5 pb-3.5">

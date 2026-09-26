@@ -7,11 +7,12 @@ import { parseVCard } from "@/lib/vcard";
 import type { Mini } from "@/lib/types";
 import { Avatar, Card, ErrorNote, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
 import { InviteButton } from "@/components/invite-button";
+import { FindFriend } from "@/components/find-friend";
 
 type ContactsManager = { select: (props: string[], opts: { multiple: boolean }) => Promise<{ tel?: string[]; email?: string[] }[]> };
 
-export function ConnectClient({ welcome, inviteCode, stats, suggestions }: {
-  welcome: boolean; inviteCode: string;
+export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions }: {
+  welcome: boolean; inviteCode: string; myName: string;
   stats: { uploaded: number; matches: number; has_phone: boolean };
   suggestions: Mini[];
 }) {
@@ -66,6 +67,7 @@ export function ConnectClient({ welcome, inviteCode, stats, suggestions }: {
 
   return (
     <div className="mt-4 flex flex-col gap-3.5">
+      <FindFriend inviteCode={inviteCode} myName={myName} />
       <Card className="p-[15px]">
         <div className="flex items-center gap-3">
           <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#8a8f6b] text-[14px] font-bold">☎</span>

@@ -111,6 +111,7 @@ export type Inbox = {
 export type Venue = {
   id: string; name: string; kind: "coffee" | "restaurant" | "bar" | "outdoors" | "movement";
   note: string; neighbourhood: string | null; walk_min: number | null; i_go: boolean; regulars: Mini[];
+  added_by: Mini | null; mine: boolean;
 };
 
 export type FlightMatch = {
@@ -118,7 +119,7 @@ export type FlightMatch = {
   person: Mini & { degree: number; via: string | null };
 };
 
-export type City = { id: string; name: string; short_name: string; country: string; is_launched: boolean };
+export type City = { id: string; name: string; short_name: string; country: string; is_launched: boolean; is_home_option?: boolean };
 export type Neighbourhood = { id: string; city_id: string; name: string };
 
 export type Profile = {
