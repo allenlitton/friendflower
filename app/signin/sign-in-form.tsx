@@ -43,8 +43,8 @@ export function SignInForm() {
     return (
       <form onSubmit={verify} className="flex flex-col gap-2.5">
         <div className="text-[13.5px] leading-normal text-muted">
-          Check <span className="text-text">{email}</span> and tap the sign-in link — open it on this same device and browser.
-          If your email has a 6-digit code instead, enter it here.
+          We sent a code to <span className="text-text">{email}</span>. Enter it here, or tap the link in the email.
+          It can take a minute — check spam too.
         </div>
         <input className="field text-center font-display !text-[28px] tracking-[.3em]" inputMode="numeric" autoComplete="one-time-code"
           maxLength={10} placeholder="······" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} autoFocus />
