@@ -1,0 +1,127 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import type { ChatSummary, Venue } from "@/lib/types";
+import { Avatar, Pill, ScreenTitle } from "@/components/ui";
+import { Sheet } from "@/components/sheet";
+import { useRpc } from "@/components/person-actions";
+
+const FILTERS = [
+  { label: "All", kinds: null },
+  { label: "Coffee", kinds: ["coffee"] },
+  { label: "Dinner", kinds: ["restaurant"] },
+  { label: "Drinks", kinds: ["bar"] },
+  { label: "Free", kinds: ["outdoors", "movement"] },
+];
+const KIND_LABEL: Record<Venue["kind"], string> = {
+  coffee: "Coffee", restaurant: "Restaurant", bar: "Wine bar", outdoors: "Free · outdoors", movement: "Movement",
+};
+const KIND_GRAD: Record<Venue["kind"], string> = {
+  coffee: "linear-gradient(135deg,#cbb79a,#9d8460)", restaurant: "linear-gradient(135deg,#e0c8a8,#bb9a72)",
+  bar: "linear-gradient(135deg,#c99aa6,#95677a)", outdoors: "linear-gradient(135deg,#a9c093,#77955f)",
+  movement: "linear-gradient(135deg,#a8bcc0,#75919a)",
+};
+
+export function PlacesClient({ city, cities, venues, chats }: {
+  city: { id: string; name: string; short_name: string }; cities: { id: string; name: string; short_name: string }[];
+  venues: Venue[]; chats: ChatSummary[];
+}) {
+  const { supabase, router, call } = useRpc();
+  const [filter, setFilter] = useState("All");
+  const [suggest, setSuggest] = useState<Venue | null>(null);
+  const kinds = FILTERS.find((f) => f.label === filter)?.kinds;
+  const shown = venues.filter((v) => !kinds || kinds.includes(v.kind));
+
+  async function toggleGo(v: Venue) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    if (v.i_go) await supabase.from("venue_regulars").delete().eq("venue_id", v.id).eq("user_id", user.id);
+    else await supabase.from("venue_regulars").insert({ venue_id: v.id, user_id: user.id });
+    router.refresh();
+  }
+
+  async function sendTo(chatId: string) {
+    if (!suggest) return;
+    await call("send_message", { p_chat: chatId, p_body: `How about ${suggest.name}?`, p_venue: suggest.id });
+    router.push(`/chat/${chatId}`);
+  }
+
+  return (
+    <>
+      <ScreenTitle sub={`${city.name} · vouched for by your circle`}>Places to meet</ScreenTitle>
+      {cities.length > 1 && (
+        <div className="flex flex-none gap-2 px-5 pt-1.5">
+          {cities.map((c) => (
+            <Link key={c.id} href={`/places?city=${c.id}`}
+              className={`text-[12px] font-bold ${c.id === city.id ? "text-pink" : "text-faint"}`}>{c.name}</Link>
+          ))}
+        </div>
+      )}
+      <div className="flex flex-none gap-[7px] overflow-x-auto px-5 pt-[11px] pb-[9px]">
+        {FILTERS.map((f) => <Pill key={f.label} on={filter === f.label} onClick={() => setFilter(f.label)}>{f.label}</Pill>)}
+      </div>
+      <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pb-3.5">
+        {venues.length === 0 && (
+          <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5 text-[13px] leading-normal text-muted">
+            We&apos;re still hand-picking places in {city.name}. In the meantime, ask your circle where they&apos;d take you.
+          </div>
+        )}
+        {shown.map((v) => {
+          const names = v.regulars.map((r) => r.first_name);
+          const vouch = v.i_go && names.length === 0 ? "You go here"
+            : names.length === 0 ? "No one in your circle yet"
+            : names.length === 1 ? `${names[0]} goes here`
+            : `${names.slice(0, -1).join(", ")} and ${names.at(-1)} go here`;
+          return (
+            <div key={v.id} className="flex flex-col rounded-[18px] border-[1.5px] border-line bg-card">
+              <div className="flex h-[88px] flex-none items-end rounded-t-2xl px-[13px] py-2.5" style={{ background: KIND_GRAD[v.kind] }}>
+                <span className="rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-[#6b645b]">{KIND_LABEL[v.kind]}</span>
+              </div>
+              <div className="px-[15px] pt-[13px] pb-3.5">
+                <div className="flex items-baseline gap-2">
+                  <div className="min-w-0 flex-1 font-display text-[23px]">{v.name}</div>
+                  <div className="text-[11.5px] whitespace-nowrap text-muted">
+                    {v.walk_min != null ? (v.walk_min <= 45 ? `${Math.max(2, v.walk_min)} min walk` : v.neighbourhood) : v.neighbourhood}
+                  </div>
+                </div>
+                <div className="mt-1 text-[13px] leading-snug text-muted">{v.note}</div>
+                <div className="mt-3 flex items-center gap-2">
+                  <div className="flex">
+                    {v.regulars.slice(0, 3).map((r) => (
+                      <div key={r.id} className="-mr-2"><Avatar id={r.id} name={r.name} src={r.avatar_url} size={26} ring="2px solid #fff" /></div>
+                    ))}
+                  </div>
+                  <span className={`min-w-0 flex-1 text-[11.5px] text-muted ${v.regulars.length ? "ml-3" : ""}`}>{vouch}</span>
+                  <button type="button" onClick={() => toggleGo(v)}
+                    className={`rounded-full px-3 py-2 text-[12px] font-bold whitespace-nowrap ${v.i_go ? "bg-leaf-bg text-leaf" : "bg-[#262220] text-soft"}`}>
+                    {v.i_go ? "✓ I go here" : "I go here"}
+                  </button>
+                  <button type="button" onClick={() => setSuggest(v)}
+                    className="rounded-full bg-pink px-3.5 py-1.5 font-display text-[16px] whitespace-nowrap text-ink">Suggest</button>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5">
+          <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Reservations</div>
+          <div className="mt-1 text-[12.5px] leading-snug text-muted">Booking a table from the app — and partner perks for first meets — are coming soon.</div>
+        </div>
+      </div>
+
+      <Sheet open={!!suggest} onClose={() => setSuggest(null)} title={`Suggest ${suggest?.name ?? ""}`}>
+        <div className="mt-3 flex flex-col gap-1.5">
+          {chats.length === 0 && <div className="text-[13px] text-muted">Start a chat with someone first, then suggest a place.</div>}
+          {chats.map((c) => (
+            <button key={c.id} type="button" onClick={() => sendTo(c.id)}
+              className="flex items-center gap-2.5 rounded-xl border-[1.5px] border-line bg-card px-3 py-2 text-left">
+              {c.members[0] && <Avatar id={c.members[0].id} name={c.members[0].name} src={c.members[0].avatar_url} size={32} />}
+              <span className="text-[14px] font-semibold">{c.members.map((m) => m.first_name).join(" · ")}</span>
+            </button>
+          ))}
+        </div>
+      </Sheet>
+    </>
+  );
+}

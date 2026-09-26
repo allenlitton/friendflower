@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@600;700;800;900&amp;family=Monofett&amp;family=VT323&amp;family=Noto+Serif:wght@400;500;600;700&amp;family=Roboto:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0a0a09;font-family:Roboto,system-ui,sans-serif}
+a{color:#e6a8bd;text-decoration:none}a:hover{color:#e6a8bd;text-decoration:underline}
+@keyframes ffp{0%{transform:scale(.6);opacity:.5}100%{transform:scale(2.2);opacity:0}}
+input::placeholder,textarea::placeholder{color:#a9a094}
+::-webkit-scrollbar{width:0;height:0}
+</style>
+</helmet>
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;background:#0a0a09">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="390px,844px">
+<div style="width:100%;height:100%;display:flex;flex-direction:column;background:#0d0c0b;color:#f3f0ea;font-family:Roboto,system-ui,sans-serif;position:relative;overflow:hidden;padding-top:56px;box-sizing:border-box">
+
+<!-- ============ 1. SIGN IN + PLAN ============ -->
+<sc-if value="{{isSignin}}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;top:0;left:0;right:0;bottom:0;background:#0d0c0b;z-index:1"></div>
+<div style="flex:1;display:flex;flex-direction:column;padding:0 26px 22px;overflow-y:auto;background:#0d0c0b;color:#ffffff;position:relative;z-index:2">
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:26px 0 22px">
+    <svg width="104" height="104" viewBox="0 0 64 64" fill="none" style="width: 83px; height: 83px">
+      <g stroke="#ffffff" stroke-opacity="1" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path transform="rotate(0 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(72 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(144 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(216 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(288 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+      </g>
+      <circle cx="32" cy="32" r="3.8" fill="#e6a8bd"></circle>
+    </svg>
+    <div style="font-family:Doto,'Noto Serif',serif;font-weight:800;font-size:38px;letter-spacing:.5px;line-height:1.05;text-align:center">friend flower.</div>
+    
+  </div>
+  <div style="display:flex;flex-direction:column;gap:9px">
+    <div onClick="{{signIn}}" style="height:50px;border-radius:14px;background:#1b1917;border:1.5px solid #34302c;color:#ffffff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:14.5px;cursor:pointer" style-hover="border-color:#5a534b"><span style="width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:10.5px;font-weight:700">IG</span>Continue with Instagram</div>
+    <div onClick="{{signIn}}" style="height:50px;border-radius:14px;background:#1b1917;border:1.5px solid #34302c;color:#ffffff;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:14.5px;cursor:pointer" style-hover="border-color:#5a534b"><span style="width:22px;height:22px;border-radius:7px;background:#3b6fd4;display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:13px;font-weight:700;font-family:'Noto Serif',Georgia,serif">f</span>Continue with Facebook</div>
+    <div onClick="{{signIn}}" style="height:50px;border-radius:14px;background:#161412;border:1.5px solid #34302c;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;font-size:14.5px;color:#cfc8bd;cursor:pointer" style-hover="background:#201d1a">Use email instead</div>
+  </div>
+  <div style="margin-top:22px;font-size:12px;font-weight:700;color:#a49b8f;letter-spacing:.06em;text-transform:uppercase">Choose your plan</div>
+  <div style="display:flex;flex-direction:column;gap:9px;margin-top:9px">
+    <div onClick="{{pickBasic}}" style="border-radius:16px;padding:14px 15px;cursor:pointer;background:{{basicBg}};border:1.5px solid {{basicBorder}};display:flex;gap:12px;align-items:flex-start">
+      <span style="width:18px;height:18px;border-radius:50%;border:2px solid {{basicDot}};background:{{basicDotFill}};flex:none;margin-top:2px"></span>
+      <div><div style="font-weight:700;font-size:15px">Basic <span style="font-weight:500;color:#a49b8f">· free</span></div><div style="font-size:12.5px;color:#a49b8f;line-height:1.45;margin-top:3px">Your city, 10 people nearby at a time.</div></div>
+    </div>
+    <div onClick="{{pickPlus}}" style="border-radius:16px;padding:14px 15px;cursor:pointer;background:{{plusBg}};border:1.5px solid {{plusBorder}};display:flex;gap:12px;align-items:flex-start">
+      <span style="width:18px;height:18px;border-radius:50%;border:2px solid {{plusDot}};background:{{plusDotFill}};flex:none;margin-top:2px"></span>
+      <div><div style="font-weight:700;font-size:15px">Bloom <span style="font-weight:500;color:#a49b8f">· $11/mo</span></div><div style="font-size:12.5px;color:#a49b8f;line-height:1.45;margin-top:3px">Travel to any city before you fly, see 25 people nearby at a time, see who's on your flight, unlimited friend tabs, AI concierge for plans and reservations.</div></div>
+    </div>
+  </div>
+  <div onClick="{{signIn}}" style="font-family: VT323,'Noto Serif',serif; letter-spacing: .5px; height: 52px; border-radius: 14px; background: #e6a8bd; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 23.8px; cursor: pointer; margin-top: 14px" style-hover="background:#c98298">create my profile&nbsp;</div>
+  <div style="font-family: Doto,'Noto Serif',serif; font-size: 14.5px; color: #b9b2a7; line-height: 1.6; max-width: 268px; margin: 6px auto 0; text-align: center">Keep track of where in the world your friends are, and meet friends of friends wherever you are.</div></div>
+</sc-if>
+
+<!-- ============ 2. CREATE PROFILE ============ -->
+<sc-if value="{{isSetup}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;overflow-y:auto;padding:6px 24px 22px">
+  <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:36.0px;line-height:1.1">Create your profile</div>
+  <div style="font-size:13.5px;color:#9c9489;line-height:1.5;margin:7px 0 18px">Set how friends and friends of friends might find you.&nbsp;</div>
+
+  <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Profile picture</div>
+  <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:18px;padding:15px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="position:relative;width:76px;height:76px;border-radius:50%;background:#131211;border:1.5px dashed #4d4740;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden">
+        <sc-if value="{{hasUserImg}}" hint-placeholder-val="{{ false }}"><img src="{{userImg}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#ffffff"></sc-if>
+        <sc-if value="{{noUserImg}}" hint-placeholder-val="{{ true }}"><span style="font-size:22px;color:#8a8177">+</span></sc-if>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600">{{picTitle}}</div>
+        <div style="font-size:11.5px;color:#9c9489;line-height:1.45;margin-top:3px">{{picNote}}</div>
+      </div>
+    </div>
+    <sc-if value="{{noUserPhoto}}" hint-placeholder-val="{{ true }}">
+    <label style="margin-top:13px;height:44px;border-radius:13px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:700;cursor:pointer">Upload a real photo of you<input type="file" accept="image/*" onChange="{{pickPhoto}}" style="display:none"></label>
+    </sc-if>
+    <sc-if value="{{hasUserPhoto}}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;background:#131211;border-radius:12px;padding:3px;gap:2px;margin-top:13px">
+      <sc-for list="{{avatarOpts}}" as="ao" hint-placeholder-count="2">
+        <div onClick="{{ao.pick}}" style="flex:1;text-align:center;padding:9px 0;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;background:{{ao.bg}};color:{{ao.color}}">{{ao.label}}</div>
+      </sc-for>
+    </div>
+    <label style="display:block;text-align:center;margin-top:10px;font-size:12px;font-weight:600;color:#e6a8bd;cursor:pointer">Use a different photo<input type="file" accept="image/*" onChange="{{pickPhoto}}" style="display:none"></label>
+    </sc-if>
+  </div>
+
+  <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px">Links</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <sc-for list="{{links}}" as="l" hint-placeholder-count="4">
+      <div style="display:flex;align-items:center;gap:12px;background:#1a1816;border:1.5px solid #322e2a;border-radius:15px;padding:12px 14px">
+        <span style="width:34px;height:34px;border-radius:11px;background:{{l.iconBg}};display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:12px;font-weight:700;flex:none">{{l.icon}}</span>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14.5px">{{l.name}}</div><div style="font-size:11.5px;color:#9c9489">{{l.note}}</div></div>
+        <div onClick="{{l.toggle}}" style="padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{l.btnBg}};color:{{l.btnColor}};white-space:nowrap">{{l.btnLabel}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px">Schools</div>
+  <div style="display:flex;flex-wrap:wrap;gap:7px">
+    <sc-for list="{{schools}}" as="s" hint-placeholder-count="3">
+      <div onClick="{{s.toggle}}" style="padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{s.bg}};color:{{s.color}};border:1.5px solid {{s.border}}">{{s.label}}</div>
+    </sc-for>
+    <sc-for list="{{customSchools}}" as="cs" hint-placeholder-count="0">
+      <div style="padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;background:#e6a8bd;color:#241f1a;border:1.5px solid #e6a8bd">{{cs.label}}</div>
+    </sc-for>
+    <div onClick="{{openAddSchool}}" style="padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:#1a1816;color:#c2bbb0;border:1.5px solid #322e2a">+ Add school</div>
+  </div>
+
+  <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px">Cities</div>
+  <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:15px;padding:6px 14px">
+    <sc-for list="{{cityRows}}" as="c" hint-placeholder-count="4">
+      <div style="display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid {{c.rule}}">
+        <span style="font-size:14px;width:18px;text-align:center;flex:none;color:#9c9489">{{c.glyph}}</span>
+        <div style="flex:1;min-width:0;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-weight:600;font-size:14.5px">{{c.city}}</span>
+          <sc-if value="{{c.current}}" hint-placeholder-val="{{ false }}">
+          <svg width="17" height="17" viewBox="0 0 64 64" fill="none" style="flex:none">
+            <g stroke="#e6a8bd" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path transform="rotate(0 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(72 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(144 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(216 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(288 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+            </g>
+            <circle cx="32" cy="32" r="4" fill="#e6a8bd"></circle>
+          </svg>
+          </sc-if>
+          <span style="font-size:12.5px;color:#9c9489">· {{c.years}}</span>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:{{c.kindColor}};background:{{c.kindBg}};padding:3px 9px;border-radius:999px">{{c.kind}}</span>
+      </div>
+    </sc-for>
+    <div onClick="{{addCity}}" style="padding:11px 0;font-size:13.5px;font-weight:600;color:#e6a8bd;cursor:pointer">+ Add a city or trip</div>
+  </div>
+
+  <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px">Bio</div>
+  <textarea value="{{bio}}" onChange="{{setBio}}" placeholder="Where you're from, what you're into, the kind of place you'd take a new friend." style="width:100%;box-sizing:border-box;min-height:84px;border-radius:15px;border:1.5px solid #322e2a;background:#1a1816;padding:13px 14px;font-size:14px;font-family:inherit;line-height:1.5;color:#f3f0ea;outline:none;resize:none"></textarea>
+
+  <div onClick="{{finishSetup}}" style="font-family: VT323,'Noto Serif',serif; letter-spacing: .5px; height: 100px; border-radius: 14px; background: #e6a8bd; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 23.8px; cursor: pointer; margin-top: 18px; opacity: {{setupOpacity}}" style-hover="background:#c98298">save profile</div>
+  <div style="text-align:center;font-size:11.5px;color:#8a8177;margin-top:9px">{{setupHint}}</div>
+  <div style="display:flex;justify-content:center;margin-top:18px">
+    <svg width="34" height="34" viewBox="0 0 64 64" fill="none">
+      <g stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path transform="rotate(0 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(72 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(144 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(216 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(288 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+      </g>
+      <circle cx="32" cy="32" r="4" fill="#e6a8bd"></circle>
+    </svg>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ 3. LIVE SCREEN ============ -->
+<sc-if value="{{isLive}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+  <div style="padding:8px 20px 0;display:flex;align-items:center;gap:11px;flex:none">
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:30.0px;line-height:1.1">{{cityName}}</span>
+        <svg width="21" height="21" viewBox="0 0 64 64" fill="none" style="flex:none">
+          <g stroke="#e6a8bd" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path transform="rotate(0 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+            <path transform="rotate(72 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+            <path transform="rotate(144 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+            <path transform="rotate(216 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+            <path transform="rotate(288 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+          </g>
+          <circle cx="32" cy="32" r="4" fill="#e6a8bd"></circle>
+        </svg>
+      </div>
+      <div style="font-size:11.5px;color:#9c9489">{{liveSub}}</div>
+    </div>
+    <div onClick="{{openTravel}}" style="padding:8px 12px;border-radius:999px;background:#1a1816;border:1.5px solid #322e2a;font-size:12px;font-weight:600;color:#c2bbb0;cursor:pointer;white-space:nowrap" style-hover="border-color:#5a534b">✈ Travelling</div>
+  </div>
+  <div style="display:flex;gap:7px;padding:11px 20px 9px;overflow-x:auto;flex:none">
+    <sc-for list="{{filters}}" as="f" hint-placeholder-count="5">
+      <div onClick="{{f.pick}}" style="padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;background:{{f.bg}};color:{{f.color}};border:1.5px solid {{f.border}}">{{f.label}}</div>
+    </sc-for>
+    <div onClick="{{toggleMore}}" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;background:{{moreBg}};color:{{moreColor}};border:1.5px solid {{moreBorder}}">{{moreLabel}}<span style="font-size:9px;opacity:.8">▾</span></div>
+  </div>
+  <sc-if value="{{moreOpen}}" hint-placeholder-val="{{ false }}">
+  <div style="margin:0 20px 10px;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:13px 14px;flex:none">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;flex:1">More filters</span>
+      <span style="font-size:10px;font-weight:700;color:#e0b070;background:#2a2017;padding:3px 8px;border-radius:999px">Bloom</span>
+    </div>
+    <sc-if value="{{isPaid}}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:11px">
+      <sc-for list="{{extraFilters}}" as="x" hint-placeholder-count="4">
+        <div onClick="{{x.toggle}}" style="padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{x.bg}};color:{{x.color}};border:1.5px solid {{x.border}}">{{x.label}}</div>
+      </sc-for>
+    </div>
+    <div onClick="{{clearExtras}}" style="margin-top:11px;font-size:12px;font-weight:600;color:#e6a8bd;cursor:pointer">{{clearLabel}}</div>
+    </sc-if>
+    <sc-if value="{{isBasic}}" hint-placeholder-val="{{ false }}">
+    <div style="font-size:13px;color:#9c9489;line-height:1.5;margin-top:9px">Filter by shared school, overlapping cities, languages and who's leaving soon. Included with Bloom.</div>
+    <div onClick="{{upgrade}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;margin-top:12px;height:44px;border-radius:13px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16.9px;cursor:pointer">Upgrade to Bloom · $6/mo</div>
+    </sc-if>
+  </div>
+  </sc-if>
+  <div onScroll="{{gridScroll}}" style="flex:1;overflow-y:auto;padding:0 20px 12px">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px">
+      <div onClick="{{navYouTile}}" style="position:relative;aspect-ratio:0.61;border-radius:16px;background:linear-gradient(135deg,#8f9f6b,#5c7a52);overflow:hidden;cursor:pointer;box-shadow:inset 0 0 0 2.5px #e6a8bd">
+        <sc-if value="{{hasUserImg}}" hint-placeholder-val="{{ false }}"><img src="{{userImg}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#ffffff"></sc-if>
+        <sc-if value="{{noUserImg}}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;font-weight:700;font-size:32px;color:rgba(255,255,255,.9);padding-bottom:16px">AR</div></sc-if>
+        <div style="position:absolute;top:6px;right:6px;background:#e6a8bd;color:#241f1a;font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:999px">Edit</div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:18px 8px 7px;background:linear-gradient(transparent,rgba(24,19,15,.66));display:flex;flex-direction:column;gap:2px">
+          <div style="color:#ffffff;font-weight:600;font-size:13px;line-height:1.1">You</div>
+          <div><span style="font-size:9.5px;font-weight:700;color:#8a3a57;background:rgba(255,255,255,.93);padding:2px 5px;border-radius:999px">{{youTileTag}}</span></div>
+        </div>
+      </div>
+      <sc-for list="{{people}}" as="p" hint-placeholder-count="9">
+        <div onClick="{{p.open}}" style="position:relative;aspect-ratio:0.61;border-radius:16px;background:{{p.grad}};overflow:hidden;cursor:pointer">
+          <sc-if value="{{p.img}}" hint-placeholder-val="{{ false }}"><img src="{{p.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if>
+          <sc-if value="{{p.noImg}}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:32.4px;color:rgba(255,255,255,.9);padding-bottom:16px">{{p.initials}}</div></sc-if>
+          <sc-if value="{{p.isFirst}}" hint-placeholder-val="{{ false }}">
+          <svg width="19" height="19" viewBox="0 0 64 64" fill="none" style="position:absolute;top:6px;left:6px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))">
+            <g stroke="#ffffff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path transform="rotate(0 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(72 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(144 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(216 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+              <path transform="rotate(288 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+            </g>
+            <circle cx="32" cy="32" r="4" fill="#e6a8bd"></circle>
+          </svg>
+          </sc-if>
+          <div style="position:absolute;top:6px;right:6px;display:flex;align-items:center;gap:4px">
+            <sc-if value="{{p.online}}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:#4cd471;border:2px solid rgba(255,255,255,.92)"></span></sc-if>
+            <span style="background:rgba(28,23,19,.5);color:#ffffff;font-size:9.5px;font-weight:700;padding:3px 6px;border-radius:999px">{{p.degLabel}}</span>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:18px 8px 7px;background:linear-gradient(transparent,rgba(24,19,15,.66));display:flex;flex-direction:column;gap:2px">
+            <div style="color:#ffffff;font-weight:600;font-size:13px;line-height:1.1">{{p.name}}</div>
+            <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+              <span style="font-size:9.5px;font-weight:700;color:{{p.tagColor}};background:rgba(255,255,255,.93);padding:2px 5px;border-radius:999px">{{p.tag}}</span>
+              <sc-if value="{{showDist}}" hint-placeholder-val="{{ false }}"><span style="font-size:10px;color:rgba(255,255,255,.88)">{{p.distLabel}}</span></sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{gridLimited}}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:10px;background:#2a1f27;border:1.5px solid #4a3243;border-radius:16px;padding:15px">
+      <div style="font-size:14.5px;font-weight:600">{{moreHiddenLine}}</div>
+      <div style="font-size:12px;color:#c9aebb;line-height:1.45;margin-top:4px">Basic shows the 10 closest people at a time. Bloom shows 25.</div>
+      <div onClick="{{upgrade}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;margin-top:12px;height:46px;border-radius:13px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;cursor:pointer">upgrade to bloom</div>
+    </div>
+    </sc-if>
+    <sc-if value="{{gridCapped}}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px 0 4px;text-align:center;font-size:12px;color:#9c9489;line-height:1.5">Showing your 25 closest · more appear as people move nearby</div>
+    </sc-if>
+    <sc-if value="{{gridLoadingMore}}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0 4px;font-size:12px;color:#9c9489"><span style="width:6px;height:6px;border-radius:50%;background:#e6a8bd"></span>Scroll for more people nearby</div>
+    </sc-if>
+    <div onClick="{{navVenues}}" style="margin-top:10px;display:flex;align-items:center;gap:11px;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:13px 14px;cursor:pointer" style-hover="border-color:#5a534b">
+      <span style="width:34px;height:34px;border-radius:11px;background:#2b2118;display:flex;align-items:center;justify-content:center;font-size:15px;flex:none">☕</span>
+      <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">Where to meet in {{cityName}}</div><div style="font-size:11.5px;color:#9c9489">{{meetSub}}</div></div>
+      <span style="color:#e6a8bd;font-size:17px">›</span>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ 8. GLOBAL MAP / WHO'S WHERE ============ -->
+<sc-if value="{{isWorld}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+  <div style="padding:10px 20px 4px;flex:none">
+    <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:31.2px;line-height:1.1">Who's where</div>
+    <div style="font-size:11.5px;color:#9c9489">{{worldSub}}</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:10px 20px 14px;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{worldCities}}" as="c" hint-placeholder-count="4">
+      <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:18px;padding:14px 15px">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:24.0px;flex:1;min-width:0">{{c.city}}</div>
+          <div style="font-size:11.5px;color:#9c9489;white-space:nowrap">{{c.meta}}</div>
+        </div>
+        <div style="display:flex;align-items:center;margin-top:11px">
+          <sc-for list="{{c.faces}}" as="f" hint-placeholder-count="3">
+            <div onClick="{{f.open}}" style="position:relative;width:68px;height:68px;margin-right:-14px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none">
+              <svg width="68" height="68" viewBox="0 0 64 64" fill="none" style="position:absolute;top:0;left:0;pointer-events:none;opacity:.85;mix-blend-mode:screen">
+                <g stroke="{{f.petal}}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="rotate({{f.spin}} 32 32)">
+                  <path transform="rotate(2 32 32)" d="M31.4 17.2 C24.8 14.6 21.6 6.4 27.4 3.6 C30.4 2.2 32.2 4.2 32.6 6.4 C34.4 3.4 38.6 3.2 40.2 6.2 C42.4 10.4 37.6 15.4 32.4 17 Z"></path>
+                  <path transform="rotate(86 32 32)" d="M32.6 16.6 C26.2 15.4 21.8 7.8 26.6 4.2 C29.8 2.1 32 4.6 32.4 6.8 C33.8 3.8 38.2 3.4 39.6 6.8 C41.4 11.2 37.2 15.2 31.8 16.8 Z"></path>
+                  <path transform="rotate(171 32 32)" d="M31.6 17.4 C25.4 14.2 22.4 5.8 28.2 3.4 C31 2.4 32.4 4.8 32.8 7 C34.6 4.2 38.4 4 40 7.4 C41.8 11.6 37 15.8 32.2 17.2 Z"></path>
+                  <path transform="rotate(263 32 32)" d="M32.2 17 C25.6 15.2 21.4 7.2 26.8 3.8 C30 1.9 32.1 4.4 32.5 6.6 C34.2 3.6 38.8 3.6 40 7 C41.6 11.4 36.8 15.6 31.6 17.2 Z"></path>
+                </g>
+              </svg>
+              <div style="position:relative;width:42px;height:42px;border-radius:50%;background:{{f.grad}};border:2.5px solid #131211;display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:16.8px;color:rgba(255,255,255,.92);overflow:visible"><sc-if value="{{f.img}}" hint-placeholder-val="{{ false }}"><img src="{{f.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover"></sc-if><sc-if value="{{f.noImg}}" hint-placeholder-val="{{ true }}"><span>{{f.initials}}</span></sc-if><sc-if value="{{f.online}}" hint-placeholder-val="{{ false }}"><span style="position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;background:#4cd471;border:2px solid #131211"></span></sc-if></div>
+            </div>
+          </sc-for>
+          <div style="flex:1"></div>
+          <div onClick="{{c.plan}}" style="padding:8px 13px;border-radius:999px;background:#2a2017;border:1.5px solid #4a3c28;color:#e0b070;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;z-index:1">{{c.cta}}</div>
+        </div>
+        <div style="font-size:12.5px;color:#9c9489;margin-top:11px;line-height:1.45">{{c.note}}</div>
+      </div>
+    </sc-for>
+    <div style="background:#1a1816;border-radius:18px;padding:14px 15px">
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase">Concierge watch</div>
+      <div style="font-size:13.5px;color:#d6d0c6;line-height:1.5;margin-top:6px">I'll tell you the moment someone in your circle lands in a city you're in — or one you've told me you're headed to.</div>
+      <div onClick="{{togWatch}}" style="display:inline-flex;align-items:center;gap:8px;margin-top:11px;padding:8px 13px;border-radius:999px;background:{{watchBg}};color:{{watchColor}};font-size:12.5px;font-weight:700;cursor:pointer">{{watchLabel}}</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ 7. VENUES ============ -->
+<sc-if value="{{isVenues}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+  <div style="padding:10px 20px 4px;flex:none">
+    <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:31.2px;line-height:1.1">Places to meet</div>
+    <div style="font-size:11.5px;color:#9c9489">{{cityName}} · vouched for by your circle</div>
+  </div>
+  <div style="display:flex;gap:7px;padding:11px 20px 9px;overflow-x:auto;flex:none">
+    <sc-for list="{{venueFilters}}" as="f" hint-placeholder-count="4">
+      <div onClick="{{f.pick}}" style="padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;background:{{f.bg}};color:{{f.color}};border:1.5px solid {{f.border}}">{{f.label}}</div>
+    </sc-for>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:0 20px 14px;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{venues}}" as="v" hint-placeholder-count="4">
+      <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:18px;display:flex;flex-direction:column">
+        <div style="height:88px;flex:none;border-radius:16px 16px 0 0;background:{{v.grad}};display:flex;align-items:flex-end;padding:10px 13px;box-sizing:border-box">
+          <span style="background:rgba(255,255,255,.93);border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;color:#c2bbb0">{{v.kind}}</span>
+        </div>
+        <div style="padding:13px 15px 14px;flex:1 1 auto;min-height:0">
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:22.8px;flex:1;min-width:0">{{v.name}}</div>
+            <div style="font-size:11.5px;color:#9c9489;white-space:nowrap">{{v.walk}}</div>
+          </div>
+          <div style="font-size:13px;color:#9c9489;line-height:1.45;margin-top:5px">{{v.note}}</div>
+          <div style="display:flex;align-items:center;gap:9px;margin-top:12px">
+            <div style="display:flex">
+              <sc-for list="{{v.faces}}" as="f" hint-placeholder-count="2">
+                <div style="width:26px;height:26px;box-sizing:border-box;flex:none;border-radius:50%;background:{{f.grad}};border:2px solid #ffffff;margin-right:-8px;display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:rgba(255,255,255,.92)">{{f.initials}}</div>
+              </sc-for>
+            </div>
+            <span style="font-size:11.5px;color:#9c9489;margin-left:8px;flex:1;min-width:0">{{v.vouch}}</span>
+            <div onClick="{{v.reserve}}" style="padding:8px 14px;border-radius:999px;background:{{v.btnBg}};color:{{v.btnColor}};font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-size:16.3px;font-weight:700;cursor:pointer;white-space:nowrap">{{v.btnLabel}}</div>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+    <div style="border-radius:18px;border:1.5px dashed #3a352e;padding:14px 15px;background:#141312">
+      <div style="font-size:11px;font-weight:700;color:#8a8177;letter-spacing:.06em;text-transform:uppercase">Partner venue</div>
+      <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:21.6px;margin-top:5px">{{partner.name}}</div>
+      <div style="font-size:12.5px;color:#9c9489;line-height:1.45;margin-top:4px">{{partner.note}}</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ CHATS LIST ============ -->
+<sc-if value="{{isChats}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+  <div style="padding:10px 20px 6px;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:31.2px;flex:none">Chats</div>
+  <div style="flex:1;overflow-y:auto;padding:2px 13px 14px;display:flex;flex-direction:column;gap:2px">
+    <sc-for list="{{convos}}" as="c" hint-placeholder-count="3">
+      <div onClick="{{c.open}}" style="display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:15px;cursor:pointer" style-hover="background:#221f1c">
+        <div style="width:48px;height:48px;border-radius:50%;background:{{c.grad}};display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:19.2px;color:rgba(255,255,255,.92);flex:none;position:relative;overflow:visible"><sc-if value="{{c.img}}" hint-placeholder-val="{{ false }}"><img src="{{c.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover"></sc-if><sc-if value="{{c.noImg}}" hint-placeholder-val="{{ true }}"><span>{{c.initials}}</span></sc-if><sc-if value="{{c.isPod}}" hint-placeholder-val="{{ false }}"><span style="position:absolute;bottom:-2px;right:-2px;background:#ffffff;border-radius:999px;font-size:9px;font-weight:700;color:#e6a8bd;padding:1px 5px;border:1.5px solid #f4e9f2">pod</span></sc-if></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><span style="font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{c.name}}</span><span style="font-size:11px;color:#8a8177;flex:none">{{c.time}}</span></div>
+          <div style="font-size:13px;color:#9c9489;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px">{{c.last}}</div>
+        </div>
+        <sc-if value="{{c.unread}}" hint-placeholder-val="{{ false }}"><span style="width:9px;height:9px;border-radius:50%;background:#e6a8bd;flex:none"></span></sc-if>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ YOU / PRIVACY ============ -->
+<sc-if value="{{isYou}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:10px 20px 18px;display:flex;flex-direction:column;gap:15px">
+  <div style="display:flex;align-items:center;gap:7px">
+    <span style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:31.2px">You</span>
+    <svg width="21" height="21" viewBox="0 0 64 64" fill="none" style="flex:none">
+      <g stroke="#e6a8bd" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <path transform="rotate(0 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(72 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(144 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(216 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+        <path transform="rotate(288 32 32)" d="M32 32 C27.8 26.5 23.2 18.6 23.2 10.3 A5 4.8 0 0 1 32 5.5 A5 4.8 0 0 1 40.8 10.3 C40.8 18.6 36.2 26.5 32 32 Z"></path>
+      </g>
+      <circle cx="32" cy="32" r="4" fill="#e6a8bd"></circle>
+    </svg>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;background:#1a1816;border:1.5px solid #322e2a;border-radius:18px;padding:15px">
+    <div style="position:relative;display:flex;align-items:center;justify-content:center;width:88px;height:88px;flex:none">
+    <svg width="88" height="88" viewBox="0 0 64 64" fill="none" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none">
+          <path transform="rotate(0 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          <path transform="rotate(72 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          <path transform="rotate(144 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          <path transform="rotate(216 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          <path transform="rotate(288 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+        </svg>
+    <div style="position:relative;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8f9f6b,#5c7a52);display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:22.8px;color:rgba(255,255,255,.92);flex:none;overflow:hidden"><sc-if value="{{hasUserImg}}" hint-placeholder-val="{{ false }}"><img src="{{userImg}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if><sc-if value="{{noUserImg}}" hint-placeholder-val="{{ true }}"><span>AR</span></sc-if></div>
+  </div>
+    <div style="flex:1;min-width:0"><div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:22.8px">Arren</div><div style="font-size:12.5px;color:#9c9489;line-height:1.4">{{youSub}}<br>{{planLabel}}</div></div>
+    <div onClick="{{openEdit}}" style="padding:8px 13px;border-radius:999px;background:#e6a8bd;color:#241f1a;font-size:12.5px;font-weight:700;cursor:pointer;flex:none;white-space:nowrap">Edit profile</div>
+  </div>
+  <div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">How you're found</div>
+    <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;overflow:hidden">
+      <sc-for list="{{toggles}}" as="t" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:11px;padding:12px 15px;border-bottom:1px solid {{t.rule}}">
+          <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{t.label}}</div><div style="font-size:11.5px;color:#9c9489;line-height:1.4">{{t.note}}</div></div>
+          <div onClick="{{t.toggle}}" style="width:44px;height:26px;border-radius:999px;background:{{t.bg}};position:relative;cursor:pointer;flex:none;transition:background .15s"><span style="position:absolute;top:3px;left:{{t.left}};width:20px;height:20px;border-radius:50%;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .15s"></span></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Who can see me</div>
+    <div style="display:flex;background:#211e1b;border-radius:12px;padding:3px;gap:2px">
+      <sc-for list="{{visOpts}}" as="v" hint-placeholder-count="3">
+        <div onClick="{{v.pick}}" style="flex:1;text-align:center;padding:8px 0;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;background:{{v.bg}};color:{{v.color}};box-shadow:{{v.shadow}}">{{v.label}}</div>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;color:#9c9489;line-height:1.5;margin-top:9px">{{visNote}}</div>
+  </div>
+  <div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Notifications</div>
+    <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;overflow:hidden">
+      <sc-for list="{{notifToggles}}" as="t" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:11px;padding:12px 15px;border-bottom:1px solid {{t.rule}}">
+          <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">{{t.label}}</div><div style="font-size:11.5px;color:#9c9489;line-height:1.4">{{t.note}}</div></div>
+          <div onClick="{{t.toggle}}" style="width:44px;height:26px;border-radius:999px;background:{{t.bg}};position:relative;cursor:pointer;flex:none;transition:background .15s"><span style="position:absolute;top:3px;left:{{t.left}};width:20px;height:20px;border-radius:50%;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .15s"></span></div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Language</div>
+    <div style="position:relative;display:flex;align-items:center;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:0 15px;height:52px">
+      <span style="flex:1;min-width:0;font-size:14px;font-weight:600">App language</span>
+      <span style="font-size:13.5px;color:#e6a8bd;font-weight:600">{{appLang}}</span>
+      <span style="font-size:11px;color:#9c9489;margin-left:7px">▾</span>
+      <select value="{{appLang}}" onChange="{{setAppLang}}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px">
+        <sc-for list="{{langOpts}}" as="lo" hint-placeholder-count="8">
+          <option value="{{lo}}">{{lo}}</option>
+        </sc-for>
+      </select>
+    </div>
+  </div>
+  <sc-if value="{{isBasic}}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{upgrade}}" style="display:flex;align-items:center;gap:12px;background:#2a1f27;border:1.5px solid #4a3243;border-radius:16px;padding:14px 15px;cursor:pointer">
+    <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;color:#f3f0ea">Upgrade to Bloom</div><div style="font-size:11.5px;color:#c9aebb;line-height:1.4">Browse any city, flight matches, advanced filters, AI concierge · $6/mo</div></div>
+    <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;padding:8px 14px;border-radius:999px;background:#e6a8bd;color:#241f1a;font-size:18px;font-weight:700;flex:none">upgrade</div>
+  </div>
+  </sc-if>
+  <sc-if value="{{isPaid}}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex;align-items:center;gap:12px;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:14px 15px">
+    <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">You're on Bloom</div><div style="font-size:11.5px;color:#9c9489">$11/mo · renews Oct 22</div></div>
+    <div onClick="{{downgrade}}" style="font-size:12.5px;font-weight:700;color:#9c9489;cursor:pointer">Manage</div>
+  </div>
+  </sc-if>
+  <div onClick="{{inviteFriends}}" style="display:flex;align-items:center;gap:12px;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:14px 15px;cursor:pointer" style-hover="border-color:#5a534b">
+    <span style="width:34px;height:34px;border-radius:11px;background:#2a1f27;color:#e6a8bd;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex:none">+</span>
+    <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">Invite friends</div><div style="font-size:11.5px;color:#9c9489">{{inviteSub}}</div></div>
+    <span style="color:#e6a8bd;font-size:17px">›</span>
+  </div>
+  <a href="mailto:help@friendflower.app" style="display:flex;align-items:center;gap:12px;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:14px 15px;text-decoration:none;color:#f3f0ea" style-hover="border-color:#5a534b">
+    <span style="width:34px;height:34px;border-radius:11px;background:#2a1f27;color:#e6a8bd;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex:none">?</span>
+    <div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600">Need help?</div><div style="font-size:11.5px;color:#9c9489">Contact the Friend Flower team</div></div>
+    <span style="color:#e6a8bd;font-size:17px">›</span>
+  </a>
+  <div onClick="{{signOut}}" style="text-align:center;padding:13px;border-radius:14px;background:#1a1816;border:1.5px solid #322e2a;color:#e6a8bd;font-weight:600;font-size:14px;cursor:pointer" style-hover="background:#241a22">Sign out</div>
+</div>
+</sc-if>
+
+<!-- ============ FLIGHTS ============ -->
+<sc-if value="{{isFlightsLocked}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:10px 20px 18px;display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:center;gap:8px"><span style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:31.2px;line-height:1.1">Flights</span><span style="font-size:10px;font-weight:700;color:#e0b070;background:#2a2017;padding:3px 8px;border-radius:999px">Bloom</span></div>
+  <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:18px;padding:18px 16px">
+    <div style="font-size:15px;font-weight:600">See who's on your flight</div>
+    <div style="font-size:13px;color:#9c9489;line-height:1.55;margin-top:6px">Add your upcoming flights and we'll show which friends and friends of friends are on the same plane. Included with Bloom.</div>
+    <div onClick="{{upgrade}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;margin-top:14px;height:50px;border-radius:14px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:21px;cursor:pointer">upgrade to bloom · $6/mo</div>
+  </div>
+</div>
+</sc-if>
+<sc-if value="{{isFlights}}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow-y:auto;padding:10px 20px 18px;display:flex;flex-direction:column;gap:12px">
+  <div style="display:flex;align-items:flex-end;gap:10px">
+    <div style="flex:1;min-width:0">
+      <div style="display:flex;align-items:center;gap:8px"><span style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:31.2px;line-height:1.1">Flights</span><span style="font-size:10px;font-weight:700;color:#e0b070;background:#2a2017;padding:3px 8px;border-radius:999px">Bloom</span></div>
+      <div style="font-size:11.5px;color:#9c9489">{{flightsSub}}</div>
+    </div>
+    <div onClick="{{openAddTrip}}" style="padding:8px 13px;border-radius:999px;background:#e6a8bd;color:#241f1a;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap">+ Add flight</div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{trips}}" as="tr" hint-placeholder-count="2">
+        <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:18px;padding:14px 15px">
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <div style="flex:1;min-width:0;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:24px;line-height:1">{{tr.city}}</div>
+            <div style="font-size:12px;color:#9c9489;white-space:nowrap">{{tr.dates}}</div>
+            <div onClick="{{tr.remove}}" style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#8a8177;cursor:pointer;flex:none">✕</div>
+          </div>
+          <sc-for list="{{tr.legs}}" as="lg" hint-placeholder-count="2">
+          <div style="margin-top:11px;font-size:11px;font-weight:700;color:#e6a8bd;letter-spacing:.05em;text-transform:uppercase">{{lg.dirLabel}}</div>
+          <div style="margin-top:6px;background:#131211;border:1.5px dashed #3a352e;border-radius:14px;padding:12px 13px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:#9c9489;letter-spacing:.05em;text-transform:uppercase">
+              <span style="flex:1;min-width:0">{{lg.airlineLine}}</span><span>Your seat {{lg.seat}}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:9px">
+              <div style="font-family:VT323,'Noto Serif',serif;font-size:30px;line-height:1;letter-spacing:1px">{{lg.from}}</div>
+              <div style="flex:1;display:flex;align-items:center;gap:6px"><span style="flex:1;height:0;border-top:1.5px dashed #4d4740"></span><span style="font-size:13px;color:#e6a8bd">✈</span><span style="flex:1;height:0;border-top:1.5px dashed #4d4740"></span></div>
+              <div style="font-family:VT323,'Noto Serif',serif;font-size:30px;line-height:1;letter-spacing:1px">{{lg.to}}</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;gap:10px;margin-top:6px;font-size:11.5px;color:#9c9489">
+              <span>{{lg.dep}}</span><span style="text-align:right">{{lg.arr}}</span>
+            </div>
+          </div>
+          <sc-if value="{{lg.hasPax}}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px">
+            <div style="font-size:12.5px;font-weight:700;color:#e6a8bd;margin-bottom:8px">{{lg.paxLine}}</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{lg.pax}}" as="px" hint-placeholder-count="1">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div onClick="{{px.open}}" style="position:relative;width:34px;height:34px;border-radius:50%;background:{{px.grad}};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:rgba(255,255,255,.92);flex:none;overflow:hidden;cursor:pointer"><sc-if value="{{px.img}}" hint-placeholder-val="{{ false }}"><img src="{{px.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if><sc-if value="{{px.noImg}}" hint-placeholder-val="{{ true }}"><span>{{px.initials}}</span></sc-if></div>
+                  <div onClick="{{px.open}}" style="flex:1;min-width:0;cursor:pointer"><div style="font-size:13.5px;font-weight:600">{{px.fullName}}</div><div style="font-size:11px;color:#9c9489">{{px.degWord}} degree · via {{px.viaName}}</div></div>
+                  <div onClick="{{px.sayHi}}" style="padding:7px 12px;border-radius:999px;background:#2a1f27;border:1.5px solid #4a3243;color:#e6a8bd;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Say hi</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+          <sc-if value="{{lg.noPax}}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:11px;font-size:12px;color:#9c9489;line-height:1.5">No one in your circles has shared this flight yet.</div>
+          </sc-if>
+          </sc-for>
+        </div>
+      </sc-for>
+  </div>
+  <sc-if value="{{noTrips}}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{openAddTrip}}" style="border:1.5px dashed #3a352e;border-radius:16px;padding:22px 16px;text-align:center;font-size:13px;color:#9c9489;cursor:pointer;line-height:1.5">Add an upcoming flight to see which friends and friends of friends are on board.</div>
+  </sc-if>
+  <div style="font-size:11.5px;color:#8a8177;line-height:1.5">Matches only show people who've shared the same flight and let friends of friends see it. Seat numbers are never shared.</div>
+</div>
+</sc-if>
+
+<!-- ============ EDIT PROFILE ============ -->
+<sc-if value="{{isEdit}}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:56px;left:0;right:0;bottom:0;background:#0d0c0b;display:flex;flex-direction:column;z-index:22">
+  <div style="flex:none;display:flex;align-items:center;gap:11px;padding:9px 16px;border-bottom:1px solid #2b2723">
+    <div onClick="{{closeEdit}}" style="width:32px;height:32px;border-radius:50%;background:#1a1816;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:#c2bbb0;flex:none">‹</div>
+    <div style="flex:1;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:26px">Edit profile</div>
+    <div onClick="{{closeEdit}}" style="font-size:13.5px;font-weight:700;color:#e6a8bd;cursor:pointer">Done</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:18px 22px 22px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <div style="position:relative;width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,#8f9f6b,#5c7a52);display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;font-size:38px;color:rgba(255,255,255,.92);overflow:hidden;border:2px solid #322e2a"><sc-if value="{{hasUserImg}}" hint-placeholder-val="{{ false }}"><img src="{{userImg}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#ffffff"></sc-if><sc-if value="{{noUserImg}}" hint-placeholder-val="{{ true }}"><span>AR</span></sc-if></div>
+      <div style="display:flex;gap:8px">
+        <label style="padding:8px 14px;border-radius:999px;background:#e6a8bd;color:#241f1a;font-size:12.5px;font-weight:700;cursor:pointer">Change photo<input type="file" accept="image/*" onChange="{{pickPhoto}}" style="display:none"></label>
+      </div>
+      <sc-if value="{{hasUserPhoto}}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;background:#1a1816;border-radius:12px;padding:3px;gap:2px;width:100%;max-width:280px">
+        <sc-for list="{{avatarOpts}}" as="ao" hint-placeholder-count="2">
+          <div onClick="{{ao.pick}}" style="flex:1;text-align:center;padding:8px 0;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;background:{{ao.bg}};color:{{ao.color}}">{{ao.label}}</div>
+        </sc-for>
+      </div>
+      </sc-if>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Bio</div>
+      <textarea value="{{bio}}" onChange="{{setBio}}" style="width:100%;box-sizing:border-box;min-height:92px;border-radius:15px;border:1.5px solid #322e2a;background:#1a1816;padding:13px 14px;font-size:14px;font-family:inherit;line-height:1.5;color:#f3f0ea;outline:none;resize:none"></textarea>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Currently living in</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input value="{{home}}" onChange="{{setHome}}" placeholder="City" style="height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+        <input value="{{homeArea}}" onChange="{{setHomeArea}}" placeholder="Neighbourhood" style="height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Schools</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        <sc-for list="{{schools}}" as="s" hint-placeholder-count="2">
+          <div onClick="{{s.toggle}}" style="padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{s.bg}};color:{{s.color}};border:1.5px solid {{s.border}}">{{s.label}}</div>
+        </sc-for>
+        <sc-for list="{{customSchools}}" as="cs" hint-placeholder-count="0">
+          <div style="padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;background:#e6a8bd;color:#241f1a;border:1.5px solid #e6a8bd">{{cs.label}}</div>
+        </sc-for>
+        <div onClick="{{openAddSchool}}" style="padding:8px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:#1a1816;color:#c2bbb0;border:1.5px solid #322e2a">+ Add school</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Places you've lived</div>
+      <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:15px;padding:4px 14px">
+        <sc-for list="{{livedRows}}" as="lr" hint-placeholder-count="2">
+          <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #26231f">
+            <span style="flex:none">🏠</span>
+            <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">{{lr.city}}</div><div style="font-size:11.5px;color:#9c9489">{{lr.years}}</div></div>
+            <div onClick="{{lr.remove}}" style="font-size:12px;font-weight:600;color:#8a8177;cursor:pointer">Remove</div>
+          </div>
+        </sc-for>
+        <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:center;padding:11px 0">
+          <input value="{{newLivedCity}}" onChange="{{setNewLivedCity}}" placeholder="City" style="min-width:0;height:40px;border-radius:11px;border:1.5px solid #322e2a;background:#131211;padding:0 11px;font-size:13.5px;font-family:inherit;color:#f3f0ea;outline:none">
+          <input value="{{newLivedYears}}" onChange="{{setNewLivedYears}}" placeholder="Years" style="min-width:0;height:40px;border-radius:11px;border:1.5px solid #322e2a;background:#131211;padding:0 11px;font-size:13.5px;font-family:inherit;color:#f3f0ea;outline:none">
+          <div onClick="{{addLived}}" style="height:40px;padding:0 13px;border-radius:11px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;font-size:13px;font-weight:700;cursor:pointer;opacity:{{addLivedOpacity}}">Add</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Linked socials</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{links}}" as="l" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:12px;background:#1a1816;border:1.5px solid #322e2a;border-radius:15px;padding:11px 14px">
+            <span style="width:32px;height:32px;border-radius:10px;background:{{l.iconBg}};display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:12px;font-weight:700;flex:none">{{l.icon}}</span>
+            <div style="flex:1;min-width:0;font-weight:600;font-size:14.5px">{{l.name}}</div>
+            <div onClick="{{l.toggle}}" style="padding:7px 13px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;background:{{l.btnBg}};color:{{l.btnColor}};white-space:nowrap">{{l.btnLabel}}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div>
+      <div style="display:flex;align-items:baseline;margin-bottom:8px">
+        <div style="flex:1;font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase">Upcoming trips</div>
+        <div onClick="{{openAddTrip}}" style="font-size:12.5px;font-weight:700;color:#e6a8bd;cursor:pointer">+ Add trip</div>
+      </div>
+      <div style="background:#1a1816;border:1.5px solid #322e2a;border-radius:15px;padding:4px 14px">
+        <sc-for list="{{trips}}" as="tr" hint-placeholder-count="2">
+          <div style="display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #26231f">
+            <span style="color:#e6a8bd;flex:none">✈</span>
+            <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">{{tr.city}}</div><div style="font-size:11.5px;color:#9c9489">{{tr.dates}} · {{tr.flightNos}}</div></div>
+            <div onClick="{{tr.remove}}" style="font-size:12px;font-weight:600;color:#8a8177;cursor:pointer">Remove</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{noTrips}}" hint-placeholder-val="{{ false }}"><div style="padding:12px 0;font-size:13px;color:#9c9489">No trips yet</div></sc-if>
+      </div>
+    </div>
+    <div onClick="{{closeEdit}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;height:52px;border-radius:14px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:23.8px;cursor:pointer;flex:none">save changes</div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ ADD SCHOOL SHEET ============ -->
+<sc-if value="{{addSchoolOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeAddSchool}}" style="position:absolute;inset:0;background:rgba(6,5,4,.6);display:flex;flex-direction:column;justify-content:flex-end;z-index:46">
+  <div onClick="{{stop}}" style="background:#141312;border-radius:22px 22px 0 0;padding:18px 22px 24px;border-top:1.5px solid #322e2a">
+    <div style="width:38px;height:4px;border-radius:99px;background:#3a352e;margin:0 auto 16px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:26px">Add a school</div>
+      <div onClick="{{closeAddSchool}}" style="width:28px;height:28px;border-radius:50%;background:#1a1816;border:1.5px solid #322e2a;display:flex;align-items:center;justify-content:center;font-size:14px;color:#c2bbb0;cursor:pointer;flex:none">✕</div>
+    </div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:16px 0 7px">School name</div>
+    <input value="{{newSchoolName}}" onChange="{{setNewSchoolName}}" placeholder="e.g. UCLA" style="width:100%;box-sizing:border-box;height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:14px 0 7px">Graduating year</div>
+    <input value="{{newSchoolYear}}" onChange="{{setNewSchoolYear}}" placeholder="e.g. 2018" style="width:100%;box-sizing:border-box;height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:14px 0 7px">Level</div>
+    <div style="display:flex;background:#1a1816;border-radius:12px;padding:3px;gap:2px">
+      <sc-for list="{{levelOpts}}" as="lv" hint-placeholder-count="2">
+        <div onClick="{{lv.pick}}" style="flex:1;text-align:center;padding:9px 0;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;background:{{lv.bg}};color:{{lv.color}}">{{lv.label}}</div>
+      </sc-for>
+    </div>
+    <div onClick="{{saveSchool}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;height:50px;border-radius:14px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;cursor:pointer;margin-top:18px;opacity:{{saveSchoolOpacity}}">add school</div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ ADD TRIP SHEET ============ -->
+<sc-if value="{{addTripOpen}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeAddTrip}}" style="position:absolute;inset:0;background:rgba(6,5,4,.6);display:flex;flex-direction:column;justify-content:flex-end;z-index:45">
+  <div onClick="{{stop}}" style="background:#141312;border-radius:22px 22px 0 0;padding:18px 22px 24px;border-top:1.5px solid #322e2a">
+    <div style="width:38px;height:4px;border-radius:99px;background:#3a352e;margin:0 auto 16px"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:26px">Add a trip</div>
+      <div onClick="{{closeAddTrip}}" style="width:28px;height:28px;border-radius:50%;background:#1a1816;border:1.5px solid #322e2a;display:flex;align-items:center;justify-content:center;font-size:14px;color:#c2bbb0;cursor:pointer;flex:none">✕</div>
+    </div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:16px 0 7px">City</div>
+    <input value="{{newTripCity}}" onChange="{{setNewTripCity}}" placeholder="e.g. Tokyo" style="width:100%;box-sizing:border-box;height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin:14px 0 7px">Dates</div>
+    <input value="{{newTripDates}}" onChange="{{setNewTripDates}}" placeholder="e.g. Nov 3 – Nov 10" style="width:100%;box-sizing:border-box;height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:14px">
+      <div>
+        <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px">Inbound flight</div>
+        <input value="{{newTripIn}}" onChange="{{setNewTripIn}}" placeholder="e.g. UA 837" style="width:100%;box-sizing:border-box;height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+        <div style="font-size:11px;color:#8a8177;margin-top:5px">{{inHint}}</div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px">Outbound flight</div>
+        <input value="{{newTripOut}}" onChange="{{setNewTripOut}}" placeholder="e.g. UA 838" style="width:100%;box-sizing:border-box;height:48px;border-radius:13px;border:1.5px solid #322e2a;background:#1a1816;padding:0 14px;font-size:14.5px;font-family:inherit;color:#f3f0ea;outline:none">
+        <div style="font-size:11px;color:#8a8177;margin-top:5px">{{outHint}}</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:#8a8177;margin-top:6px">Both optional</div>
+    <div style="font-size:11.5px;color:#8a8177;line-height:1.5;margin-top:8px">We'll check whether anyone in your circles is on the same flight.</div>
+    <div onClick="{{saveTrip}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;height:50px;border-radius:14px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;cursor:pointer;margin-top:16px;opacity:{{saveTripOpacity}}">add trip</div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ TAB BAR ============ -->
+<sc-if value="{{showTabs}}" hint-placeholder-val="{{ false }}">
+<div style="flex:none;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid #2b2723;background:rgba(19,18,17,.97);padding:7px 6px 3px">
+  <sc-for list="{{tabs}}" as="t" hint-placeholder-count="5">
+    <div onClick="{{t.go}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:3px 0;position:relative">
+      <span style="width:21px;height:21px;border-radius:{{t.radius}};background:{{t.bg}};display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:9px;font-weight:700">{{t.glyph}}</span>
+      <span style="font-size:10px;font-weight:700;color:{{t.color}}">{{t.label}}</span>
+      <sc-if value="{{t.dot}}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:0;right:22%;width:8px;height:8px;border-radius:50%;background:#e6a8bd;border:1.5px solid #131211"></span></sc-if>
+    </div>
+  </sc-for>
+</div>
+</sc-if>
+
+<!-- ============ 4. PROFILE VIEW ============ -->
+<sc-if value="{{isProfile}}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:56px;left:0;right:0;bottom:0;background:#0d0c0b;display:flex;z-index:20">
+  <div style="flex:none;width:64px;background:#1a1816;border-right:1px solid #2b2723;display:flex;flex-direction:column;align-items:center;padding:12px 0 16px;gap:14px">
+    <div onClick="{{closeProfile}}" style="width:34px;height:34px;border-radius:50%;background:#1a1816;border:1.5px solid #322e2a;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:#c2bbb0;flex:none">‹</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:15px">📍</span><span style="font-size:10px;font-weight:700;color:#c2bbb0;text-align:center;line-height:1.15">{{sel.cityShort}}</span></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:3px"><span style="font-size:14px">✈</span><span style="font-size:10px;font-weight:700;color:#c2bbb0;text-align:center;line-height:1.15">{{sel.nextCity}}</span></div>
+    <sc-if value="{{selNotMe}}" hint-placeholder-val="{{ true }}"><div onClick="{{openKnow}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><span style="width:32px;height:32px;border-radius:50%;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{sel.degShort}}</span><span style="font-size:10px;font-weight:700;color:#e6a8bd">how</span></div></sc-if>
+    <div style="flex:1"></div>
+    <sc-if value="{{selIsMe}}" hint-placeholder-val="{{ false }}"><div onClick="{{openEdit}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><span style="width:34px;height:34px;border-radius:11px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700">✎</span><span style="font-size:10px;font-weight:700;color:#e6a8bd">edit</span></div></sc-if>
+    <sc-if value="{{selNotMe}}" hint-placeholder-val="{{ true }}"><div onClick="{{openChatFromProfile}}" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer"><span style="width:34px;height:34px;border-radius:11px;background:#1a1816;border:1.5px solid #322e2a;display:flex;align-items:center;justify-content:center;font-size:14px">💬</span><span style="font-size:10px;font-weight:700;color:#c2bbb0">chat</span></div></sc-if>
+  </div>
+  <div style="flex:1;min-width:0;overflow-y:auto">
+    <div style="position:relative;height:220px;background:{{sel.grad}}">
+      <sc-if value="{{sel.img}}" hint-placeholder-val="{{ false }}"><img src="{{sel.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></sc-if>
+      <sc-if value="{{sel.noImg}}" hint-placeholder-val="{{ true }}"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:62.4px;color:rgba(255,255,255,.88)">{{sel.initials}}</div></sc-if>
+      <sc-if value="{{sel.online}}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.94);border-radius:999px;padding:4px 10px;font-size:10.5px;font-weight:700;color:#2c7a45"><span style="width:7px;height:7px;border-radius:50%;background:#4cd471"></span>online</div></sc-if>
+    </div>
+    <div style="padding:14px 18px 18px;display:flex;flex-direction:column;gap:14px">
+      <sc-if value="{{selIsMe}}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:12px;color:#c9aebb;background:#2a1f27;border:1.5px solid #4a3243;border-radius:12px;padding:9px 12px;line-height:1.4">This is how friends and friends of friends see your profile.</div>
+      </sc-if>
+      <div>
+        <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:32.4px;line-height:1.05">{{sel.fullName}}</div>
+        <div style="font-size:13px;color:#9c9489;margin-top:4px;line-height:1.45">{{sel.school}} · {{sel.age}}<br>{{sel.distLabel}} away in {{sel.area}}</div>
+      </div>
+      <sc-if value="{{sel.onFlight}}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:10px;background:#2a1f27;border:1.5px solid #4a3243;border-radius:14px;padding:11px 13px"><span style="font-size:14px;color:#e6a8bd;flex:none">✈</span><span style="font-size:13px;font-weight:600;color:#f3d6df;line-height:1.4">{{sel.flightNote}}</span></div>
+      </sc-if>
+      <sc-if value="{{selNotMe}}" hint-placeholder-val="{{ true }}"><div onClick="{{openKnow}}" style="display:flex;align-items:center;gap:11px;background:#1a1816;border:1.5px solid #322e2a;border-radius:16px;padding:12px 14px;cursor:pointer" style-hover="border-color:#5a534b">
+        <span style="width:32px;height:32px;border-radius:50%;background:#2a1f27;color:#e6a8bd;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;flex:none">{{sel.degShort}}</span>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px">{{sel.mutualLine}}</div><div style="font-size:11.5px;color:#9c9489">Tap to see how you know each other</div></div>
+        <span style="color:#e6a8bd;font-size:17px">›</span>
+      </div></sc-if>
+      <div style="font-size:14.5px;line-height:1.55;color:#d6d0c6">{{sel.bio}}</div>
+      <div>
+        <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Cities</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <sc-for list="{{sel.cities}}" as="c" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;gap:9px;font-size:13.5px"><span style="width:16px;text-align:center;color:#9c9489;flex:none">{{c.glyph}}</span><span style="font-weight:600">{{c.city}}</span><span style="color:#9c9489">{{c.years}}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">Where they'd take you</div>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          <sc-for list="{{sel.spots}}" as="s" hint-placeholder-count="3">
+            <span style="padding:7px 12px;border-radius:999px;background:#1a1816;border:1.5px solid #322e2a;font-size:12.5px;font-weight:600;color:#d6d0c6">{{s}}</span>
+          </sc-for>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#9c9489"><span style="font-weight:700;color:#c2bbb0">Speaks</span> · {{sel.langs}}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a href="#" style="display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:12px;background:#1a1816;border:1.5px solid #322e2a;font-size:12.5px;font-weight:600;color:#d6d0c6;text-decoration:none"><span style="width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:8px;font-weight:700">IG</span>{{sel.ig}}</a>
+        <sc-if value="{{sel.fb}}" hint-placeholder-val="{{ false }}"><a href="#" style="display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:12px;background:#1a1816;border:1.5px solid #322e2a;font-size:12.5px;font-weight:600;color:#d6d0c6;text-decoration:none"><span style="width:18px;height:18px;border-radius:6px;background:#3b6fd4;display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:10px;font-weight:700;font-family:'Noto Serif',Georgia,serif">f</span>{{sel.fb}}</a></sc-if>
+      </div>
+      <sc-if value="{{selNotMe}}" hint-placeholder-val="{{ true }}"><div onClick="{{openChatFromProfile}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;height:50px;border-radius:14px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22.5px;cursor:pointer" style-hover="background:#c98298">Say hello</div></sc-if>
+      <sc-if value="{{selIsMe}}" hint-placeholder-val="{{ false }}"><div onClick="{{openEdit}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;height:50px;border-radius:14px;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22.5px;cursor:pointer" style-hover="background:#c98298">edit profile</div></sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ 5. HOW YOU KNOW EACH OTHER ============ -->
+<sc-if value="{{isKnow}}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:56px;left:0;right:0;bottom:0;background:#0d0c0b;display:flex;flex-direction:column;z-index:25">
+  <div style="flex:none;display:flex;align-items:center;gap:11px;padding:10px 16px">
+    <div onClick="{{closeKnow}}" style="width:32px;height:32px;border-radius:50%;background:#1a1816;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:#c2bbb0">‹</div>
+    <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase">{{sel.degLabel}} connection</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:4px 22px 18px">
+    <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:34.8px;line-height:1.15">{{knowHeading}}</div>
+    <div style="font-size:13px;color:#9c9489;margin-top:6px">{{knowSub}}</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;margin:22px 0 6px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="position:relative;display:flex;align-items:center;justify-content:center;width:94px;height:94px">
+          <svg width="94" height="94" viewBox="0 0 64 64" fill="none" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none">
+            <path transform="rotate(0 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(72 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(144 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(216 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(288 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          </svg>
+          <div style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#8f9f6b,#5c7a52);display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:22.8px;color:rgba(255,255,255,.92)">AR</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#c2bbb0">You</div>
+      </div>
+      <div style="width:2px;height:26px;background:repeating-linear-gradient(180deg,#dcbcd4 0 5px,transparent 5px 10px)"></div>
+      <sc-if value="{{sel.hasVia}}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="position:relative;display:flex;align-items:center;justify-content:center;width:94px;height:94px">
+          <svg width="94" height="94" viewBox="0 0 64 64" fill="none" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none">
+            <path transform="rotate(0 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(72 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(144 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(216 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(288 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          </svg>
+          <div style="width:60px;height:60px;border-radius:50%;background:{{sel.viaGrad}};display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:22.8px;color:rgba(255,255,255,.92)">{{sel.viaInitials}}</div>
+        </div>
+        <div style="font-size:12.5px;font-weight:700;color:#c2bbb0">{{sel.viaName}}</div>
+        <div style="font-size:11.5px;color:#9c9489">{{sel.viaSrc}}</div>
+      </div>
+      <div style="width:2px;height:26px;background:repeating-linear-gradient(180deg,#dcbcd4 0 5px,transparent 5px 10px)"></div>
+      </sc-if>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="position:relative;display:flex;align-items:center;justify-content:center;width:94px;height:94px">
+          <svg width="94" height="94" viewBox="0 0 64 64" fill="none" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none">
+            <path transform="rotate(0 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(72 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(144 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(216 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+            <path transform="rotate(288 32 32)" d="M32 15.5 C26.2 11.8 25.6 5.6 32 1.6 C38.4 5.6 37.8 11.8 32 15.5 Z" fill="rgba(230,168,189,.55)"></path>
+          </svg>
+          <div style="position:relative;width:60px;height:60px;border-radius:50%;background:{{sel.grad}};display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:22.8px;color:rgba(255,255,255,.92)"><sc-if value="{{sel.img}}" hint-placeholder-val="{{ false }}"><img src="{{sel.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover"></sc-if><sc-if value="{{sel.noImg}}" hint-placeholder-val="{{ true }}"><span>{{sel.initials}}</span></sc-if></div>
+        </div>
+        <div style="font-size:12.5px;font-weight:700;color:#c2bbb0">{{sel.name}}</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:18px">
+      <sc-for list="{{sel.evidence}}" as="e" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:11px;background:#1a1816;border:1.5px solid #322e2a;border-radius:15px;padding:12px 14px">
+          <span style="width:30px;height:30px;border-radius:10px;background:{{e.bg}};display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:11px;font-weight:700;flex:none">{{e.icon}}</span>
+          <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600">{{e.title}}</div><div style="font-size:11.5px;color:#9c9489;line-height:1.4">{{e.note}}</div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:#1a1816;border-radius:16px;padding:14px 15px;margin-top:14px">
+      <div style="font-size:11.5px;font-weight:700;color:#9c9489;letter-spacing:.06em;text-transform:uppercase">Verify the link</div>
+      <div style="font-size:13.5px;color:#d6d0c6;line-height:1.55;margin-top:6px">{{verifyCopy}}</div>
+      <div onClick="{{verify}}" style="margin-top:12px;height:46px;border-radius:13px;background:{{verifyBtnBg}};color:{{verifyBtnColor}};display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:18.8px;cursor:pointer">{{verifyBtnLabel}}</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ 6. CHAT ============ -->
+<sc-if value="{{isChat}}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:56px;left:0;right:0;bottom:0;background:#0d0c0b;display:flex;flex-direction:column;z-index:30">
+  <div style="flex:none;display:flex;align-items:center;gap:11px;padding:9px 14px;border-bottom:1px solid #2b2723;background:#131211">
+    <div onClick="{{closeChat}}" style="width:32px;height:32px;border-radius:50%;background:#1a1816;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;color:#c2bbb0;flex:none">‹</div>
+    <div onClick="{{chatToProfile}}" style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0">
+      <div style="position:relative;width:36px;height:36px;border-radius:50%;background:{{chatP.grad}};display:flex;align-items:center;justify-content:center;font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:16.8px;color:rgba(255,255,255,.92);flex:none"><sc-if value="{{chatP.img}}" hint-placeholder-val="{{ false }}"><img src="{{chatP.img}}" alt="" style="position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover"></sc-if><sc-if value="{{chatP.noImg}}" hint-placeholder-val="{{ true }}"><span>{{chatP.initials}}</span></sc-if></div>
+      <div style="min-width:0"><div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:20.4px;line-height:1.1">{{chatP.name}}</div><div style="font-size:11px;color:#9c9489">{{chatP.presence}}</div></div>
+    </div>
+    <span style="font-size:10.5px;font-weight:700;color:#e6a8bd;background:#2a1f27;border-radius:999px;padding:4px 9px;flex:none">{{chatP.degShort}}</span>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:14px 15px 8px;display:flex;flex-direction:column;gap:7px">
+    <div style="align-self:center;font-size:11px;color:#958d82;background:#221f1c;border-radius:999px;padding:5px 12px;text-align:center;line-height:1.4;max-width:88%">{{chatP.knowNote}}</div>
+    <sc-for list="{{chatMsgs}}" as="m" hint-placeholder-count="3">
+      <div style="max-width:{{m.max}};align-self:{{m.align}};background:{{m.bg}};color:{{m.color}};border-radius:{{m.radius}};padding:10px 13px;font-size:14px;line-height:1.45;border:{{m.border}}">
+        <sc-if value="{{m.who}}" hint-placeholder-val="{{ false }}"><div style="font-size:10.5px;font-weight:700;opacity:.72;margin-bottom:3px">{{m.who}}</div></sc-if>
+        {{m.t}}
+      </div>
+    </sc-for>
+    <sc-if value="{{showConcierge}}" hint-placeholder-val="{{ false }}">
+    <div style="align-self:stretch;background:#241d14;border:1.5px solid #4a3c28;border-radius:16px;padding:13px 14px;margin-top:4px">
+      <div style="display:flex;align-items:center;gap:8px"><span style="width:20px;height:20px;border-radius:50%;background:#e8b54b;display:flex;align-items:center;justify-content:center;font-size:10px">✦</span><span style="font-size:11px;font-weight:700;color:#e0b070;letter-spacing:.05em;text-transform:uppercase">Concierge</span></div>
+      <div style="font-size:13.5px;line-height:1.5;color:#d6d0c6;margin-top:7px">{{conciergeText}}</div>
+      <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap">
+        <div onClick="{{bookIt}}" style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;padding:8px 13px;border-radius:999px;background:#e6a8bd;color:#241f1a;font-size:15.6px;font-weight:700;cursor:pointer">{{bookLabel}}</div>
+        <div onClick="{{otherTime}}" style="padding:8px 13px;border-radius:999px;background:#1a1816;color:#c2bbb0;font-size:12.5px;font-weight:600;cursor:pointer">Another time</div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+  <div style="flex:none;padding:8px 13px 13px;background:#131211;border-top:1px solid #2b2723;display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;gap:7px;overflow-x:auto">
+      <div onClick="{{letsMeet}}" style="padding:7px 13px;border-radius:999px;background:#2a2017;color:#e0b070;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;border:1.5px solid #4a3c28">Let's meet…</div>
+      <div onClick="{{askConcierge}}" style="padding:7px 13px;border-radius:999px;background:#2a1f27;color:#e6a8bd;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;border:1.5px solid #4a3243">Ask concierge</div>
+      <div onClick="{{shareVenue}}" style="padding:7px 13px;border-radius:999px;background:#182419;color:#8ec9a1;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;border:1.5px solid #2c412f">Share a place</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input value="{{draft}}" onChange="{{setDraft}}" onKeyDown="{{draftKey}}" placeholder="Say hello…" style="flex:1;min-width:0;height:44px;border-radius:999px;border:1.5px solid #322e2a;background:#1a1816;padding:0 16px;font-size:14px;font-family:inherit;color:#f3f0ea;outline:none">
+      <div onClick="{{send}}" style="width:44px;height:44px;border-radius:50%;background:#e6a8bd;color:#241f1a;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;flex:none" style-hover="background:#c98298">↑</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ TRAVEL SHEET ============ -->
+<sc-if value="{{isTravel}}" hint-placeholder-val="{{ false }}">
+<div onClick="{{closeTravel}}" style="position:absolute;top:56px;left:0;right:0;bottom:0;background:rgba(30,25,20,.42);display:flex;flex-direction:column;justify-content:flex-end;z-index:40">
+  <div style="background:#0d0c0b;border-radius:24px 24px 0 0;padding:18px 22px 24px">
+    <div style="width:38px;height:4px;border-radius:99px;background:#3a352e;margin:0 auto 14px"></div>
+    <div style="font-family:VT323,'Noto Serif',serif;letter-spacing:.5px;font-weight:700;font-size:28.8px">Look ahead</div>
+    <div style="font-size:13px;color:#9c9489;line-height:1.5;margin-top:5px">See a city's circle before you fly. Bloom lets you browse any city; Basic shows the one you're in.</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+      <sc-for list="{{travelCities}}" as="t" hint-placeholder-count="3">
+        <div onClick="{{t.pick}}" style="display:flex;align-items:center;gap:11px;background:#ffffff;border:1.5px solid {{t.border}};border-radius:15px;padding:12px 14px;cursor:pointer">
+          <span style="font-size:15px;flex:none">{{t.glyph}}</span>
+          <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14.5px">{{t.city}}</div><div style="font-size:11.5px;color:#9c9489">{{t.note}}</div></div>
+          <sc-if value="{{t.locked}}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:700;color:#e0b070;background:#2a2017;padding:4px 9px;border-radius:999px">Bloom</span></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+</div>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 470, &quot;height&quot;: 980}, &quot;startScreen&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;signin&quot;, &quot;setup&quot;, &quot;live&quot;, &quot;world&quot;, &quot;venues&quot;, &quot;chats&quot;, &quot;you&quot;], &quot;default&quot;: &quot;signin&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Demo&quot;}, &quot;showDistanceOnTiles&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Nearby&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: null, plan: 'plus', filter: 'Nearby', venueFilter: 'All', moreOpen: false, extras: [], conciergeOn: {}, booked: {}, sel: 'barbara', chat: null, draft: '',
+    city: 'San Francisco', bio: 'Third culture kid — Jakarta, Bath, now mostly SF. I collect corner tables and long walks. Ask me for the good natural wine list.',
+    links: { ig: true, fb: true, contacts: false, li: false },
+    schools: { ucla: true, bath: true, jis: false },
+    verified: {}, watch: true, travelOpen: false,
+    addSchoolOpen: false, newSchoolName: '', newSchoolYear: '', schoolLevel: 'Undergraduate', customSchools: [],
+    appLang: 'English', notifs: { nearby: true, landed: true, flights: true, messages: true, concierge: false },
+    home: 'San Francisco', homeArea: 'Mission District',
+    lived: [{ id: 'l1', city: 'Bath', years: '2009–2013' }, { id: 'l2', city: 'Jakarta', years: '1998–2009' }], newLivedCity: '', newLivedYears: '', userPhoto: null, userDoodle: null, avatarMode: 'photo', doodling: false,
+    trips: [
+      { id: 't1', city: 'Tokyo', dates: 'Oct 1 – Oct 14', flight: { no: 'JL 1', airline: 'Japan Airlines', from: 'SFO', to: 'HND', dep: 'Oct 1 · 11:40', arr: 'Oct 2 · 15:25', seat: '34K' }, returnFlight: { no: 'JL 2', airline: 'Japan Airlines', from: 'HND', to: 'SFO', dep: 'Oct 14 · 17:05', arr: 'Oct 14 · 10:10', seat: '31A' } },
+      { id: 't2', city: 'Berlin', dates: 'Oct 20 – Oct 26', flight: { no: 'LH 455', airline: 'Lufthansa', from: 'SFO', to: 'FRA', dep: 'Oct 20 · 15:30', arr: 'Oct 21 · 11:05', seat: '52A' }, returnFlight: { no: 'LH 454', airline: 'Lufthansa', from: 'FRA', to: 'SFO', dep: 'Oct 26 · 13:20', arr: 'Oct 26 · 16:10', seat: '48C' } }
+    ],
+    loaded: 24, addTripOpen: false, newTripCity: '', newTripDates: '', newTripIn: '', newTripOut: '',
+    prefs: { live: true, trips: true, online: true, dist: true }, vis: 'fof',
+    msgs: {
+      barbara: [
+        { f: 'them', t: 'Ha — Priya told me you were landing this week. Welcome back to SF.' },
+        { f: 'me', t: 'Small world. Here for ten days, then Tokyo.' },
+        { f: 'them', t: "Let's meet before you fly. I know a place." }
+      ],
+      'pod:kenji': [
+        { f: 'sys', t: 'Theo M. opened this pod so the three of you can confirm how you know each other.' },
+        { f: 'them', who: 'Theo', t: 'Confirming: Arren and I go back to Berlin, and Kenji and I have been friends for years. You two overlap in Tokyo next month — meet.' }
+      ],
+      theo: [{ f: 'them', t: 'Berlin in October? I owe you a coffee at Bonanza.' }]
+    },
+    read: { theo: true }
+  };
+  people = [
+    { img: 'photos/d1.svg', id: 'barbara', name: 'Barbara', fullName: 'Barbara N.', initials: 'BN', grad: 'linear-gradient(135deg,#c98da3,#8c5f7d)', deg: 1, dist: 0.4, online: true, mutuals: 4, tag: 'Local', school: 'UCLA', age: 'Bath, 31', area: 'the Mission', cityShort: 'SF', nextCity: 'Tokyo', langs: 'English, French, Bahasa', ig: '@barbara.n', fb: 'Barbara N.', bio: "Grew up between Bath and Jakarta, landed in SF for a design job and stayed. I keep a running list of tables worth sitting at.", cities: [{ glyph: '📍', city: 'San Francisco', years: 'now, 6 yrs' }, { glyph: '🏠', city: 'Bath', years: 'grew up' }, { glyph: '✈', city: 'Tokyo', years: 'Oct trip' }], spots: ['Tartine Manufactory', 'Bar Part Time', 'Dolores at dusk'], via: { name: 'Priya Kaur', initials: 'PK', grad: 'linear-gradient(135deg,#c4a06a,#96703c)', src: 'Instagram · UCLA \u201918' }, evidence: [{ icon: 'IG', bg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)', title: '4 mutual followers', note: 'Priya Kaur, Theo M., Sasuke K., Sam O.' }, { icon: 'C', bg: '#8ec9a1', title: 'UCLA overlap', note: 'You and Priya, class of \u201918' }, { icon: '🏠', bg: '#e0b070', title: 'Both lived in Bath', note: '2009–2013 · same three years' }] },
+    { img: 'photos/p2.png', id: 'theo', name: 'Theo', fullName: 'Theo M.', initials: 'TM', grad: 'linear-gradient(135deg,#7f9bb8,#4d6a8a)', deg: 1, dist: 0.9, online: true, mutuals: 6, tag: 'Traveller', school: 'LSE', age: 'Berlin, 29', area: 'Hayes Valley', cityShort: 'SF', nextCity: 'Berlin', langs: 'English, German', ig: '@theo.m', fb: 'Theo Merten', bio: 'Berlin-based, in SF for three weeks of work. Runs on filter coffee and long dinners.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'until Sep 24' }, { glyph: '🏠', city: 'Berlin', years: 'based' }, { glyph: '🏠', city: 'Singapore', years: 'childhood' }], spots: ['Bonanza (Berlin)', 'Sightglass', 'Zuni Café'], via: { name: 'Sam Ortiz', initials: 'SO', grad: 'linear-gradient(135deg,#9a8fc4,#6a5f9a)', src: 'Facebook · verified' }, evidence: [{ icon: 'f', bg: '#3b6fd4', title: '6 mutual friends', note: 'Sam Ortiz and five others' }, { icon: '✈', bg: '#e0b070', title: 'Overlapped in Berlin', note: 'Both there Mar 2024' }] },
+    { img: 'photos/d2.svg', id: 'priya', name: 'Priya', fullName: 'Priya Kaur', initials: 'PK', grad: 'linear-gradient(135deg,#c4a06a,#96703c)', deg: 1, dist: 1.4, online: false, mutuals: 9, tag: 'Local', school: 'UCLA \u201918', age: 'LA, 30', area: 'Noe Valley', cityShort: 'SF', nextCity: 'Lisbon', langs: 'English, Hindi, Mandarin', ig: '@priya.folds', fb: null, bio: 'Old friend from UCLA. Bookbinder by night, will drag you to a museum on a Sunday.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'now, 4 yrs' }, { glyph: '🏠', city: 'Los Angeles', years: 'grew up' }], spots: ['Legion of Honor', 'Saint Frank', 'Ferry Building'], via: { name: 'direct', initials: 'AR', grad: 'linear-gradient(135deg,#8f9f6b,#5c7a52)', src: 'you met at UCLA' }, evidence: [{ icon: 'C', bg: '#8ec9a1', title: 'UCLA, class of \u201918', note: 'Same college, verified' }, { icon: 'IG', bg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)', title: '9 mutual followers', note: 'Your densest overlap in SF' }] },
+    { img: 'photos/p3.png', id: 'noor', name: 'Ali', fullName: 'Ali M.', initials: 'AM', grad: 'linear-gradient(135deg,#b48ac4,#7d5a94)', deg: 2, dist: 1.8, online: true, mutuals: 3, tag: 'Traveller', school: 'Central Saint Martins', age: 'London, 28', area: 'SoMa', cityShort: 'SF', nextCity: 'London', langs: 'English, Arabic, French', ig: '@noor.makes', fb: null, bio: 'London designer on a two-week residency. Happiest with a flat white and a long walk.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'until Aug 24' }, { glyph: '🏠', city: 'London', years: 'based' }, { glyph: '🏠', city: 'Beirut', years: 'childhood' }], spots: ['Andytown', 'SFMOMA', 'Ocean Beach'], via: { name: 'Barbara N.', initials: 'BN', grad: 'linear-gradient(135deg,#c98da3,#8c5f7d)', src: 'Instagram mutual' }, evidence: [{ icon: 'IG', bg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)', title: '3 mutual followers', note: 'All through Barbara' }, { icon: '🏠', bg: '#e0b070', title: 'Both lived in London', note: 'Different years' }] },
+    { img: 'photos/d3.svg', id: 'kenji', name: 'Kenji', fullName: 'Kenji T.', initials: 'KT', grad: 'linear-gradient(135deg,#6f9aa8,#42687a)', deg: 2, dist: 2.3, online: false, mutuals: 2, tag: 'Local', school: 'Berkeley', age: 'Tokyo, 34', area: 'Bernal', cityShort: 'SF', nextCity: 'Tokyo', langs: 'English, Japanese, Mandarin', ig: '@kenji.builds', fb: null, bio: 'Architect, amateur mycologist. Will happily plan your Tokyo week for you.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'now, 8 yrs' }, { glyph: '🏠', city: 'Tokyo', years: 'grew up' }], spots: ['Rintaro', 'Coffee Movement', 'Mount Sutro'], via: { name: 'Theo M.', initials: 'TM', grad: 'linear-gradient(135deg,#7f9bb8,#4d6a8a)', src: 'Facebook friend' }, evidence: [{ icon: 'f', bg: '#3b6fd4', title: '2 mutual friends', note: 'Theo M. and Sam O.' }, { icon: '✈', bg: '#e0b070', title: 'Tokyo in October', note: 'Your trips overlap by 4 days' }] },
+    { img: 'photos/p1.png', id: 'lena', name: 'Sasuke', fullName: 'Sasuke K.', initials: 'SK', grad: 'linear-gradient(135deg,#89a68e,#57755c)', deg: 2, dist: 2.9, online: true, mutuals: 3, tag: 'Local', school: 'RISD', age: 'Munich, 32', area: 'Hayes Valley', cityShort: 'SF', nextCity: 'Munich', langs: 'English, German', ig: '@sasuke.draws', fb: 'Sasuke Koch', bio: 'Illustrator. Keeps a list of the city\u2019s best benches and will share it on request.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'now, 5 yrs' }, { glyph: '🏠', city: 'Munich', years: 'grew up' }], spots: ['Ritual Hayes', 'Patricia\u2019s Green', 'Bar Crenn'], via: { name: 'Barbara N.', initials: 'BN', grad: 'linear-gradient(135deg,#c98da3,#8c5f7d)', src: 'Instagram mutual' }, evidence: [{ icon: 'IG', bg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)', title: '3 mutual followers', note: 'Barbara N., Sam O., Theo M.' }] },
+    { img: 'photos/d4.svg', id: 'sofia', name: 'Sofia', fullName: 'Sofia M.', initials: 'SM', grad: 'linear-gradient(135deg,#c99070,#9c6444)', deg: 2, dist: 3.6, online: true, mutuals: 2, tag: 'Traveller', school: 'UCLA \u201919', age: 'Lisbon, 30', area: 'North Beach', cityShort: 'SF', nextCity: 'Lisbon', langs: 'English, Portuguese, Italian', ig: '@sofia.mira', fb: null, bio: 'Lisbon writer on a west-coast research trip. Collector of ferry rides.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'until Aug 30' }, { glyph: '🏠', city: 'Lisbon', years: 'based' }], spots: ['Caffè Trieste', 'Sausalito ferry', 'City Lights'], via: { name: 'UCLA network', initials: 'C', grad: 'linear-gradient(135deg,#63977a,#3e8563)', src: 'alumni network' }, evidence: [{ icon: 'C', bg: '#8ec9a1', title: 'UCLA \u201919', note: 'One year below you' }, { icon: 'IG', bg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)', title: '2 mutual followers', note: 'Priya Kaur, Sam O.' }] },
+    { id: 'marcus', name: 'Marcus', fullName: 'Marcus B.', initials: 'MB', grad: 'linear-gradient(135deg,#8a8f9e,#5b6070)', deg: 2, dist: 5.2, online: false, mutuals: 1, tag: 'Local', school: 'SFSU', age: 'SF, 35', area: 'the Richmond', cityShort: 'SF', nextCity: 'Osaka', langs: 'English', ig: '@marcus.lows', fb: 'Marcus Bell', bio: 'Bassist and coffee-shop regular. Slow mornings, long records, dim sum every Sunday.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'born here' }], spots: ['Good Luck Dim Sum', 'Amoeba', 'Land\u2019s End'], via: { name: 'Sasuke K.', initials: 'SK', grad: 'linear-gradient(135deg,#89a68e,#57755c)', src: 'Facebook friend' }, evidence: [{ icon: 'f', bg: '#3b6fd4', title: '1 mutual friend', note: 'Sasuke K.' }] },
+    { id: 'ava', name: 'Ava', fullName: 'Ava C.', initials: 'AC', grad: 'linear-gradient(135deg,#d1917f,#a35c4c)', deg: 2, dist: 7.8, online: true, mutuals: 2, tag: 'Traveller', school: 'McGill', age: 'Toronto, 27', area: 'the Sunset', cityShort: 'SF', nextCity: 'Toronto', langs: 'English, French', ig: '@ava.cs', fb: null, bio: 'Toronto to SF, remote for the summer. Learning to surf, badly and happily.', cities: [{ glyph: '📍', city: 'San Francisco', years: 'until Sep 15' }, { glyph: '🏠', city: 'Toronto', years: 'based' }], spots: ['Outerlands', 'Java Beach', 'Golden Gate Park'], via: { name: 'Ali M.', initials: 'AM', grad: 'linear-gradient(135deg,#b48ac4,#7d5a94)', src: 'Instagram mutual' }, evidence: [{ icon: 'IG', bg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)', title: '2 mutual followers', note: 'Ali M., Barbara N.' }] }
+  ];
+  venueList = [
+    { id: 'v1', name: 'Tartine Manufactory', kind: 'Restaurant', walk: '6 min walk', grad: 'linear-gradient(135deg,#e0c8a8,#bb9a72)', note: 'Long tables, good light, easy to linger. Book the 6pm.', vouch: 'Barbara and Priya go here', faces: ['barbara', 'priya'], res: true },
+    { id: 'v2', name: 'Saint Frank Coffee', kind: 'Coffee', walk: '11 min walk', grad: 'linear-gradient(135deg,#cbb79a,#9d8460)', note: 'Quiet enough for a first hello. Counter seats at the back.', vouch: 'Priya\u2019s standing order', faces: ['priya'], res: false },
+    { id: 'v3', name: 'Bar Part Time', kind: 'Wine bar', grad: 'linear-gradient(135deg,#c99aa6,#95677a)', walk: '9 min walk', note: 'Natural wine, records, no menu anxiety.', vouch: 'Barbara and Sasuke go here', faces: ['barbara', 'lena'], res: true },
+    { id: 'v4', name: 'Dolores Park', kind: 'Free · outdoors', walk: '4 min walk', grad: 'linear-gradient(135deg,#a9c093,#77955f)', note: 'The no-commitment option. North end, late afternoon.', vouch: 'Everyone, honestly', faces: ['barbara', 'theo', 'lena'], res: false },
+    { id: 'v5', name: 'Rintaro', kind: 'Restaurant', walk: '14 min walk', grad: 'linear-gradient(135deg,#c2a9b4,#8d7280)', note: 'Kenji\u2019s pick for the night before you fly to Tokyo.', vouch: 'Kenji\u2019s pick', faces: ['kenji'], res: true },
+    { id: 'v6', name: 'Yoga Flow SoMa', kind: 'Movement', walk: '19 min walk', grad: 'linear-gradient(135deg,#a8bcc0,#75919a)', note: '7am flow, then coffee next door. Low-pressure first meet.', vouch: 'Ali\u2019s morning habit', faces: ['noor'], res: true }
+  ];
+  world = [
+    { city: 'London', meta: '4 in your circle', ids: ['noor', 'theo', 'sofia'], note: 'Two are 1st degree. Ali flies home Aug 24 — your dates overlap in October.', cta: 'Plan ahead' },
+    { city: 'Tokyo', meta: 'you land in 9 days', ids: ['kenji', 'barbara'], note: 'Kenji is there the same week and has already offered to plan your Friday.', cta: 'See circle' },
+    { city: 'Berlin', meta: '3 in your circle', ids: ['theo', 'lena', 'marcus'], note: 'Theo is back home Sep 24. He owes you a coffee at Bonanza.', cta: 'Plan ahead' },
+    { city: 'Lisbon', meta: '2 in your circle', ids: ['sofia', 'priya'], note: 'Sofia is based there year-round and hosts a Sunday table.', cta: 'Plan ahead' }
+  ];
+  makeDoodle(url) {
+    const img = new Image();
+    img.onload = () => {
+      const N = 64, c = document.createElement('canvas'); c.width = N; c.height = N;
+      const x = c.getContext('2d');
+      const side = Math.min(img.width, img.height);
+      x.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, N, N);
+      const d = x.getImageData(0, 0, N, N).data;
+      const lum = (px, py) => { const i = (Math.min(N - 1, py) * N + Math.min(N - 1, px)) * 4; return d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11; };
+      const region = (x0, y0, x1, y1) => { let t = 0, n = 0; for (let yy = Math.floor(y0 * N); yy < y1 * N; yy++) for (let xx = Math.floor(x0 * N); xx < x1 * N; xx++) { t += lum(xx, yy); n++; } return t / Math.max(1, n); };
+      const face = region(.38, .38, .62, .58);
+      const top = region(.34, .06, .66, .2);
+      const sidesLow = (region(.12, .55, .26, .85) + region(.74, .55, .88, .85)) / 2;
+      const chin = region(.42, .64, .58, .74);
+      let seed = 0; for (let i = 0; i < d.length; i += 97) seed = (seed * 31 + d[i]) % 100003;
+      const hairTop = top < face - 18;
+      const longHair = sidesLow < face - 28;
+      const beard = chin < face - 22;
+      const curly = hairTop && !longHair && seed % 3 === 0;
+      const smileOpen = seed % 2 === 0;
+      const ink = '#1a1a1a';
+      const P = [];
+      P.push('<path d="M206 462 C196 352 250 270 328 270 C408 270 460 352 450 464 C442 558 396 620 328 620 C258 620 214 556 206 462 Z"/>');
+      if (longHair) {
+        P.push('<path d="M204 462 C160 334 210 212 328 210 C450 208 500 330 454 462"/>');
+        P.push('<path d="M206 420 C176 500 168 582 182 650"/>', '<path d="M452 424 C486 500 492 584 478 652"/>');
+      } else if (curly) {
+        P.push('<path d="M198 392 C176 330 206 246 276 224 C300 178 380 176 408 214 C476 226 500 300 478 386"/>');
+        P.push('<path d="M200 362 C184 330 214 306 240 318"/>', '<path d="M468 366 C490 332 462 302 436 314"/>', '<path d="M300 232 C312 206 348 206 358 232"/>');
+      } else if (hairTop) {
+        P.push('<path d="M200 372 C214 268 262 226 330 226 C400 226 452 272 460 376 C430 316 380 300 328 300 C272 300 228 318 200 372 Z"/>');
+      } else {
+        P.push('<path d="M232 318 C262 292 300 284 330 284 C362 284 398 292 424 316"/>');
+      }
+      P.push('<path d="M246 424 C266 408 298 410 312 424"/>', '<path d="M348 424 C364 408 396 408 410 422"/>');
+      P.push('<circle cx="278" cy="456" r="11" fill="' + ink + '" stroke="none"/>', '<circle cx="380" cy="456" r="11" fill="' + ink + '" stroke="none"/>');
+      P.push('<path d="M330 472 C322 500 320 512 338 516"/>');
+      if (beard) {
+        P.push('<path d="M228 520 C244 600 290 640 330 640 C372 640 414 600 430 520"/>');
+        P.push('<path d="M290 552 C312 568 350 568 370 552"/>');
+      } else if (smileOpen) {
+        P.push('<path d="M276 542 C304 590 364 588 388 540 C352 552 310 552 276 542 Z"/>');
+      } else {
+        P.push('<path d="M274 540 C306 574 362 570 390 536"/>');
+      }
+      P.push('<path d="M204 470 C180 470 178 508 204 512"/>', '<path d="M452 470 C476 470 476 508 452 512"/>');
+      P.push('<path d="M328 620 L328 688"/>', '<path d="M178 830 C188 728 252 688 328 688 C406 688 468 728 478 830"/>');
+      P.push(seed % 2 ? '<path d="M290 692 C300 724 356 724 366 692"/>' : '<path d="M262 700 L328 758 L394 700"/>');
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 1016" width="620" height="1016"><rect width="620" height="1016" fill="#ffffff"/><g fill="none" stroke="' + ink + '" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">' + P.join('') + '</g></svg>';
+      this.setState({ userDoodle: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg), doodling: false });
+    };
+    img.onerror = () => this.setState({ doodling: false });
+    img.src = url;
+  }
+  genCache = [];
+  genPeople(n) {
+    const first = ['Maya','Jonah','Inès','Ravi','Lucía','Omar','Hana','Felix','Zara','Mateo','Yuki','Amara','Leo','Nadia','Kai','Sana','Elio','Freya','Tariq','Mei','Bruno','Ines','Arjun','Clara','Dev','Ottilie','Rafa','Leila','Hugo','Asha','Nico','Imogen','Sami','Wren','Tomás','Aiko'];
+    const lastI = 'ABCDEFGHJKLMNOPRSTVWY';
+    const grads = [['#c98da3','#8c5f7d'],['#7f9bb8','#4d6a8a'],['#c4a06a','#96703c'],['#b48ac4','#7d5a94'],['#6f9aa8','#42687a'],['#89a68e','#57755c'],['#c99070','#9c6444'],['#8a8f9e','#5b6070'],['#d1917f','#a35c4c']];
+    const areas = ['the Mission','Hayes Valley','Noe Valley','SoMa','the Richmond','the Sunset','North Beach','Bernal','Dogpatch','Russian Hill','Potrero','Cole Valley'];
+    const homes = ['London','Lisbon','Seoul','Mexico City','Nairobi','Sydney','Berlin','Toronto','Mumbai','Paris','Taipei','Bogotá'];
+    const langsets = ['English, Spanish','English, French','English, Mandarin','English, Korean','English, Portuguese','English','English, Hindi','English, German'];
+    const interests = [['Bouldering','Coffee','Film'],['Ceramics','Tea','Hiking'],['Jazz','Cooking','Cycling'],['Running','Books','Wine'],['Surfing','Photography','Dim sum'],['Dance','Museums','Markets']];
+    const vias = this.people.slice(0, 6);
+    while (this.genCache.length < n) {
+      const i = this.genCache.length;
+      const name = first[i % first.length] + (i >= first.length ? ' ' : '');
+      const clean = first[i % first.length];
+      const g = grads[i % grads.length], v = vias[i % vias.length];
+      const traveller = i % 3 === 0;
+      const home = homes[i % homes.length];
+      this.genCache.push({
+        id: 'g' + i, name: clean, fullName: clean + ' ' + lastI[(i * 7) % lastI.length] + '.', initials: clean[0] + lastI[(i * 7) % lastI.length],
+        grad: 'linear-gradient(135deg,' + g[0] + ',' + g[1] + ')', deg: i % 5 === 0 ? 1 : 2,
+        dist: +(3 + i * 0.22).toFixed(1), online: i % 2 === 0, mutuals: 1 + (i % 5),
+        tag: traveller ? 'Traveller' : 'Local', school: ['UCLA','LSE','Berkeley','McGill','RISD','NYU'][i % 6], age: home + ', ' + (25 + (i % 12)),
+        area: areas[i % areas.length], cityShort: 'SF', nextCity: homes[(i + 3) % homes.length], langs: langsets[i % langsets.length],
+        ig: '@' + clean.toLowerCase().replace(/[^a-z]/g, '') + '.' + (10 + i), fb: null,
+        bio: traveller ? 'In SF from ' + home + ' for a few weeks. Always up for coffee and a long walk.' : 'Originally from ' + home + ', now in ' + areas[i % areas.length] + '. Happy to show you the good spots.',
+        cities: [{ glyph: '📍', city: 'San Francisco', years: traveller ? 'visiting' : 'now' }, { glyph: '🏠', city: home, years: traveller ? 'based' : 'grew up' }],
+        spots: interests[i % interests.length], via: { name: v.fullName, initials: v.initials, grad: v.grad, src: i % 2 ? 'Instagram mutual' : 'Facebook friend' },
+        evidence: [{ icon: i % 2 ? 'IG' : 'f', bg: i % 2 ? 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)' : '#3b6fd4', title: (1 + (i % 5)) + ' mutual ' + (i % 2 ? 'followers' : 'friends'), note: 'Including ' + v.fullName }]
+      });
+    }
+    return this.genCache.slice(0, n);
+  }
+  cityVenues = {
+    Tokyo: [
+      { id: 'tk1', name: 'Fuglen Tokyo', kind: 'Coffee', walk: '8 min walk', grad: 'linear-gradient(135deg,#cbb79a,#9d8460)', note: 'Tomigaya coffee bar, calm by day. Grab the bench out front.', vouch: 'Kenji\u2019s morning spot', faces: ['kenji'], res: false },
+      { id: 'tk2', name: 'Afuri Ebisu', kind: 'Restaurant', walk: '12 min walk', grad: 'linear-gradient(135deg,#e0c8a8,#bb9a72)', note: 'Yuzu shio ramen, quick and easy for a first hello.', vouch: 'Kenji and Barbara go here', faces: ['kenji', 'barbara'], res: false },
+      { id: 'tk3', name: 'Bar Benfiddich', kind: 'Bar', walk: '15 min walk', grad: 'linear-gradient(135deg,#c99aa6,#95677a)', note: 'Tiny Shinjuku cocktail bar. Book ahead, arrive early.', vouch: 'Barbara\u2019s favourite', faces: ['barbara'], res: true },
+      { id: 'tk4', name: 'Yoyogi Park', kind: 'Free · outdoors', walk: '5 min walk', grad: 'linear-gradient(135deg,#a9c093,#77955f)', note: 'Sunday afternoons by the fountain. No commitment.', vouch: 'Everyone, honestly', faces: ['kenji', 'barbara'], res: false }
+    ],
+    London: [
+      { id: 'ld1', name: 'Monmouth Coffee', kind: 'Coffee', walk: '7 min walk', grad: 'linear-gradient(135deg,#cbb79a,#9d8460)', note: 'Borough Market branch. Standing room, great for a quick hello.', vouch: 'Ali\u2019s daily habit', faces: ['noor'], res: false },
+      { id: 'ld2', name: 'Dishoom Shoreditch', kind: 'Restaurant', walk: '14 min walk', grad: 'linear-gradient(135deg,#e0c8a8,#bb9a72)', note: 'Bombay café breakfast. The bacon naan is non-negotiable.', vouch: 'Ali and Theo go here', faces: ['noor', 'theo'], res: true },
+      { id: 'ld3', name: 'Noble Rot', kind: 'Wine bar', walk: '11 min walk', grad: 'linear-gradient(135deg,#c99aa6,#95677a)', note: 'Lamb\u2019s Conduit Street. Wine list for a long conversation.', vouch: 'Sofia\u2019s pick', faces: ['sofia'], res: true },
+      { id: 'ld4', name: 'Hampstead Heath', kind: 'Free · outdoors', walk: '20 min walk', grad: 'linear-gradient(135deg,#a9c093,#77955f)', note: 'Parliament Hill at golden hour. Bring a coffee.', vouch: 'Everyone, honestly', faces: ['noor', 'sofia', 'theo'], res: false }
+    ],
+    Berlin: [
+      { id: 'bl1', name: 'Bonanza Coffee', kind: 'Coffee', walk: '6 min walk', grad: 'linear-gradient(135deg,#cbb79a,#9d8460)', note: 'Prenzlauer Berg roastery. Theo owes you one here.', vouch: 'Theo\u2019s standing order', faces: ['theo'], res: false },
+      { id: 'bl2', name: 'Cocolo Ramen', kind: 'Restaurant', walk: '10 min walk', grad: 'linear-gradient(135deg,#e0c8a8,#bb9a72)', note: 'Small, loud, excellent. Counter seats move fast.', vouch: 'Theo and Sasuke go here', faces: ['theo', 'lena'], res: false },
+      { id: 'bl3', name: 'Weinbar Rutz', kind: 'Wine bar', walk: '13 min walk', grad: 'linear-gradient(135deg,#c99aa6,#95677a)', note: 'Mitte wine bar downstairs from the restaurant. Easy evening.', vouch: 'Marcus\u2019s pick', faces: ['marcus'], res: true },
+      { id: 'bl4', name: 'Tempelhofer Feld', kind: 'Free · outdoors', walk: '18 min walk', grad: 'linear-gradient(135deg,#a9c093,#77955f)', note: 'The old airfield. Walk the runway, no plans needed.', vouch: 'Everyone, honestly', faces: ['theo', 'lena', 'marcus'], res: false }
+    ],
+    Lisbon: [
+      { id: 'lb1', name: 'Fábrica Coffee Roasters', kind: 'Coffee', walk: '5 min walk', grad: 'linear-gradient(135deg,#cbb79a,#9d8460)', note: 'Baixa roastery with good light and long tables.', vouch: 'Sofia\u2019s morning spot', faces: ['sofia'], res: false },
+      { id: 'lb2', name: 'Taberna da Rua das Flores', kind: 'Restaurant', walk: '9 min walk', grad: 'linear-gradient(135deg,#e0c8a8,#bb9a72)', note: 'Chalkboard menu, petiscos to share. Go early, no bookings.', vouch: 'Sofia and Priya go here', faces: ['sofia', 'priya'], res: false },
+      { id: 'lb3', name: 'By the Wine', kind: 'Wine bar', walk: '8 min walk', grad: 'linear-gradient(135deg,#c99aa6,#95677a)', note: 'Chiado wine bar under a ceiling of bottles.', vouch: 'Priya\u2019s pick', faces: ['priya'], res: true },
+      { id: 'lb4', name: 'Miradouro da Senhora do Monte', kind: 'Free · outdoors', walk: '16 min walk', grad: 'linear-gradient(135deg,#a9c093,#77955f)', note: 'The best view in the city at sunset. Bring a pastel de nata.', vouch: 'Everyone, honestly', faces: ['sofia', 'priya'], res: false }
+    ]
+  };
+  partners = {
+    'San Francisco': { name: 'Rosalie Wine Bar', note: 'Two glasses on the house for first Friend Flower meets, Tuesdays through Thursdays.' },
+    Tokyo: { name: 'Kissa Hanare', note: 'Free hand-drip coffee for first Friend Flower meets, weekday mornings.' },
+    London: { name: 'The Linden Room', note: 'A shared plate on the house for first Friend Flower meets, Monday to Wednesday.' },
+    Berlin: { name: 'Café Laube', note: 'Second coffee free for first Friend Flower meets, any afternoon.' },
+    Lisbon: { name: 'Casa Azulejo', note: 'A glass of vinho verde each for first Friend Flower meets, Thursdays.' }
+  };
+  flightPax = { JL1: ['barbara', 'kenji'], JL2: ['kenji'], LH454: ['theo'], UA837: ['priya'], UA838: ['priya'], BA286: ['noor'] };
+  replies = { barbara: ['Perfect — Thursday 7pm at Bar Part Time?', 'Booked it. Bring the Tokyo list.', 'See you there.'], theo: ['Yes! Bonanza, October.', 'Sending you my Berlin list now.'] };
+  podReplies = ['Verified from my side — you two will get on.', 'Confirmed. Have a good one.'];
+  mi(d) { return d < 1 ? Math.round(d * 10) / 10 + ' mi' : (Math.round(d * 10) / 10) + ' mi'; }
+  go(p) { this.setState(p); }
+  push(id, msg, delay) {
+    this.setState(s => ({ msgs: { ...s.msgs, [id]: [...(s.msgs[id] || []), msg] }, draft: '' }));
+    if (delay === false) return;
+    const arr = (id && id.indexOf('pod:') === 0 ? this.podReplies : this.replies[id]) || [];
+    if (!arr.length) return;
+    const n = ((this.state.msgs[id] || []).filter(m => m.f === 'me').length) % arr.length;
+    setTimeout(() => { if (this.state.chat === id) this.setState(s => ({ msgs: { ...s.msgs, [id]: [...s.msgs[id], { f: 'them', t: arr[n] }] } })); }, 1100);
+  }
+  renderVals() {
+    const S = this.state, P = this.props;
+    const screen = S.screen ?? (P.startScreen ?? 'signin');
+    const showDist = (P.showDistanceOnTiles ?? true) && S.prefs.dist;
+    const seg = on => ({ bg: on ? '#2e2a26' : 'transparent', color: on ? '#f3f0ea' : '#9c9489', shadow: on ? '0 1px 3px rgba(0,0,0,.1)' : 'none' });
+    const pill = on => ({ bg: on ? '#e6a8bd' : '#1a1816', color: on ? '#241f1a' : '#c2bbb0', border: on ? '#e6a8bd' : '#322e2a' });
+    const pool = this.people.concat(this.genPeople(40));
+    const byId = id => pool.find(p => p.id === id);
+    const normF = s => String(s || '').toUpperCase().replace(/\s+/g, '');
+    const fbp = {};
+    const legsOf = t => [t.flight ? { ...t.flight, dir: 'in' } : null, t.returnFlight ? { ...t.returnFlight, dir: 'out' } : null].filter(l => l && l.no && l.no !== '—');
+    if (S.plan === 'plus') S.trips.forEach(t => legsOf(t).forEach(l => (this.flightPax[normF(l.no)] || []).forEach(id => { if (!fbp[id]) fbp[id] = { no: l.no, date: l.dep.split(' · ')[0], city: t.city, dir: l.dir }; })));
+    const dec = p => ({ ...p, degWord: p.deg === 1 ? '1st' : '2nd', noImg: !p.img, onFlight: !!fbp[p.id], flightNote: fbp[p.id] ? 'On your flight ' + (fbp[p.id].dir === 'out' ? 'home from ' : 'to ') + fbp[p.id].city + ' · ' + fbp[p.id].no + ' · ' + fbp[p.id].date : '', distLabel: this.mi(p.dist), degLabel: (p.deg === 1 ? '1st' : '2nd') + (fbp[p.id] ? ' ✈' : ''), degShort: p.deg === 1 ? '1°' : '2°', isFirst: p.deg === 1, hasVia: p.deg === 2, tagColor: p.tag === 'Traveller' ? '#8a5418' : '#2f6b4c', mutualLine: p.deg === 1 ? p.mutuals + ' mutual' + (p.mutuals > 1 ? 's' : '') + ' · you know each other directly' : p.mutuals + ' mutual' + (p.mutuals > 1 ? 's' : '') + ' · via ' + p.via.name, viaName: p.via.name, viaInitials: p.via.initials, viaGrad: p.via.grad, viaSrc: p.via.src, open: () => this.go({ screen: 'profile', sel: p.id }) });
+    const fullList = pool
+      .filter(p => S.filter === 'Nearby' || S.filter === 'All' || (S.filter === 'Online' ? p.online : S.filter === '1st degree' ? p.deg === 1 : S.filter === '2nd degree' ? p.deg === 2 : S.filter === 'Travellers' ? p.tag === 'Traveller' : true))
+      .filter(p => !(S.plan === 'plus' && S.extras.length) || S.extras.every(x =>
+        x === 'Shared schools' ? /UCLA/.test(p.school)
+          : x === 'Overlapping cities' ? p.cities.some(c => /Tokyo|Bath|Jakarta/.test(c.city))
+          : x === 'Speaks Mandarin' ? /Mandarin/.test(p.langs)
+          : x === 'Speaks French' ? /French/.test(p.langs)
+          : x === 'Leaving soon' ? p.cities.some(c => /until/.test(c.years)) : true))
+      .sort((a, b) => a.dist - b.dist).map(dec);
+    const isBloom = S.plan === 'plus';
+    const cap = isBloom ? 25 : 10;
+    const list = fullList.slice(0, cap);
+    const hiddenCount = Math.max(0, fullList.length - cap);
+    const selP = byId(S.sel);
+    const meAvatar = S.userPhoto ? (S.avatarMode === 'doodle' ? (S.userDoodle || null) : S.userPhoto) : null;
+    const meSel = {
+      fullName: 'Arren', initials: 'AR', grad: 'linear-gradient(135deg,#8f9f6b,#5c7a52)', img: meAvatar, noImg: !meAvatar, online: S.prefs.online,
+      school: [S.schools.ucla ? 'UCLA \u201918' : null, S.schools.bath ? 'Bath \u201913' : null].concat(S.customSchools.map(cs => cs.name)).filter(Boolean).join(' · ') || 'No school added',
+      age: 'Jakarta, 30', distLabel: '0 mi', area: S.homeArea || S.home,
+      cityShort: (S.home || '').split(' ').map(w => w[0]).join('').slice(0, 3).toUpperCase() || '—',
+      nextCity: S.trips[0] ? S.trips[0].city : '—', degShort: 'you',
+      bio: S.bio, langs: 'English, Bahasa, French', ig: '@arren', fb: S.links.fb ? 'Arren' : null,
+      cities: [{ glyph: '📍', city: S.home, years: 'now' }].concat(S.trips.map(t => ({ glyph: '✈', city: t.city, years: t.dates }))).concat(S.lived.map(l => ({ glyph: '🏠', city: l.city, years: l.years }))),
+      spots: ['Bar Part Time', 'Tartine Manufactory', 'Dolores at dusk'], onFlight: false
+    };
+    const selIsMe = S.sel === 'me';
+    const sel = selIsMe ? meSel : selP ? dec(selP) : {};
+    const first = n => String(n || '').split(' ')[0];
+    const podTitle = p => p ? 'Arren · ' + first(p.via.name) + ' · ' + p.name : 'Verification pod';
+    const chatIsPod = !!S.chat && S.chat.indexOf('pod:') === 0;
+    const podP = chatIsPod ? byId(S.chat.slice(4)) : null;
+    const chatPP = chatIsPod ? null : byId(S.chat);
+    const knowNoteFor = p => p.deg === 1
+      ? (p.via.name === 'direct' ? 'You ' + p.via.src.replace(/^you /, '') : 'A direct friend · ' + p.via.src) + ' · ' + p.mutuals + ' mutual' + (p.mutuals > 1 ? 's' : '') + ' since'
+      : 'You know each other through ' + p.via.name + ' · ' + p.via.src;
+    const chatP = chatIsPod
+      ? { name: podTitle(podP), initials: podP ? podP.via.initials : 'FF', grad: podP ? podP.via.grad : 'linear-gradient(135deg,#c98da3,#96703c)', presence: 'Verification pod · ' + (podP ? podP.name : ''), degShort: 'pod', knowNote: podP ? first(podP.via.name) + ' can confirm you both really know them. Nobody sees your contacts.' : 'A pod opens when a mutual friend can confirm the link.' }
+      : chatPP ? { ...dec(chatPP), presence: chatPP.online ? 'online · ' + this.mi(chatPP.dist) + ' away' : 'last seen recently', knowNote: knowNoteFor(chatPP) } : {};
+    const msgs = (S.msgs[S.chat] || []).map(m => m.f === 'sys'
+      ? { ...m, align: 'center', max: '90%', bg: '#221f1c', color: '#958d82', radius: '999px', border: 'none', who: null }
+      : { ...m, align: m.f === 'me' ? 'flex-end' : 'flex-start', max: '78%', bg: m.f === 'me' ? '#e6a8bd' : '#1f1c19', color: m.f === 'me' ? '#ffffff' : '#f3f0ea', radius: m.f === 'me' ? '16px 16px 5px 16px' : '16px 16px 16px 5px', border: m.f === 'me' ? 'none' : '1.5px solid #2f2b27', who: m.who || null });
+    const cVenue = chatPP ? (this.venueList.find(v => v.faces.includes(chatPP.id) && v.res) || this.venueList.find(v => v.faces.includes(chatPP.id)) || this.venueList[0]) : null;
+    const markRead = id => this.setState(s => ({ read: { ...s.read, [id]: true } }));
+    const convoIds = Object.keys(S.msgs);
+    const convos = convoIds.map(id => {
+      const arr = S.msgs[id]; const last = arr[arr.length - 1]; const isPod = id.indexOf('pod:') === 0;
+      const p = byId(isPod ? id.slice(4) : id);
+      return {
+        id, isPod, name: isPod ? podTitle(p) : p.fullName, initials: isPod ? p.via.initials : p.initials,
+        grad: isPod ? p.via.grad : p.grad, img: isPod ? null : p.img, noImg: isPod || !p.img,
+        last: (last.f === 'me' ? 'You: ' : last.who ? last.who + ': ' : '') + last.t,
+        time: id === 'barbara' ? '2m' : isPod ? '18m' : '1h',
+        unread: last.f !== 'me' && !S.read[id],
+        open: () => { markRead(id); this.go({ screen: 'chat', chat: id }); }
+      };
+    });
+    const linkDefs = [
+      { k: 'ig', name: 'Instagram', note: 'Mutual followers, both directions', icon: 'IG', iconBg: 'linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)' },
+      { k: 'fb', name: 'Facebook', note: 'Mutual friends, verified', icon: 'f', iconBg: '#3b6fd4' },
+      { k: 'contacts', name: 'Contacts', note: 'Matched on number or email only', icon: '☎', iconBg: '#8a8f6b' },
+      { k: 'li', name: 'LinkedIn', note: 'Not recommended — but an option', icon: 'in', iconBg: '#9aa0a8' }
+    ].map(l => { const on = S.links[l.k]; return { ...l, toggle: () => this.setState(s => ({ links: { ...s.links, [l.k]: !s.links[l.k] } })), btnBg: on ? '#182419' : '#e6a8bd', btnColor: on ? '#8ec9a1' : '#ffffff', btnLabel: on ? 'Linked' : 'Link' }; });
+    const schoolDefs = [{ k: 'ucla', label: 'UCLA \u201918' }, { k: 'bath', label: 'Bath \u201913' }]
+      .map(s => { const on = S.schools[s.k]; return { ...s, toggle: () => this.setState(st => ({ schools: { ...st.schools, [s.k]: !st.schools[s.k] } })), ...pill(on) }; });
+    const levelOpts = ['High school', 'Undergraduate', 'Graduate'].map(lv => ({ label: lv, pick: () => this.setState({ schoolLevel: lv }), ...pill(S.schoolLevel === lv) }));
+    const canSaveSchool = S.newSchoolName.trim() && S.newSchoolYear.trim();
+    const cityRows = [
+      { glyph: '📍', city: S.home, years: 'now', kind: 'Living', kindBg: '#182419', kindColor: '#8ec9a1' },
+      ...S.trips.map(t => ({ glyph: '✈', city: t.city, years: t.dates, kind: 'Trip', kindBg: '#2a2017', kindColor: '#e0b070' })),
+      ...S.lived.map(l => ({ glyph: '🏠', city: l.city, years: l.years, kind: 'Lived', kindBg: '#221f1c', kindColor: '#c2bbb0' }))
+    ].map(c => ({ ...c, current: c.kind === 'Living', rule: '#26231f' }));
+    const nLinks = Object.values(S.links).filter(Boolean).length;
+    const toggleDefs = [
+      { k: 'live', label: 'Live location', note: 'Rounded to the nearest tenth of a mile' },
+      { k: 'trips', label: 'Declared trips', note: 'Cities and dates you choose to publish' },
+      { k: 'online', label: 'Online now', note: 'Shows the green dot on your tile' },
+      { k: 'dist', label: 'Show my distance', note: 'Off means city-level only' }
+    ].map((t, i, a) => { const on = S.prefs[t.k]; return { ...t, toggle: () => this.setState(s => ({ prefs: { ...s.prefs, [t.k]: !s.prefs[t.k] } })), bg: on ? '#e6a8bd' : '#3d3830', left: on ? '21px' : '3px', rule: i === a.length - 1 ? 'transparent' : '#26231f' }; });
+    const visOpts = [{ k: 'first', label: '1st only' }, { k: 'fof', label: 'Friends of friends' }, { k: 'all', label: 'Everyone' }]
+      .map(v => ({ ...v, pick: () => this.setState({ vis: v.k }), ...seg(S.vis === v.k) }));
+    const visNote = S.vis === 'first' ? 'Only people you already know can see you here.' : S.vis === 'fof' ? '' : 'Anyone in your city can see your tile, but never your exact location.';
+    const tabDefs = [
+      { k: 'live', label: 'Nearby', glyph: '❋', radius: '50%' },
+      { k: 'world', label: 'World', glyph: '⊕', radius: '50%' },
+      { k: 'flights', label: 'Flights', glyph: '✈', radius: '7px' },
+      { k: 'venues', label: 'Places', glyph: '☕', radius: '7px' },
+      { k: 'chats', label: 'Chats', glyph: '✉', radius: '7px' },
+      { k: 'you', label: 'You', glyph: 'AR', radius: '50%' }
+    ].map(t => { const on = screen === t.k; return { ...t, go: () => this.go({ screen: t.k }), bg: on ? '#e6a8bd' : '#4d4740', color: on ? '#e6a8bd' : '#8a8177', dot: (t.k === 'flights' && S.plan === 'plus' && S.trips.some(tr => legsOf(tr).some(l => (this.flightPax[normF(l.no)] || []).length))) || t.k === 'chats' && convos.some(c => c.unread) }; });
+    const venues = (this.cityVenues[S.city] || this.venueList)
+      .filter(v => S.venueFilter === 'All' || (S.venueFilter === 'Coffee' ? v.kind === 'Coffee' : S.venueFilter === 'Dinner' ? v.kind === 'Restaurant' : S.venueFilter === 'Free' ? v.kind.indexOf('Free') === 0 : true))
+      .map(v => ({ ...v, faces: v.faces.map(id => byId(id)), reserve: () => { this.go({ screen: 'chat', chat: 'barbara' }); this.push('barbara', { f: 'me', t: v.res ? 'Shall I book ' + v.name + '? Concierge says there\u2019s a table Thursday at 7.' : 'How about ' + v.name + '? ' + v.walk + ' from you.' }); }, btnBg: v.res ? '#e6a8bd' : '#262220', btnColor: v.res ? '#241f1a' : '#c2bbb0', btnLabel: v.res ? 'Reserve' : 'Suggest' }));
+    const chalk = ['#e9a3d2', '#9fd6c0', '#e6a8bd', '#a9c2ef', '#efa88c'];
+    const worldCities = this.world.map((c, ci) => ({ ...c, meta: (S.trips.find(t => t.city === c.city) ? 'your trip · ' + S.trips.find(t => t.city === c.city).dates : c.meta), faces: c.ids.map((id, fi) => { const p = byId(id); const col = chalk[(ci * 2 + fi) % chalk.length]; return { ...p, petal: col, petalFill: col + '26', spin: (fi * 17 + ci * 11) % 72, open: () => this.go({ screen: 'profile', sel: id }) }; }), plan: () => this.go({ screen: 'live', travelOpen: false, city: c.city }) }));
+    const travelCities = [
+      { city: 'San Francisco', glyph: '📍', note: 'Where you are now', locked: false },
+      { city: 'Tokyo', glyph: '✈', note: 'You land in 9 days · 2 in circle', locked: S.plan !== 'plus' },
+      { city: 'London', glyph: '⊕', note: '4 in circle · browse ahead', locked: S.plan !== 'plus' },
+      { city: 'Berlin', glyph: '⊕', note: '3 in circle · browse ahead', locked: S.plan !== 'plus' }
+    ].map(t => ({ ...t, border: t.locked ? '#2f2b27' : '#322e2a', pick: () => { if (!t.locked) this.go({ city: t.city, travelOpen: false, screen: 'live' }); } }));
+    const isVerified = !!S.verified[S.sel];
+    const podKey = 'pod:' + S.sel;
+    const podExists = !!S.msgs[podKey];
+    const airlines = { UA: 'United', JL: 'Japan Airlines', LH: 'Lufthansa', BA: 'British Airways', NH: 'ANA', AF: 'Air France' };
+    const tripsV = S.trips.map(t => {
+      const legs = legsOf(t).map(l => {
+        const pax = (S.plan === 'plus' ? (this.flightPax[normF(l.no)] || []) : []).map(id => byId(id)).filter(Boolean).map(p => ({ ...dec(p), sayHi: () => this.setState({ screen: 'chat', chat: p.id, draft: 'Just saw we\u2019re both on ' + l.no + (l.dir === 'out' ? ' home from ' : ' to ') + t.city + ' \u2014 small world!' }) }));
+        return { ...l, dirLabel: l.dir === 'out' ? 'Outbound · from ' + t.city : 'Inbound · to ' + t.city, airlineLine: (l.airline || airlines[normF(l.no).slice(0, 2)] || 'Flight') + ' · ' + l.no, pax, hasPax: pax.length > 0, noPax: !pax.length, paxLine: pax.length + ' from your circles on this flight' };
+      });
+      return { ...t, legs, paxCount: legs.reduce((n, l) => n + l.pax.length, 0), flightNos: legs.map(l => l.no).join(' / ') || 'no flights added', remove: () => this.setState(s => ({ trips: s.trips.filter(x => x.id !== t.id) })) };
+    });
+    const nextTrip = S.trips[0];
+    const avatarSrc = S.userPhoto ? (S.avatarMode === 'doodle' ? (S.userDoodle || null) : S.userPhoto) : null;
+    const canSaveTrip = S.newTripCity.trim() && S.newTripDates.trim();
+    const openAddTrip = () => this.setState({ addTripOpen: true, newTripCity: '', newTripDates: '', newTripIn: '', newTripOut: '' });
+    return {
+      isSignin: screen === 'signin', isSetup: screen === 'setup', isLive: screen === 'live', isWorld: screen === 'world',
+      isVenues: screen === 'venues', isChats: screen === 'chats', isYou: screen === 'you',
+      isProfile: screen === 'profile', isKnow: screen === 'know', isChat: screen === 'chat',
+      livedRows: S.lived.map(l => ({ ...l, remove: () => this.setState(s => ({ lived: s.lived.filter(x => x.id !== l.id) })) })),
+      newLivedCity: S.newLivedCity, setNewLivedCity: e => this.setState({ newLivedCity: e.target.value }),
+      newLivedYears: S.newLivedYears, setNewLivedYears: e => this.setState({ newLivedYears: e.target.value }),
+      addLivedOpacity: S.newLivedCity.trim() ? 1 : .45,
+      addLived: () => { if (!S.newLivedCity.trim()) return; this.setState(s => ({ lived: [...s.lived, { id: 'l' + Date.now(), city: s.newLivedCity.trim(), years: s.newLivedYears.trim() || 'lived' }], newLivedCity: '', newLivedYears: '' })); },
+      inviteSub: S.inviteCopied ? 'Invite link copied — share it anywhere' : 'The more friends join, the bigger your flower grows',
+      inviteFriends: () => {
+        const url = 'https://friendflower.app/invite/arren';
+        const done = () => { this.setState({ inviteCopied: true }); setTimeout(() => this.setState({ inviteCopied: false }), 2500); };
+        if (navigator.share) navigator.share({ title: 'Join me on Friend Flower', text: 'Meet friends of friends wherever you are.', url }).catch(() => {});
+        else if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, done);
+        else done();
+      },
+      appLang: S.appLang, setAppLang: e => this.setState({ appLang: e.target.value }),
+      langOpts: ['English', 'Español', 'Français', 'Deutsch', 'Português', 'Italiano', '日本語', '中文', '한국어', 'Bahasa Indonesia', 'हिन्दी', 'العربية'],
+      notifToggles: [
+        { k: 'nearby', label: 'Friends nearby', note: 'When someone in your circles is close by' },
+        { k: 'landed', label: 'Friends in town', note: 'When a friend lands in your city or one you\u2019re visiting' },
+        { k: 'flights', label: 'Flight matches', note: 'When someone in your circles joins your flight' },
+        { k: 'messages', label: 'Messages', note: 'New chats and verification pods' },
+        { k: 'concierge', label: 'Concierge', note: 'Booking confirmations and suggestions' }
+      ].map((t, i, a) => { const on = S.notifs[t.k]; return { ...t, toggle: () => this.setState(s => ({ notifs: { ...s.notifs, [t.k]: !s.notifs[t.k] } })), bg: on ? '#e6a8bd' : '#3d3830', left: on ? '21px' : '3px', rule: i === a.length - 1 ? 'transparent' : '#26231f' }; }),
+      navYouTile: () => this.go({ screen: 'profile', sel: 'me' }),
+      selIsMe, selNotMe: !selIsMe,
+      youTileTag: S.home === S.city ? 'Living here' : 'Visiting',
+      isEdit: screen === 'edit', openEdit: () => this.go({ screen: 'edit' }), closeEdit: () => this.go({ screen: 'you' }),
+      userImg: avatarSrc, hasUserImg: !!avatarSrc, noUserImg: !avatarSrc,
+      hasUserPhoto: !!S.userPhoto, noUserPhoto: !S.userPhoto,
+      pickPhoto: e => { const file = e.target.files && e.target.files[0]; if (!file) return; const url = URL.createObjectURL(file); this.setState({ userPhoto: url, userDoodle: null, doodling: true }); this.makeDoodle(url); e.target.value = ''; },
+      removePhoto: () => this.setState({ userPhoto: null, userDoodle: null, avatarMode: 'photo' }),
+      avatarOpts: [{ k: 'photo', label: 'Real photo' }, { k: 'doodle', label: S.doodling ? 'Drawing…' : 'Doodle of me' }].map(o => ({ ...o, pick: () => this.setState({ avatarMode: o.k }), bg: S.avatarMode === o.k ? '#e6a8bd' : 'transparent', color: S.avatarMode === o.k ? '#241f1a' : '#c2bbb0' })),
+      picTitle: !S.userPhoto ? 'How your friends will see you' : S.avatarMode === 'doodle' ? (S.doodling ? 'Drawing your doodle…' : 'Your doodle') : 'Your real photo',
+      picNote: !S.userPhoto ? 'A real photo of you, or a doodle we draw from it. No logos, pets or landscapes.' : S.avatarMode === 'doodle' ? 'Drawn from your photo in the same ink style as everyone else. Friends see this; your photo stays private.' : 'Friends see exactly this photo on your tile.',
+      home: S.home, homeArea: S.homeArea,
+      setHome: e => this.setState({ home: e.target.value }), setHomeArea: e => this.setState({ homeArea: e.target.value }),
+      youSub: (S.home || 'Somewhere') + ' now' + (nextTrip ? ' · ' + nextTrip.city + ' ' + nextTrip.dates.split('–')[0].trim() : ''),
+      trips: tripsV, noTrips: !tripsV.length,
+      addTripOpen: S.addTripOpen, openAddTrip, closeAddTrip: () => this.setState({ addTripOpen: false }),
+      newTripCity: S.newTripCity, setNewTripCity: e => this.setState({ newTripCity: e.target.value }),
+      newTripDates: S.newTripDates, setNewTripDates: e => this.setState({ newTripDates: e.target.value }),
+      newTripIn: S.newTripIn, setNewTripIn: e => this.setState({ newTripIn: e.target.value }),
+      newTripOut: S.newTripOut, setNewTripOut: e => this.setState({ newTripOut: e.target.value }),
+      inHint: S.newTripCity.trim() ? 'To ' + S.newTripCity.trim() : 'Flight there',
+      outHint: S.newTripCity.trim() ? 'From ' + S.newTripCity.trim() : 'Flight back',
+      saveTripOpacity: canSaveTrip ? 1 : .45,
+      saveTrip: () => {
+        if (!canSaveTrip) return;
+        const city = S.newTripCity.trim(), code = city.slice(0, 3).toUpperCase(), homeCode = 'SFO';
+        const [startD, endD] = S.newTripDates.split('–').map(x => (x || '').trim());
+        const inNo = S.newTripIn.trim().toUpperCase(), outNo = S.newTripOut.trim().toUpperCase();
+        this.setState(s => ({ addTripOpen: false, trips: [...s.trips, {
+          id: 't' + Date.now(), city, dates: s.newTripDates.trim(),
+          flight: inNo ? { no: inNo, airline: '', from: homeCode, to: code, dep: startD, arr: '', seat: '—' } : null,
+          returnFlight: outNo ? { no: outNo, airline: '', from: code, to: homeCode, dep: endD || startD, arr: '', seat: '—' } : null
+        }] }));
+      },
+      isTravel: S.travelOpen, showTabs: ['live', 'world', 'flights', 'venues', 'chats', 'you'].includes(screen),
+      isFlights: screen === 'flights' && S.plan === 'plus', isFlightsLocked: screen === 'flights' && S.plan !== 'plus',
+      flightsSub: tripsV.reduce((n, t) => n + t.legs.length, 0) + ' upcoming flights · ' + tripsV.reduce((n, t) => n + t.paxCount, 0) + ' from your circles on board',
+      signIn: () => this.go({ screen: 'setup' }),
+      pickBasic: () => this.setState({ plan: 'basic' }), pickPlus: () => this.setState({ plan: 'plus' }),
+      basicBg: S.plan === 'basic' ? '#221f1c' : '#161412', basicBorder: S.plan === 'basic' ? '#e6a8bd' : '#34302c',
+      basicDot: S.plan === 'basic' ? '#e6a8bd' : '#4d463f', basicDotFill: S.plan === 'basic' ? '#e6a8bd' : 'transparent',
+      plusBg: S.plan === 'plus' ? '#221f1c' : '#161412', plusBorder: S.plan === 'plus' ? '#e6a8bd' : '#34302c',
+      plusDot: S.plan === 'plus' ? '#e6a8bd' : '#4d463f', plusDotFill: S.plan === 'plus' ? '#e6a8bd' : 'transparent',
+      links: linkDefs, schools: schoolDefs, cityRows, addCity: openAddTrip,
+      customSchools: S.customSchools.map(cs => ({ label: cs.name + ' \u2019' + cs.year.slice(-2) + ' · ' + (cs.level === 'Graduate' ? 'Grad' : cs.level === 'High school' ? 'HS' : 'Undergrad') })),
+      openAddSchool: () => this.setState({ addSchoolOpen: true, newSchoolName: '', newSchoolYear: '', schoolLevel: 'Undergraduate' }),
+      closeAddSchool: () => this.setState({ addSchoolOpen: false }),
+      addSchoolOpen: S.addSchoolOpen, stop: e => e.stopPropagation(),
+      newSchoolName: S.newSchoolName, setNewSchoolName: e => this.setState({ newSchoolName: e.target.value }),
+      newSchoolYear: S.newSchoolYear, setNewSchoolYear: e => this.setState({ newSchoolYear: e.target.value }),
+      levelOpts, saveSchoolOpacity: canSaveSchool ? 1 : .45,
+      saveSchool: () => { if (canSaveSchool) this.setState(s => ({ customSchools: [...s.customSchools, { name: s.newSchoolName.trim(), year: s.newSchoolYear.trim(), level: s.schoolLevel }], addSchoolOpen: false })); },
+      bio: S.bio, setBio: e => this.setState({ bio: e.target.value }),
+      setupOpacity: nLinks && S.userPhoto ? 1 : .45,
+      setupHint: !S.userPhoto ? 'Add a profile picture so friends recognise you' : nLinks ? nLinks + ' network' + (nLinks > 1 ? 's' : '') + ' linked · you can unlink any of them later' : 'Link at least one network to build your graph',
+      finishSetup: () => { if (nLinks && S.userPhoto) this.go({ screen: 'live' }); },
+      cityName: S.city,
+      partner: this.partners[S.city] || this.partners['San Francisco'],
+      meetSub: (this.cityVenues[S.city] || this.venueList).length + ' places your circle actually goes',
+      liveSub: 'Showing the ' + list.length + ' closest · live',
+      gridLimited: !isBloom && hiddenCount > 0,
+      gridCapped: isBloom && hiddenCount > 0,
+      moreHiddenLine: hiddenCount + ' more people in your circles nearby',
+      gridLoadingMore: false,
+      gridScroll: () => {},
+      filters: ['Nearby', 'Online', '1st degree', '2nd degree', 'Travellers'].map(f => ({ label: f, pick: () => this.setState({ filter: f }), ...pill(S.filter === f) })),
+      moreOpen: S.moreOpen, isPaid: S.plan === 'plus', isBasic: S.plan !== 'plus',
+      toggleMore: () => this.setState(s => ({ moreOpen: !s.moreOpen })),
+      moreLabel: S.plan === 'plus' && S.extras.length ? 'Filters · ' + S.extras.length : 'Filters',
+      moreBg: S.moreOpen || S.extras.length ? '#e6a8bd' : '#1a1816',
+      moreColor: S.moreOpen || S.extras.length ? '#241f1a' : '#c2bbb0',
+      moreBorder: S.moreOpen || S.extras.length ? '#e6a8bd' : '#322e2a',
+      extraFilters: ['Shared schools', 'Overlapping cities', 'Speaks Mandarin', 'Speaks French', 'Leaving soon'].map(x => ({
+        label: x, toggle: () => this.setState(s => ({ extras: s.extras.includes(x) ? s.extras.filter(v => v !== x) : [...s.extras, x] })), ...pill(S.extras.includes(x))
+      })),
+      clearLabel: S.extras.length ? 'Clear ' + S.extras.length + ' filter' + (S.extras.length > 1 ? 's' : '') : 'Pick any that apply',
+      clearExtras: () => this.setState({ extras: [] }),
+      upgrade: () => this.setState({ plan: 'plus' }),
+      downgrade: () => this.setState({ plan: 'basic' }),
+      people: list, showDist, navVenues: () => this.go({ screen: 'venues' }),
+      openTravel: () => this.setState({ travelOpen: true }), closeTravel: () => this.setState({ travelOpen: false }), travelCities,
+      worldSub: 'Your circles, city by city · ' + this.world.length + ' cities live', worldCities,
+      watchLabel: S.watch ? '✓ Watching your cities' : 'Turn watch on', watchBg: S.watch ? '#182419' : '#ffffff', watchColor: S.watch ? '#8ec9a1' : '#c2bbb0',
+      togWatch: () => this.setState(s => ({ watch: !s.watch })),
+      venueFilters: ['All', 'Coffee', 'Dinner', 'Free'].map(f => ({ label: f, pick: () => this.setState({ venueFilter: f }), ...pill(S.venueFilter === f) })),
+      venues, convos, planLabel: S.plan === 'plus' ? 'Bloom member' : 'Basic plan',
+      toggles: toggleDefs, visOpts, visNote, signOut: () => this.go({ screen: 'signin', chat: null }),
+      tabs: tabDefs,
+      sel, closeProfile: () => this.go({ screen: 'live' }),
+      openChatFromProfile: () => { markRead(S.sel); this.go({ screen: 'chat', chat: S.sel }); },
+      knowHeading: selP && selP.deg === 1 ? 'You already know each other' : 'You know each other from…',
+      knowSub: selP ? (selP.deg === 1 ? selP.via.src === 'you met at UCLA' ? 'You met at UCLA — ' + selP.mutuals + ' mutuals since.' : 'A direct friend · ' + selP.mutuals + ' mutuals in common' : 'One person stands between you') : '',
+      openKnow: () => this.go({ screen: 'know' }), closeKnow: () => this.go({ screen: 'profile' }),
+      verifyCopy: isVerified ? 'Pod open. When all three confirm, the link is marked verified on both profiles.' : selP && selP.deg === 1 ? 'You two already know each other directly — nothing to verify.' : 'Ask ' + (selP ? selP.via.name : 'your mutual') + ' to confirm you both really know them. A three-way pod opens, and nothing is shared until everyone agrees.',
+      verifyBtnLabel: isVerified ? 'Open the pod' : selP && selP.deg === 1 ? 'Message ' + (selP ? selP.name : '') : 'Ask ' + (selP ? selP.via.name.split(' ')[0] : '') + ' to verify',
+      verifyBtnBg: isVerified ? '#ffffff' : '#e6a8bd', verifyBtnColor: isVerified ? '#c2bbb0' : '#241f1a',
+      verify: () => {
+        if (selP && selP.deg === 1) { this.go({ screen: 'chat', chat: selP.id }); return; }
+        if (podExists) { this.go({ screen: 'chat', chat: podKey }); return; }
+        const via = first(selP.via.name);
+        this.setState(s => ({
+          verified: { ...s.verified, [S.sel]: true },
+          read: { ...s.read, [podKey]: true },
+          msgs: {
+            ...s.msgs,
+            [podKey]: [
+              { f: 'sys', t: 'You asked ' + selP.via.name + ' to confirm how you both know them.' },
+              { f: 'them', who: via, t: 'Happy to confirm — I know you both. ' + selP.name + ', meet Arren: a good friend from my time in Singapore.' }
+            ]
+          },
+          screen: 'chat', chat: podKey
+        }));
+      },
+      chatP, chatMsgs: msgs,
+      closeChat: () => { markRead(S.chat); this.go({ screen: 'chats', chat: null }); },
+      chatToProfile: () => { if (!chatIsPod) this.go({ screen: 'profile', sel: S.chat }); },
+      draft: S.draft, setDraft: e => this.setState({ draft: e.target.value }),
+      draftKey: e => { if (e.key === 'Enter' && S.draft.trim()) this.push(S.chat, { f: 'me', t: S.draft.trim() }); },
+      send: () => { if (S.draft.trim()) this.push(S.chat, { f: 'me', t: S.draft.trim() }); },
+      letsMeet: () => this.push(S.chat, { f: 'me', t: "Let's meet — I'm free most evenings this week." }),
+      shareVenue: () => this.push(S.chat, { f: 'me', t: (cVenue ? cVenue.name : 'Bar Part Time') + '? ' + (cVenue ? cVenue.walk : '9 min walk') + ' from you.' }),
+      askConcierge: () => { if (!chatIsPod) this.setState(s => ({ conciergeOn: { ...s.conciergeOn, [S.chat]: true } })); },
+      showConcierge: !chatIsPod && !!S.conciergeOn[S.chat] && screen === 'chat',
+      conciergeText: cVenue && S.booked[S.chat]
+        ? 'Booked: ' + cVenue.name + ', Thursday 7pm, table for two under your name. I\u2019ve told ' + (chatPP ? chatPP.name : 'them') + ' and split the deposit.'
+        : cVenue ? 'You\u2019re both free Thursday evening and you both have ' + cVenue.name + ' saved. Table for two at 7pm, ' + cVenue.walk.replace(' walk', '') + ' from each of you?' : '',
+      bookLabel: S.booked[S.chat] ? 'Booked ✓' : 'Book it',
+      bookIt: () => { if (cVenue && !S.booked[S.chat]) { const id = S.chat; this.setState(s => ({ booked: { ...s.booked, [id]: true } })); this.push(id, { f: 'me', t: 'Booked us ' + cVenue.name + ', Thursday 7pm.' }); } },
+      otherTime: () => this.push(S.chat, { f: 'me', t: 'Thursday\u2019s tight — could we do Friday instead?' })
+    };
+  }
+}
+</script>
+</body>
+</html>

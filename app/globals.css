@@ -1,26 +1,66 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Colours and type from the Claude Design prototype (Friend Flower v2). */
+@theme {
+  --color-outer: #0a0a09;
+  --color-bg: #0d0c0b;
+  --color-card: #1a1816;
+  --color-well: #131211;
+  --color-raised: #221f1c;
+  --color-line: #322e2a;
+  --color-line-soft: #2b2723;
+  --color-rule: #26231f;
+  --color-text: #f3f0ea;
+  --color-body: #d6d0c6;
+  --color-soft: #c2bbb0;
+  --color-muted: #9c9489;
+  --color-faint: #8a8177;
+  --color-pink: #e6a8bd;
+  --color-pink-deep: #c98298;
+  --color-ink: #241f1a;
+  --color-plum: #2a1f27;
+  --color-plum-line: #4a3243;
+  --color-plum-text: #c9aebb;
+  --color-gold: #e0b070;
+  --color-gold-bg: #2a2017;
+  --color-gold-line: #4a3c28;
+  --color-leaf: #8ec9a1;
+  --color-leaf-bg: #182419;
+  --color-leaf-line: #2c412f;
+  --color-online: #4cd471;
+
+  --font-display: var(--font-vt323), "Noto Serif", serif;
+  --font-logo: var(--font-doto), "Noto Serif", serif;
+  --font-sans: var(--font-roboto), system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html, body {
+  background: var(--color-outer);
+  color: var(--color-text);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
 }
+
+input::placeholder, textarea::placeholder { color: #a9a094; }
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Display headings use VT323 with a touch of letter-spacing, as in the design. */
+.font-display { letter-spacing: .5px; font-weight: 700; }
+
+.field {
+  width: 100%;
+  height: 48px;
+  border-radius: 13px;
+  border: 1.5px solid var(--color-line);
+  background: var(--color-card);
+  padding: 0 14px;
+  font-size: 16px; /* 16px stops iOS zooming into inputs */
+  color: var(--color-text);
+  outline: none;
+}
+.field:focus { border-color: #5a534b; }
+textarea.field { height: auto; min-height: 88px; padding: 13px 14px; line-height: 1.5; resize: none; }
+select.field { appearance: none; }
