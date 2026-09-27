@@ -7,6 +7,8 @@ const doto = Doto({ weight: ["700", "800"], subsets: ["latin"], variable: "--fon
 const roboto = Roboto({ weight: ["300", "400", "500", "700"], subsets: ["latin"], variable: "--font-roboto" });
 
 export const metadata: Metadata = {
+  // Link previews (opengraph-image.tsx) need absolute URLs.
+  metadataBase: new URL("https://friendflower.app"),
   title: "friend flower",
   description: "Keep track of where in the world your friends are, and meet friends of friends wherever you are.",
   applicationName: "Friend Flower",
