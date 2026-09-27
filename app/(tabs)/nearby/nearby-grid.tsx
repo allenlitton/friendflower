@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore, type ReactNode } from "react";
 import type { CirclePerson } from "@/lib/types";
 import type { Lens } from "@/lib/whereabouts";
-import { dateRange, degreeWord, gradientFor, initials, nearbyLabel, shortDate } from "@/lib/format";
+import { dateRange, degreeWord, gradientFor, initials, liveDistanceLabel, shortDate } from "@/lib/format";
 import { Flower, Pill, PrimaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { turnOnLiveDistance } from "@/components/live-location";
@@ -57,7 +57,7 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, 
         <Link href="/you/edit" className="mx-5 mt-2.5 flex items-center gap-2.5 rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2.5">
           <span className="text-[15px]">📍</span>
           <span className="flex-1 text-[12.5px] leading-snug text-[#f3d6df]">
-            Add your neighbourhood so friends can see roughly how far away you are — and you can see them.
+            Add your neighbourhood so friends can see which part of town you&apos;re in.
           </span>
           <span className="text-[17px] text-pink">›</span>
         </Link>
@@ -108,7 +108,7 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, 
               <TileFooter name={p.first_name}
                 tag={p.presence === "visiting" ? `Until ${shortDate(p.ends_on)}` : "Local"}
                 tagColor={p.presence === "visiting" ? "#8a5418" : "#2f6b4c"}
-                dist={nearbyLabel(p.distance_mi, p.distance_live)} />
+                dist={p.distance_live ? liveDistanceLabel(p.distance_mi) : null} />
             </Link>
           ))}
         </div>

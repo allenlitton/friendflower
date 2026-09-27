@@ -31,7 +31,6 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
   const toggles = [
     { k: "show_trips" as const, label: "Declared trips", note: "Cities and dates you choose to publish (you can hide any single trip)" },
     { k: "show_online" as const, label: "Online now", note: "Shows the green dot when you've used the app in the last 10 minutes" },
-    { k: "show_distance" as const, label: "Show my distance", note: "Off means city-level only — no neighbourhood or distance" },
   ];
 
   return (
@@ -63,18 +62,16 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
               <Toggle label={t.label} on={p[t.k]} onChange={(v) => update({ [t.k]: v })} />
             </div>
           ))}
-          {p.show_distance && (
-            <div className="flex items-center gap-[11px] px-[15px] py-3">
-              <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-semibold">Live distance</div>
-                <div className="text-[11.5px] leading-snug text-muted">
-                  While the app is open, people in your circle who share theirs see how far away you are, to 0.1 mi
-                </div>
-                {liveError && <div className="mt-1 text-[11.5px] leading-snug text-plum-text">{liveError}</div>}
+          <div className="flex items-center gap-[11px] px-[15px] py-3">
+            <div className="min-w-0 flex-1">
+              <div className="text-[14px] font-semibold">Live distance</div>
+              <div className="text-[11.5px] leading-snug text-muted">
+                While the app is open, people in your circle who share theirs see how far away you are, to 0.1 mi
               </div>
-              <Toggle label="Live distance" on={p.share_live_location} onChange={setLive} />
+              {liveError && <div className="mt-1 text-[11.5px] leading-snug text-plum-text">{liveError}</div>}
             </div>
-          )}
+            <Toggle label="Live distance" on={p.share_live_location} onChange={setLive} />
+          </div>
         </div>
         <div className="mt-2 text-[11.5px] leading-snug text-faint">
           People see the city you live in, trips you declare, and — if you add one — your neighbourhood. With live distance on,
