@@ -8,9 +8,9 @@ export function InviteButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
   async function share() {
     const url = `${location.origin}/invite/${code}`;
-    const data = { title: "Join me on Friend Flower", text: "Meet friends of friends wherever you are.", url };
     if (navigator.share) {
-      await navigator.share(data).catch(() => {});
+      // The link goes inside the text: given a separate `url`, iOS's "Copy" copies only the text.
+      await navigator.share({ title: "Join me on Friend Flower", text: `Meet friends of friends wherever you are. ${url}` }).catch(() => {});
     } else {
       await navigator.clipboard?.writeText(url);
       setCopied(true);
