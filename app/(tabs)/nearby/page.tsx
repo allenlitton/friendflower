@@ -65,7 +65,6 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
       units={profile.units}
       lens={lens}
       lenses={lenses}
-      needsNeighbourhood={lens.kind === "home" && !profile.home_neighbourhood_id}
       offerLive={isNow && profile.show_distance && !profile.share_live_location}
       footer={
         <Link href={`/places?city=${lens.cityId}`}

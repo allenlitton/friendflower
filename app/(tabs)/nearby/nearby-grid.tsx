@@ -14,8 +14,8 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 const FILTERS = ["Nearby", "Online", "1st degree", "2nd degree", "Travellers"] as const;
 const EXTRAS = ["Saved friends", "Verified", "Same school", "Leaving soon"] as const;
 
-export function NearbyGrid({ people, error, me, units, lens, lenses, footer, needsNeighbourhood, offerLive }: {
-  people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; units: Units; needsNeighbourhood?: boolean;
+export function NearbyGrid({ people, error, me, units, lens, lenses, footer, offerLive }: {
+  people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; units: Units;
   offerLive?: boolean;
   lens: Lens; lenses: Lens[]; footer: ReactNode;
 }) {
@@ -50,17 +50,7 @@ export function NearbyGrid({ people, error, me, units, lens, lenses, footer, nee
       </div>
 
 
-      {offerLive && !needsNeighbourhood && <LiveOffer myId={me.id} />}
-
-      {needsNeighbourhood && (
-        <Link href="/you/edit" className="mx-5 mt-2.5 flex items-center gap-2.5 rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2.5">
-          <span className="text-[15px]">📍</span>
-          <span className="flex-1 text-[12.5px] leading-snug text-[#f3d6df]">
-            Add your neighbourhood so friends can see which part of town you&apos;re in.
-          </span>
-          <span className="text-[17px] text-pink">›</span>
-        </Link>
-      )}
+      {offerLive && <LiveOffer myId={me.id} />}
 
       <div className="flex flex-none gap-[7px] overflow-x-auto px-5 pt-[11px] pb-[9px]">
         {FILTERS.map((f) => <Pill key={f} on={filter === f} onClick={() => setFilter(f)}>{f}</Pill>)}
