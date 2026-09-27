@@ -151,7 +151,7 @@ export function ProfileEditor({
       const res = await fetch("/api/identity", { method: "POST", body: JSON.stringify({ phone: phone.trim() || undefined }) });
       const json = await res.json();
       if (!res.ok) { setSaving(false); return setError(json.error); }
-      if (json.phoneInUse) setError("That phone number is already linked to another account. Contact help@friendflower.app if it's yours.");
+      if (json.phoneInUse) setError("That phone number is already linked to another account. Contact hello@friendflower.app if it's yours.");
     }
 
     if (mode === "onboarding") {

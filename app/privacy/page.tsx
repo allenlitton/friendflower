@@ -47,7 +47,7 @@ export default function PrivacyPage() {
           <SectionLabel>Safety</SectionLabel>
           <p>
             You can report or block anyone from their profile or your chat. Blocking hides you from each other everywhere.
-            Questions? <a className="text-pink" href="mailto:help@friendflower.app">help@friendflower.app</a>
+            Questions? <a className="text-pink" href="mailto:hello@friendflower.app">hello@friendflower.app</a>
           </p>
         </div>
       </div>

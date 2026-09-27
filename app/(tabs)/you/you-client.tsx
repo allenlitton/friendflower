@@ -121,7 +121,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
       )}
 
       <RowLink href="/privacy" icon="🔒" title="How we handle your data" note="What's shared, with whom, and what's never stored" />
-      <a href="mailto:help@friendflower.app" className="flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5 hover:border-[#5a534b]">
+      <a href="mailto:hello@friendflower.app" className="flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5 hover:border-[#5a534b]">
         <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-plum text-[16px] font-bold text-pink">?</span>
         <div className="min-w-0 flex-1"><div className="text-[14.5px] font-semibold">Need help?</div><div className="text-[11.5px] text-muted">Contact the Friend Flower team</div></div>
         <span className="text-[17px] text-pink">›</span>
