@@ -8,6 +8,7 @@ export default function SignInPage() {
       <div className="flex flex-1 flex-col items-center justify-center gap-3 py-7">
         <Flower size={83} stroke="#ffffff" strokeWidth={2.1} />
         <div className="text-center font-logo text-[38px] leading-[1.05] font-extrabold tracking-[.5px]">friend flower.</div>
+        <div className="-mt-2 font-display text-[33px] leading-none tracking-[2px] text-pink">beta</div>
       </div>
       <Suspense>
         <SignInForm />

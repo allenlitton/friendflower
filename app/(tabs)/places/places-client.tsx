@@ -67,8 +67,7 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
 
   return (
     <>
-      <ScreenTitle sub={`${city.name} · vouched for by your circle`}
-        right={neighbourhoods.length > 0 && (
+      <ScreenTitle right={neighbourhoods.length > 0 && (
           <button type="button" onClick={() => setAdding(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold whitespace-nowrap text-ink">+ Add a place</button>
         )}>Places to meet</ScreenTitle>
       {cities.length > 1 && (

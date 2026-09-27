@@ -82,8 +82,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
 
   return (
     <>
-      <ScreenTitle sub={`${trips.length} upcoming trip${trips.length === 1 ? "" : "s"} · ${matches.length} from your circles on your flights`}
-        right={<button type="button" onClick={() => setOpen(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold text-ink">+ Add trip</button>}>
+      <ScreenTitle right={<button type="button" onClick={() => setOpen(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold text-ink">+ Add trip</button>}>
         Trips
       </ScreenTitle>
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pt-2.5 pb-4">

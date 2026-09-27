@@ -63,13 +63,6 @@ export function SignInForm() {
         value={email} onChange={(e) => setEmail(e.target.value)} />
       <ErrorNote>{error}</ErrorNote>
       <PrimaryButton type="submit" disabled={busy || !email.includes("@")}>{busy ? "sending…" : "continue with email"}</PrimaryButton>
-      <div className="mt-1 flex gap-2">
-        {["Instagram", "Facebook"].map((n) => (
-          <div key={n} className="flex h-11 flex-1 items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-line bg-[#161412] text-[12.5px] font-semibold text-faint">
-            {n} <span className="rounded-full bg-gold-bg px-1.5 py-px text-[9.5px] font-bold text-gold">soon</span>
-          </div>
-        ))}
-      </div>
     </form>
   );
 }

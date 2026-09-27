@@ -14,10 +14,10 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 const FILTERS = ["Nearby", "Online", "1st degree", "2nd degree", "Travellers"] as const;
 const EXTRAS = ["Saved friends", "Verified", "Same school", "Leaving soon"] as const;
 
-export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, needsNeighbourhood, offerLive }: {
+export function NearbyGrid({ people, error, me, lens, lenses, footer, needsNeighbourhood, offerLive }: {
   people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; needsNeighbourhood?: boolean;
   offerLive?: boolean;
-  lens: Lens; lenses: Lens[]; subtitle: string; footer: ReactNode;
+  lens: Lens; lenses: Lens[]; footer: ReactNode;
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Nearby");
@@ -42,7 +42,6 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, 
             <h1 className="font-display text-[30px] leading-[1.1]">{lens.cityName}</h1>
             <Flower />
           </div>
-          <div className="text-[11.5px] text-muted">{subtitle}</div>
         </div>
         <button type="button" onClick={() => setTravelOpen(true)}
           className="rounded-full border-[1.5px] border-line bg-card px-3 py-2 text-[12px] font-semibold whitespace-nowrap text-soft hover:border-[#5a534b]">
