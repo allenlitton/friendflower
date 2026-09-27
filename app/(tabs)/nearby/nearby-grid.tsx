@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import type { CirclePerson } from "@/lib/types";
 import type { Lens } from "@/lib/whereabouts";
 import { dateRange, degreeWord, gradientFor, initials, nearbyLabel, shortDate } from "@/lib/format";
 import { Flower, Pill, PrimaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
+import { turnOnLiveDistance } from "@/components/live-location";
+import { supabaseBrowser } from "@/lib/supabase/client";
 
 const FILTERS = ["Nearby", "Online", "1st degree", "2nd degree", "Travellers"] as const;
 const EXTRAS = ["Saved friends", "Verified", "Same school", "Leaving soon"] as const;
 
-export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, needsNeighbourhood }: {
+export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, needsNeighbourhood, offerLive }: {
   people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; needsNeighbourhood?: boolean;
+  offerLive?: boolean;
   lens: Lens; lenses: Lens[]; subtitle: string; footer: ReactNode;
 }) {
   const router = useRouter();
@@ -47,6 +50,8 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, 
         </button>
       </div>
 
+
+      {offerLive && !needsNeighbourhood && <LiveOffer myId={me.id} />}
 
       {needsNeighbourhood && (
         <Link href="/you/edit" className="mx-5 mt-2.5 flex items-center gap-2.5 rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2.5">
@@ -103,7 +108,7 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, 
               <TileFooter name={p.first_name}
                 tag={p.presence === "visiting" ? `Until ${shortDate(p.ends_on)}` : "Local"}
                 tagColor={p.presence === "visiting" ? "#8a5418" : "#2f6b4c"}
-                dist={nearbyLabel(p.distance_mi)} />
+                dist={nearbyLabel(p.distance_mi, p.distance_live)} />
             </Link>
           ))}
         </div>
@@ -149,6 +154,51 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, 
           </Link>
         </div>
       </Sheet>
+    </div>
+  );
+}
+
+const LIVE_OFFER_KEY = "ff_live_offer_dismissed";
+const noSubscribe = () => () => {};
+const offerDismissed = () => {
+  try { return localStorage.getItem(LIVE_OFFER_KEY) === "1"; } catch { return false; }
+};
+
+function LiveOffer({ myId }: { myId: string }) {
+  const router = useRouter();
+  const saved = useSyncExternalStore(noSubscribe, offerDismissed, () => true);
+  const [dismissed, setDismissed] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  if (saved || dismissed) return null;
+
+  const dismiss = () => {
+    setDismissed(true);
+    try { localStorage.setItem(LIVE_OFFER_KEY, "1"); } catch {}
+  };
+  const turnOn = async () => {
+    setBusy(true);
+    const err = await turnOnLiveDistance(supabaseBrowser(), myId);
+    setBusy(false);
+    if (err) return setError(err);
+    router.refresh();
+  };
+
+  return (
+    <div className="mx-5 mt-2.5 rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2.5">
+      <div className="flex items-center gap-2.5">
+        <span className="text-[15px]">📍</span>
+        <span className="flex-1 text-[12.5px] leading-snug text-[#f3d6df]">
+          See exactly how far away your circle is. Turn on live distance — they see how far you are, never where.
+        </span>
+      </div>
+      {error && <div className="mt-1.5 text-[11.5px] leading-snug text-plum-text">{error}</div>}
+      <div className="mt-2 flex gap-3 pl-[25px]">
+        <button type="button" disabled={busy} onClick={turnOn} className="text-[12.5px] font-bold text-pink disabled:opacity-60">
+          {busy ? "Finding you…" : "Turn on"}
+        </button>
+        <button type="button" onClick={dismiss} className="text-[12.5px] font-semibold text-muted">Not now</button>
+      </div>
     </div>
   );
 }

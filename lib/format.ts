@@ -13,9 +13,13 @@ export function dateRange(from: string, to: string) {
   return `${shortDate(from)} – ${shortDate(to)}`;
 }
 
-/** Distance between two people in the same city (neighbourhood-based, so coarse). */
-export function nearbyLabel(mi: number | null | undefined) {
+/**
+ * Distance between two people in the same city. Live distances (both sharing
+ * their position) are real, to 0.1 mi; otherwise it's neighbourhood-based, so coarse.
+ */
+export function nearbyLabel(mi: number | null | undefined, live = false) {
   if (mi == null) return null;
+  if (live) return mi < 0.1 ? "< 0.1 mi" : `${mi < 10 ? mi.toFixed(1) : Math.round(mi)} mi`;
   if (mi < 0.5) return "< 0.5 mi";
   return `~${mi < 10 ? mi.toFixed(1).replace(/\.0$/, "") : Math.round(mi)} mi`;
 }

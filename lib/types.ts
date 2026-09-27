@@ -16,6 +16,7 @@ export type CirclePerson = {
   ends_on: string | null;
   online: boolean;
   distance_mi: number | null;
+  distance_live: boolean;
   neighbourhood: string | null;
   mutual_count: number;
   is_friend: boolean;
@@ -47,6 +48,7 @@ export type Person = {
   now: { city_id: string; city: string; short: string; presence: "lives" | "visiting"; until: string | null; neighbourhood: string | null } | null;
   distance_mi: number | null;
   distance_kind: "nearby" | "same_city" | "far" | null;
+  distance_live: boolean;
   home: { city_id: string; city: string; short: string } | null;
   trips: { id: string; city_id: string; city: string; starts_on: string; ends_on: string }[];
   places: { city: string; years: string | null; kind: "lived" | "grew_up" }[];
@@ -127,7 +129,7 @@ export type Profile = {
   hometown: string | null; birth_year: number | null; home_city_id: string | null;
   home_neighbourhood_id: string | null; languages: string[]; spots: string[];
   instagram: string | null; facebook: string | null; visibility: "first" | "fof";
-  show_online: boolean; show_distance: boolean; show_trips: boolean;
+  show_online: boolean; show_distance: boolean; show_trips: boolean; share_live_location: boolean;
   invite_code: string; onboarded_at: string | null;
 };
 

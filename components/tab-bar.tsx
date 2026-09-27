@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { initials } from "@/lib/format";
+import { useLiveLocation } from "@/components/live-location";
 
 const TABS = [
   { href: "/nearby", label: "Nearby", glyph: "❋", round: true },
@@ -27,13 +28,15 @@ export function usePresence() {
   }, [supabase]);
 }
 
-export function Presence() {
+export function Presence({ liveLocation }: { liveLocation: boolean }) {
   usePresence();
+  useLiveLocation(liveLocation);
   return null;
 }
 
-export function TabBar({ myName }: { myName: string }) {
+export function TabBar({ myName, liveLocation }: { myName: string; liveLocation: boolean }) {
   usePresence();
+  useLiveLocation(liveLocation);
   const path = usePathname();
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [chatDot, setChatDot] = useState(false);

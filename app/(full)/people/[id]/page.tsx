@@ -17,11 +17,11 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
   const nextTrip = p.trips.find((t) => t.starts_on > (p.now?.until ?? ""));
   const flightsTrip = p.trip_overlaps?.[0];
 
-  // Approximate distance: neighbourhood-to-neighbourhood in the same city,
-  // city-to-city otherwise. Never an exact location.
+  // Live distance when you both share your position, else neighbourhood-to-neighbourhood
+  // in the same city, city-to-city otherwise. Never a location, only a distance.
   const where = p.now ? (p.now.neighbourhood ? `${p.now.neighbourhood}, ${p.now.short}` : p.now.city) : null;
   const distance =
-    p.distance_kind === "nearby" ? { icon: "📍", big: `${nearbyLabel(p.distance_mi)} away`, small: where }
+    p.distance_kind === "nearby" ? { icon: "📍", big: `${nearbyLabel(p.distance_mi, p.distance_live)} away`, small: where }
     : p.distance_kind === "far" ? { icon: "✈", big: `${farLabel(p.distance_mi)} away`, small: p.now?.city ?? null }
     : p.distance_kind === "same_city" ? {
         icon: "📍", big: `Also in ${p.now?.city}`,
@@ -29,7 +29,7 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
         small: p.now?.neighbourhood ? "Add your neighbourhood in Edit profile to see how close" : `${p.first_name} hasn't added a neighbourhood yet`,
       }
     : where ? { icon: "📍", big: p.is_me ? `In ${where}` : where, small: null } : null;
-  const railDistance = p.distance_kind === "nearby" ? nearbyLabel(p.distance_mi)?.replace("~", "")
+  const railDistance = p.distance_kind === "nearby" ? nearbyLabel(p.distance_mi, p.distance_live)?.replace("~", "")
     : p.distance_kind === "far" ? farLabel(p.distance_mi) : null;
 
   const mutualLine = p.degree === 1

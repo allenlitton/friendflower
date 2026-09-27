@@ -6,14 +6,25 @@ import type { Mini, Profile } from "@/lib/types";
 import { Avatar, Flower, PetalHalo, RowLink, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { InviteButton } from "@/components/invite-button";
 import { useRpc } from "@/components/person-actions";
+import { turnOnLiveDistance } from "@/components/live-location";
 
 export function YouClient({ profile, sub, blocks, contactMatches }: { profile: Profile; sub: string; blocks: Mini[]; contactMatches: number }) {
   const { supabase, router } = useRpc();
   const [p, setP] = useState(profile);
+  const [liveError, setLiveError] = useState<string | null>(null);
 
   async function update(patch: Partial<Profile>) {
     setP({ ...p, ...patch });
     await supabase.from("profiles").update(patch).eq("id", p.id);
+    router.refresh();
+  }
+
+  async function setLive(on: boolean) {
+    setLiveError(null);
+    if (!on) return update({ share_live_location: false });
+    setP({ ...p, share_live_location: true });
+    const err = await turnOnLiveDistance(supabase, p.id);
+    if (err) { setP({ ...p, share_live_location: false }); setLiveError(err); }
     router.refresh();
   }
 
@@ -43,8 +54,8 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
       <div>
         <SectionLabel>How you&apos;re found</SectionLabel>
         <div className="overflow-hidden rounded-2xl border-[1.5px] border-line bg-card">
-          {toggles.map((t, i) => (
-            <div key={t.k} className={`flex items-center gap-[11px] px-[15px] py-3 ${i < toggles.length - 1 ? "border-b border-rule" : ""}`}>
+          {toggles.map((t) => (
+            <div key={t.k} className="flex items-center gap-[11px] border-b border-rule px-[15px] py-3 last:border-0">
               <div className="min-w-0 flex-1">
                 <div className="text-[14px] font-semibold">{t.label}</div>
                 <div className="text-[11.5px] leading-snug text-muted">{t.note}</div>
@@ -52,9 +63,22 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
               <Toggle label={t.label} on={p[t.k]} onChange={(v) => update({ [t.k]: v })} />
             </div>
           ))}
+          {p.show_distance && (
+            <div className="flex items-center gap-[11px] px-[15px] py-3">
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold">Live distance</div>
+                <div className="text-[11.5px] leading-snug text-muted">
+                  While the app is open, people in your circle who share theirs see how far away you are, to 0.1 mi
+                </div>
+                {liveError && <div className="mt-1 text-[11.5px] leading-snug text-plum-text">{liveError}</div>}
+              </div>
+              <Toggle label="Live distance" on={p.share_live_location} onChange={setLive} />
+            </div>
+          )}
         </div>
         <div className="mt-2 text-[11.5px] leading-snug text-faint">
-          Friend Flower never tracks your location. People only see the city you live in, trips you declare, and — if you add one — your neighbourhood.
+          People see the city you live in, trips you declare, and — if you add one — your neighbourhood. With live distance on,
+          they see how far away you are, never where you are.
         </div>
       </div>
 

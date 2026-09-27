@@ -65,6 +65,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
       lens={lens}
       lenses={lenses}
       needsNeighbourhood={lens.kind === "home" && !profile.home_neighbourhood_id}
+      offerLive={isNow && profile.show_distance && !profile.share_live_location}
       subtitle={isNow ? (lens.kind === "home" ? "Your circle here right now" : `You're here until ${dateRange(lens.from, lens.to).split(" – ")[1]}`) : `Your trip · ${dateRange(lens.from, lens.to)}`}
       footer={
         <Link href={`/places?city=${lens.cityId}`}

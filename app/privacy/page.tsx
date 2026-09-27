@@ -1,7 +1,7 @@
 import { BackBar, Card, SectionLabel } from "@/components/ui";
 
 const ROWS: [string, string][] = [
-  ["Friends (1st degree)", "Your photo, name, bio, rough distance, online status, the city you live in, trips you share with them, cities you've lived in, schools, and mutual friends."],
+  ["Friends (1st degree)", "Your photo, name, bio, distance (rough, or live if you both turn on live distance), online status, the city you live in, trips you share with them, cities you've lived in, schools, and mutual friends."],
   ["Friends of friends (2nd degree)", "The same — marked “not verified” until a mutual friend confirms you really are connected. You can switch this off in You → Who can see me."],
   ["Everyone else", "Nothing. People outside your circle can't find you."],
 ];
@@ -33,8 +33,14 @@ export default function PrivacyPage() {
         <div>
           <SectionLabel>Your location</SectionLabel>
           <p>
-            Friend Flower never tracks where you are. The only places we know are the ones you tell us: the city you live in, an optional
-            neighbourhood, and trips you add. Distances are worked out between neighbourhood or city centres, so they&apos;re always approximate.
+            We know the places you tell us: the city you live in, an optional neighbourhood, and trips you add. Distances are normally
+            worked out between neighbourhood or city centres, so they&apos;re approximate.
+          </p>
+          <p className="mt-2">
+            <b>Live distance</b> is off unless you turn it on. When it&apos;s on, the app sends your position about once a minute, only while
+            it&apos;s open. We round it to about 100 m and keep only the latest one; it stops being used after 30 minutes and is deleted soon
+            after, or straight away when you turn live distance off. People in your circle who also share theirs see how far away you
+            are (to 0.1 mi) — never your location itself.
           </p>
         </div>
         <div>
