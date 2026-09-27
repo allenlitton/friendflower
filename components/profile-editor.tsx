@@ -59,7 +59,9 @@ export function ProfileEditor({
   const launched = cities.filter((c) => c.is_launched);
   const others = cities.filter((c) => !c.is_launched && (c.is_home_option || c.id === profile.home_city_id));
   const cityNbs = neighbourhoods.filter((n) => n.city_id === homeCity);
-  const canSave = firstName.trim() && homeCity && (avatarUrl || photo);
+  // In live-map cities a neighbourhood is required, so friends can see roughly how far away you are.
+  const needsNb = homeCity !== "" && neighbourhoods.some((n) => n.city_id === homeCity);
+  const canSave = firstName.trim() && homeCity && (!needsNb || homeNb) && (avatarUrl || photo);
 
   async function uploadAvatar(file: File, as: "photo" | "doodle") {
     setPhotoBusy(true);
@@ -227,17 +229,15 @@ export function ProfileEditor({
         </select>
         {cityNbs.length > 0 && (
           <select className="field" value={homeNb} onChange={(e) => setHomeNb(e.target.value)}>
-            <option value="">Neighbourhood (optional)</option>
+            <option value="">Choose your neighbourhood</option>
             {cityNbs.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)}
           </select>
         )}
-        {homeCity && cityNbs.length > 0 && !homeNb && (
-          <div className="text-[11.5px] text-pink">Add a neighbourhood so friends can see roughly how far away you are.</div>
-        )}
+
         <div className="text-[11.5px] leading-snug text-faint">
           {homeCity && !launched.some((c) => c.id === homeCity)
             ? "The live map is only in San Francisco and New York for now. Friends will still see you're here on their World page, and you can add trips."
-            : "We never use your live location. Your neighbourhood is only used to show a rough distance, like “~1.5 mi”."}
+            : "We never use your live location. Your neighbourhood is only used to show friends a rough distance, like “~1.5 mi”."}
         </div>
       </div>
 
@@ -310,7 +310,7 @@ export function ProfileEditor({
         </PrimaryButton>
         {!canSave && (
           <div className="text-center text-[11.5px] text-faint">
-            {!avatarUrl && !photo ? "Add a profile picture so friends recognise you" : !firstName.trim() ? "Add your first name" : "Choose the city you live in"}
+            {!avatarUrl && !photo ? "Add a profile picture so friends recognise you" : !firstName.trim() ? "Add your first name" : !homeCity ? "Choose the city you live in" : "Choose your neighbourhood"}
           </div>
         )}
       </div>

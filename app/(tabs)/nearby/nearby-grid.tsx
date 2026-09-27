@@ -12,8 +12,8 @@ import { Sheet } from "@/components/sheet";
 const FILTERS = ["Nearby", "Online", "1st degree", "2nd degree", "Travellers"] as const;
 const EXTRAS = ["Saved friends", "Verified", "Same school", "Leaving soon"] as const;
 
-export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer }: {
-  people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null };
+export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer, needsNeighbourhood }: {
+  people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; needsNeighbourhood?: boolean;
   lens: Lens; lenses: Lens[]; subtitle: string; footer: ReactNode;
 }) {
   const router = useRouter();
@@ -47,6 +47,16 @@ export function NearbyGrid({ people, error, me, lens, lenses, subtitle, footer }
         </button>
       </div>
 
+
+      {needsNeighbourhood && (
+        <Link href="/you/edit" className="mx-5 mt-2.5 flex items-center gap-2.5 rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2.5">
+          <span className="text-[15px]">📍</span>
+          <span className="flex-1 text-[12.5px] leading-snug text-[#f3d6df]">
+            Add your neighbourhood so friends can see roughly how far away you are — and you can see them.
+          </span>
+          <span className="text-[17px] text-pink">›</span>
+        </Link>
+      )}
 
       <div className="flex flex-none gap-[7px] overflow-x-auto px-5 pt-[11px] pb-[9px]">
         {FILTERS.map((f) => <Pill key={f} on={filter === f} onClick={() => setFilter(f)}>{f}</Pill>)}

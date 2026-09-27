@@ -23,7 +23,11 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
   const distance =
     p.distance_kind === "nearby" ? { icon: "📍", big: `${nearbyLabel(p.distance_mi)} away`, small: where }
     : p.distance_kind === "far" ? { icon: "✈", big: `${farLabel(p.distance_mi)} away`, small: p.now?.city ?? null }
-    : p.distance_kind === "same_city" ? { icon: "📍", big: `Also in ${p.now?.city}`, small: "Add a neighbourhood to your profile to see how close" }
+    : p.distance_kind === "same_city" ? {
+        icon: "📍", big: `Also in ${p.now?.city}`,
+        // Distance needs both neighbourhoods; say whose is missing.
+        small: p.now?.neighbourhood ? "Add your neighbourhood in Edit profile to see how close" : `${p.first_name} hasn't added a neighbourhood yet`,
+      }
     : where ? { icon: "📍", big: p.is_me ? `In ${where}` : where, small: null } : null;
   const railDistance = p.distance_kind === "nearby" ? nearbyLabel(p.distance_mi)?.replace("~", "")
     : p.distance_kind === "far" ? farLabel(p.distance_mi) : null;
