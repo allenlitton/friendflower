@@ -49,6 +49,8 @@ export type Person = {
   distance_mi: number | null;
   distance_kind: "nearby" | "same_city" | "far" | null;
   distance_live: boolean;
+  /** They share live distance, even if there's no fresh position (and so no distance) right now. */
+  live_on?: boolean;
   home: { city_id: string; city: string; short: string } | null;
   trips: { id: string; city_id: string; city: string; starts_on: string; ends_on: string }[];
   places: { city: string; years: string | null; kind: "lived" | "grew_up" }[];

@@ -26,6 +26,8 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
     : p.distance_live ? liveDistanceLabel(p.distance_mi, profile.units) : null;
   const distance =
     liveDistance ? { icon: "📍", big: `${liveDistance} away`, small: where }
+    // Live distance is on but they haven't had the app open in the last 30 minutes.
+    : p.live_on ? { icon: "📍", big: "Live distance on", small: `${where ? `${where} · ` : ""}Distance shows when ${p.first_name} next opens the app` }
     : where ? { icon: "📍", big: p.is_me ? `In ${where}` : where, small: null } : null;
   const railDistance = liveDistance;
 
