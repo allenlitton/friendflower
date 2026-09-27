@@ -116,8 +116,8 @@ export function NearbyGrid({ people, error, me, units, lens, lenses, footer, nee
           <div className="mt-3 rounded-2xl border-[1.5px] border-plum-line bg-plum p-[15px]">
             <div className="text-[14.5px] font-semibold">Your flower is still a bud</div>
             <div className="mt-1 text-[12px] leading-snug text-plum-text">
-              Nobody in your circle is in {lens.cityName} {lens.kind === "trip" ? "during your trip" : "right now"}. Sync your contacts or invite
-              a few friends — their friends appear here too.
+              Nobody in your circle with live distance on is in {lens.cityName} {lens.kind === "trip" ? "during your trip" : "right now"}.
+              Nearby only shows people who share their live distance. Sync your contacts or invite a few friends — their friends appear here too.
             </div>
             <PrimaryButton href="/connect" className="mt-3 !h-[46px] !text-[20px]">find your friends</PrimaryButton>
           </div>

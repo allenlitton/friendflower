@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { doodleFromPhoto, squarePhoto } from "@/lib/image";
 import type { City, Neighbourhood, Profile } from "@/lib/types";
-import { Card, ErrorNote, Flower, Pill, PrimaryButton, SectionLabel } from "@/components/ui";
+import { Card, ErrorNote, Flower, Pill, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
+import { turnOnLiveDistance } from "@/components/live-location";
 
 type Place = { id: string; city_name: string; years: string | null; kind: "lived" | "grew_up" };
 type School = { id: string; grad_year: number; level: string; schools: { name: string } };
@@ -54,6 +55,10 @@ export function ProfileEditor({
   const [newSchool, setNewSchool] = useState({ name: "", year: "", level: "undergrad" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  // After "save profile" on sign-up: ask whether to turn on live distance.
+  const [livePrompt, setLivePrompt] = useState(false);
+  const [liveBusy, setLiveBusy] = useState(false);
+  const [liveError, setLiveError] = useState("");
 
   // Where you can say you live: the live-map cities, plus a short list of others.
   const launched = cities.filter((c) => c.is_launched);
@@ -162,11 +167,25 @@ export function ProfileEditor({
         await supabase.rpc("redeem_invite", { p_code: invite });
         localStorage.removeItem("ff_invite");
       }
-      router.replace("/connect?welcome=1");
-    } else {
-      router.replace("/you");
+      setSaving(false);
+      return setLivePrompt(true);
     }
+    router.replace("/you");
     router.refresh();
+  }
+
+  function finishOnboarding() {
+    router.replace("/connect?welcome=1");
+    router.refresh();
+  }
+
+  async function enableLive() {
+    setLiveBusy(true);
+    setLiveError("");
+    const err = await turnOnLiveDistance(supabase, profile.id);
+    setLiveBusy(false);
+    if (err) return setLiveError(err);
+    finishOnboarding();
   }
 
   return (
@@ -315,6 +334,18 @@ export function ProfileEditor({
         )}
       </div>
       {mode === "onboarding" && <div className="mt-[18px] flex justify-center"><Flower size={34} stroke="#fff" strokeWidth={3.2} /></div>}
+
+      <Sheet open={livePrompt} onClose={finishOnboarding} title="Turn on live distance?">
+        <p className="mt-2 text-[13.5px] leading-normal text-body">
+          Turn on Live Distance to help you and your friend flowers find each other
+        </p>
+        <p className="mt-2 text-[12px] leading-snug text-muted">You can change this any time on the You page.</p>
+        <div className="mt-4 flex flex-col gap-2">
+          <ErrorNote>{liveError}</ErrorNote>
+          <PrimaryButton onClick={enableLive} disabled={liveBusy}>{liveBusy ? "turning on…" : "turn on live distance"}</PrimaryButton>
+          <SecondaryButton onClick={finishOnboarding} disabled={liveBusy}>Not now</SecondaryButton>
+        </div>
+      </Sheet>
 
       <Sheet open={schoolSheet} onClose={() => setSchoolSheet(false)} title="Add a school">
         <SectionLabel className="mt-4">School name</SectionLabel>
