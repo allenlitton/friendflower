@@ -59,7 +59,7 @@ export function ProfileEditor({
   const launched = cities.filter((c) => c.is_launched);
   const others = cities.filter((c) => !c.is_launched && (c.is_home_option || c.id === profile.home_city_id));
   const cityNbs = neighbourhoods.filter((n) => n.city_id === homeCity);
-  // In live-map cities a neighbourhood is required, so friends can see roughly how far away you are.
+  // In live-map cities a neighbourhood is required, so friends can see which part of town you're in.
   const needsNb = homeCity !== "" && neighbourhoods.some((n) => n.city_id === homeCity);
   const canSave = firstName.trim() && homeCity && (!needsNb || homeNb) && (avatarUrl || photo);
 
@@ -237,7 +237,7 @@ export function ProfileEditor({
         <div className="text-[11.5px] leading-snug text-faint">
           {homeCity && !launched.some((c) => c.id === homeCity)
             ? "The live map is only in San Francisco and New York for now. Friends will still see you're here on their World page, and you can add trips."
-            : "We never use your live location. Your neighbourhood is only used to show friends a rough distance, like “~1.5 mi”."}
+            : "Friends see your neighbourhood, not your address. To show how far away you are, turn on Live distance in You."}
         </div>
       </div>
 

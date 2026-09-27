@@ -13,22 +13,10 @@ export function dateRange(from: string, to: string) {
   return `${shortDate(from)} – ${shortDate(to)}`;
 }
 
-/**
- * Distance between two people in the same city. Live distances (both sharing
- * their position) are real, to 0.1 mi; otherwise it's neighbourhood-based, so coarse.
- */
-export function nearbyLabel(mi: number | null | undefined, live = false) {
+/** Live distance between two people who both share their position, to 0.1 mi. */
+export function liveDistanceLabel(mi: number | null | undefined) {
   if (mi == null) return null;
-  if (live) return mi < 0.1 ? "< 0.1 mi" : `${mi < 10 ? mi.toFixed(1) : Math.round(mi)} mi`;
-  if (mi < 0.5) return "< 0.5 mi";
-  return `~${mi < 10 ? mi.toFixed(1).replace(/\.0$/, "") : Math.round(mi)} mi`;
-}
-
-/** Distance between cities, rounded so it reads naturally. */
-export function farLabel(mi: number | null | undefined) {
-  if (mi == null) return null;
-  const rounded = mi < 100 ? Math.round(mi / 10) * 10 : Math.round(mi / 50) * 50;
-  return `${rounded.toLocaleString("en-US")} mi`;
+  return mi < 0.1 ? "< 0.1 mi" : `${mi < 10 ? mi.toFixed(1) : Math.round(mi)} mi`;
 }
 
 export function degreeWord(d: number) {

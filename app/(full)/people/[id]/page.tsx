@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireProfile } from "@/lib/session";
 import type { Person } from "@/lib/types";
-import { dateRange, farLabel, gradientFor, initials, nearbyLabel, shortDate } from "@/lib/format";
+import { dateRange, gradientFor, initials, liveDistanceLabel, shortDate } from "@/lib/format";
 import { SectionLabel, PrimaryButton, Tag } from "@/components/ui";
 import { ChatRailButton, FriendButton, ReportBlock, SayHello } from "@/components/person-actions";
 
@@ -17,20 +17,14 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
   const nextTrip = p.trips.find((t) => t.starts_on > (p.now?.until ?? ""));
   const flightsTrip = p.trip_overlaps?.[0];
 
-  // Live distance when you both share your position, else neighbourhood-to-neighbourhood
-  // in the same city, city-to-city otherwise. Never a location, only a distance.
+  // The only distance shown is live distance (when you both share your position).
+  // Otherwise just where they are.
   const where = p.now ? (p.now.neighbourhood ? `${p.now.neighbourhood}, ${p.now.short}` : p.now.city) : null;
+  const liveDistance = p.distance_live ? liveDistanceLabel(p.distance_mi) : null;
   const distance =
-    p.distance_kind === "nearby" ? { icon: "📍", big: `${nearbyLabel(p.distance_mi, p.distance_live)} away`, small: where }
-    : p.distance_kind === "far" ? { icon: "✈", big: `${farLabel(p.distance_mi)} away`, small: p.now?.city ?? null }
-    : p.distance_kind === "same_city" ? {
-        icon: "📍", big: `Also in ${p.now?.city}`,
-        // Distance needs both neighbourhoods; say whose is missing.
-        small: p.now?.neighbourhood ? "Add your neighbourhood in Edit profile to see how close" : `${p.first_name} hasn't added a neighbourhood yet`,
-      }
+    liveDistance ? { icon: "📍", big: `${liveDistance} away`, small: where }
     : where ? { icon: "📍", big: p.is_me ? `In ${where}` : where, small: null } : null;
-  const railDistance = p.distance_kind === "nearby" ? nearbyLabel(p.distance_mi, p.distance_live)?.replace("~", "")
-    : p.distance_kind === "far" ? farLabel(p.distance_mi) : null;
+  const railDistance = liveDistance;
 
   const mutualLine = p.degree === 1
     ? `${p.mutuals.length} mutual${p.mutuals.length === 1 ? "" : "s"} · you know each other directly`
