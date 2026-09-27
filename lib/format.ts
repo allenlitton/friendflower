@@ -1,5 +1,7 @@
 // Small display helpers shared by every screen.
 
+import type { Units } from "@/lib/types";
+
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 /** '2026-10-03' -> 'Oct 3' (dates are calendar days, so no timezone maths). */
@@ -13,10 +15,17 @@ export function dateRange(from: string, to: string) {
   return `${shortDate(from)} – ${shortDate(to)}`;
 }
 
-/** Live distance between two people who both share their position, to 0.1 mi. */
-export function liveDistanceLabel(mi: number | null | undefined) {
+/**
+ * Live distance between two people who both share their position. The database
+ * gives miles to 0.1; short distances show in feet or metres.
+ */
+export function liveDistanceLabel(mi: number | null | undefined, units: Units = "imperial") {
   if (mi == null) return null;
-  return mi < 0.1 ? "< 0.1 mi" : `${mi < 10 ? mi.toFixed(1) : Math.round(mi)} mi`;
+  if (units === "metric") {
+    const km = mi * 1.609344;
+    return km < 1 ? `${Math.round(km * 100) * 10} m` : `${km < 10 ? km.toFixed(1) : Math.round(km)} km`;
+  }
+  return mi < 0.1 ? `${Math.round(mi * 528) * 10} ft` : `${mi < 10 ? mi.toFixed(1) : Math.round(mi)} mi`;
 }
 
 export function degreeWord(d: number) {

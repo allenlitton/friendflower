@@ -66,7 +66,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
             <div className="min-w-0 flex-1">
               <div className="text-[14px] font-semibold">Live distance</div>
               <div className="text-[11.5px] leading-snug text-muted">
-                While the app is open, people in your circle who share theirs see how far away you are, to 0.1 mi
+                While the app is open, people in your circle who share theirs see how far away you are, to {p.units === "metric" ? "about 150 m" : "0.1 mi"}
               </div>
               {liveError && <div className="mt-1 text-[11.5px] leading-snug text-plum-text">{liveError}</div>}
             </div>
@@ -120,6 +120,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         </div>
       )}
 
+      <RowLink href="/you/settings" icon="⚙" title="Settings" note="Language and units" />
       <RowLink href="/privacy" icon="🔒" title="How we handle your data" note="What's shared, with whom, and what's never stored" />
       <a href="mailto:hello@friendflower.app" className="flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5 hover:border-[#5a534b]">
         <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-plum text-[16px] font-bold text-pink">?</span>

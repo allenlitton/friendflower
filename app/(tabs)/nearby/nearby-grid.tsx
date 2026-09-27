@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore, type ReactNode } from "react";
-import type { CirclePerson } from "@/lib/types";
+import type { CirclePerson, Units } from "@/lib/types";
 import type { Lens } from "@/lib/whereabouts";
 import { dateRange, degreeWord, gradientFor, initials, liveDistanceLabel, shortDate } from "@/lib/format";
 import { Flower, Pill, PrimaryButton } from "@/components/ui";
@@ -14,8 +14,8 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 const FILTERS = ["Nearby", "Online", "1st degree", "2nd degree", "Travellers"] as const;
 const EXTRAS = ["Saved friends", "Verified", "Same school", "Leaving soon"] as const;
 
-export function NearbyGrid({ people, error, me, lens, lenses, footer, needsNeighbourhood, offerLive }: {
-  people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; needsNeighbourhood?: boolean;
+export function NearbyGrid({ people, error, me, units, lens, lenses, footer, needsNeighbourhood, offerLive }: {
+  people: CirclePerson[]; error?: string; me: { id: string; name: string; avatar: string | null }; units: Units; needsNeighbourhood?: boolean;
   offerLive?: boolean;
   lens: Lens; lenses: Lens[]; footer: ReactNode;
 }) {
@@ -107,7 +107,7 @@ export function NearbyGrid({ people, error, me, lens, lenses, footer, needsNeigh
               <TileFooter name={p.first_name}
                 tag={p.presence === "visiting" ? `Until ${shortDate(p.ends_on)}` : "Local"}
                 tagColor={p.presence === "visiting" ? "#8a5418" : "#2f6b4c"}
-                dist={p.distance_live ? liveDistanceLabel(p.distance_mi) : null} />
+                dist={p.distance_live ? liveDistanceLabel(p.distance_mi, units) : null} />
             </Link>
           ))}
         </div>

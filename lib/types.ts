@@ -124,12 +124,15 @@ export type FlightMatch = {
 export type City = { id: string; name: string; short_name: string; country: string; is_launched: boolean; is_home_option?: boolean };
 export type Neighbourhood = { id: string; city_id: string; name: string };
 
+export type Units = "imperial" | "metric";
+
 export type Profile = {
   id: string; first_name: string; last_initial: string; avatar_url: string | null; bio: string;
   hometown: string | null; birth_year: number | null; home_city_id: string | null;
   home_neighbourhood_id: string | null; languages: string[]; spots: string[];
   instagram: string | null; facebook: string | null; visibility: "first" | "fof";
   show_online: boolean; show_distance: boolean; show_trips: boolean; share_live_location: boolean;
+  units: Units;
   invite_code: string; onboarded_at: string | null;
 };
 

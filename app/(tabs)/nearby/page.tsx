@@ -62,6 +62,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
       people={people}
       error={error?.message}
       me={{ id: profile.id, name: profile.first_name, avatar: profile.avatar_url }}
+      units={profile.units}
       lens={lens}
       lenses={lenses}
       needsNeighbourhood={lens.kind === "home" && !profile.home_neighbourhood_id}

@@ -8,7 +8,7 @@ import { ChatRailButton, FriendButton, ReportBlock, SayHello } from "@/component
 
 export default async function PersonPage({ params }: PageProps<"/people/[id]">) {
   const { id } = await params;
-  const { supabase } = await requireProfile();
+  const { supabase, profile } = await requireProfile();
   const { data } = await supabase.rpc("person", { p_id: id });
   const p = data as Person | null;
   if (!p) notFound();
@@ -18,9 +18,12 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
   const flightsTrip = p.trip_overlaps?.[0];
 
   // The only distance shown is live distance (when you both share your position).
-  // Otherwise just where they are.
+  // Otherwise just where they are. On your own profile with live distance on,
+  // preview the card others see: zero distance from yourself.
   const where = p.now ? (p.now.neighbourhood ? `${p.now.neighbourhood}, ${p.now.short}` : p.now.city) : null;
-  const liveDistance = p.distance_live ? liveDistanceLabel(p.distance_mi) : null;
+  const liveDistance = p.is_me
+    ? (profile.share_live_location ? liveDistanceLabel(0, profile.units) : null)
+    : p.distance_live ? liveDistanceLabel(p.distance_mi, profile.units) : null;
   const distance =
     liveDistance ? { icon: "📍", big: `${liveDistance} away`, small: where }
     : where ? { icon: "📍", big: p.is_me ? `In ${where}` : where, small: null } : null;
