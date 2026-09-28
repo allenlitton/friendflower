@@ -9,9 +9,12 @@ import { Pill } from "@/components/ui";
  * else is a search (our cities plus the geocoder), and a city we don't have yet
  * is added when it's picked.
  */
-export function CityPicker({ value, cities, onChange }: {
+export function CityPicker({ value, cities, onChange, exclude, placeholder = "Search any city in the world" }: {
   value: string;
   cities: City[];
+  /** A city not to offer (e.g. your home city when adding a trip). */
+  exclude?: string | null;
+  placeholder?: string;
   onChange: (city: { id: string; name: string; launched: boolean }) => void;
 }) {
   const current = cities.find((c) => c.id === value);
@@ -21,7 +24,7 @@ export function CityPicker({ value, cities, onChange }: {
   const [searching, setSearching] = useState(false);
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState("");
-  const launched = cities.filter((c) => c.is_launched);
+  const launched = cities.filter((c) => c.is_launched && c.id !== exclude);
 
   useEffect(() => {
     const term = q.trim();
@@ -32,7 +35,7 @@ export function CityPicker({ value, cities, onChange }: {
       try {
         const res = await fetch(`/api/cities?${new URLSearchParams({ q: term })}`, { signal: ctl.signal });
         const json = await res.json();
-        setResults(json.results ?? []);
+        setResults(((json.results ?? []) as CityOption[]).filter((o) => !o.id || o.id !== exclude));
         setError(res.ok ? "" : json.error);
       } catch (e) {
         if ((e as Error).name !== "AbortError") setError("Couldn't search right now. Try again.");
@@ -41,7 +44,7 @@ export function CityPicker({ value, cities, onChange }: {
       }
     }, 250);
     return () => { clearTimeout(t); ctl.abort(); };
-  }, [q]);
+  }, [q, exclude]);
 
   function pick(c: { id: string; name: string; launched: boolean }, text: string) {
     setLabel(text);
@@ -73,7 +76,7 @@ export function CityPicker({ value, cities, onChange }: {
       {value && !launched.some((c) => c.id === value) && label && (
         <div className="rounded-xl border-[1.5px] border-pink bg-card px-3.5 py-2.5 text-[14px] font-semibold">📍 {label}</div>
       )}
-      <input className="field" type="search" autoComplete="off" placeholder={value ? "Somewhere else? Search any city" : "Search any city in the world"}
+      <input className="field" type="search" autoComplete="off" placeholder={value ? "Somewhere else? Search any city" : placeholder}
         value={q} onChange={(e) => { setQ(e.target.value); if (e.target.value.trim().length < 2) setResults([]); }} />
       {term.length >= 2 && (
         <div className="overflow-hidden rounded-xl border-[1.5px] border-line bg-card">

@@ -9,6 +9,7 @@ import { dateRange, shortDate, todayISO } from "@/lib/format";
 import { Avatar, ErrorNote, PrimaryButton, ScreenTitle, SectionLabel, Segmented } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { useRpc } from "@/components/person-actions";
+import { CityPicker } from "@/components/city-picker";
 
 const VIS = [
   { value: "first" as const, label: "1st only" },
@@ -28,6 +29,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
   const [open, setOpen] = useState(openAdd);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [cityLaunched, setCityLaunched] = useState(!!cities.find((c) => c.id === presetCity)?.is_launched);
   const [f, setF] = useState({
     city: presetCity ?? "", nb: "", from: "", to: "", vis: "fof" as Trip["visibility"], inNo: "", outNo: "", inDate: "", outDate: "",
   });
@@ -160,10 +162,13 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
 
       <Sheet open={open} onClose={() => setOpen(false)} title="Add a trip">
         <SectionLabel className="mt-4">City</SectionLabel>
-        <select className="field" value={f.city} onChange={(e) => setF({ ...f, city: e.target.value, nb: "" })}>
-          <option value="">Where are you going?</option>
-          {cities.filter((c) => c.id !== homeCity).map((c) => <option key={c.id} value={c.id}>{c.name}{c.is_launched ? "" : " (no live map yet)"}</option>)}
-        </select>
+        <CityPicker value={f.city} cities={cities} exclude={homeCity} placeholder="Where are you going?"
+          onChange={(c) => { setF({ ...f, city: c.id, nb: "" }); setCityLaunched(c.launched); }} />
+        {f.city && !cityLaunched && (
+          <div className="mt-1.5 text-[11.5px] leading-snug text-faint">
+            No live map there yet. Friends will still see you&apos;re in this city on their World page.
+          </div>
+        )}
         {neighbourhoods.some((n) => n.city_id === f.city) && (
           <select className="field mt-2" value={f.nb} onChange={(e) => setF({ ...f, nb: e.target.value })}>
             <option value="">Staying in… (optional)</option>
