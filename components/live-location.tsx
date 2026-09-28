@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
@@ -22,17 +22,21 @@ function report(supabase: SupabaseClient, pos: GeolocationPosition) {
  * While the app is open and live distance is on, sends your position about once a minute.
  * The server rounds it to ~100 m and only ever shows other people a distance.
  */
-export function useLiveLocation(enabled: boolean) {
+export function useLiveLocation(enabled: boolean, onSaved?: () => void) {
   const supabase = useMemo(() => supabaseBrowser(), []);
   const router = useRouter();
+  const saved = useRef(onSaved);
+  useEffect(() => { saved.current = onSaved; });
   useEffect(() => {
     if (!enabled || !("geolocation" in navigator)) return;
     let refreshed = false;
     const beat = () => {
       if (document.visibilityState !== "visible") return;
       currentPosition().then((pos) => report(supabase, pos)).then((res) => {
-        // Show live distances as soon as the first position lands.
-        if (res.data === true && !refreshed) { refreshed = true; router.refresh(); }
+        if (res.data !== true) return;
+        // Show live distances (and a city you've just arrived in) as soon as the first position lands.
+        if (!refreshed) { refreshed = true; router.refresh(); }
+        saved.current?.();
       }).catch(() => {});
     };
     beat();

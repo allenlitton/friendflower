@@ -143,5 +143,7 @@ export type Profile = {
 export type Trip = {
   id: string; city_id: string; neighbourhood_id: string | null; starts_on: string; ends_on: string;
   visibility: "first" | "fof" | "nobody";
+  /** Started automatically because live distance found you in this city. */
+  from_live: boolean;
   trip_flights: { id: string; direction: "in" | "out"; flight_no: string; flight_date: string }[];
 };

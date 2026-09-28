@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { initials } from "@/lib/format";
-import { useLiveLocation } from "@/components/live-location";
+import { LiveLocation } from "@/components/live-trip-prompt";
 
 const TABS = [
   { href: "/nearby", label: "Nearby", glyph: "❋", round: true },
@@ -30,13 +30,11 @@ export function usePresence() {
 
 export function Presence({ liveLocation }: { liveLocation: boolean }) {
   usePresence();
-  useLiveLocation(liveLocation);
-  return null;
+  return <LiveLocation enabled={liveLocation} />;
 }
 
 export function TabBar({ myName, liveLocation }: { myName: string; liveLocation: boolean }) {
   usePresence();
-  useLiveLocation(liveLocation);
   const path = usePathname();
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [chatDot, setChatDot] = useState(false);
@@ -53,22 +51,25 @@ export function TabBar({ myName, liveLocation }: { myName: string; liveLocation:
   }, [supabase, path]);
 
   return (
-    <nav className="sticky bottom-0 z-40 grid flex-none grid-cols-6 border-t border-line-soft bg-[rgba(19,18,17,.97)] px-1.5 pt-[7px] pb-[calc(4px+env(safe-area-inset-bottom))] backdrop-blur">
-      {TABS.map((t) => {
-        const on = path === t.href || path.startsWith(t.href + "/");
-        return (
-          <Link key={t.href} href={t.href} className="relative flex flex-col items-center gap-[3px] py-[3px]">
-            <span className="flex h-[21px] w-[21px] items-center justify-center text-[9px] font-bold text-white"
-              style={{ borderRadius: t.round ? "50%" : 7, background: on ? "var(--color-pink)" : "#4d4740" }}>
-              {t.glyph || initials(myName)}
-            </span>
-            <span className="text-[10px] font-bold" style={{ color: on ? "var(--color-pink)" : "var(--color-faint)" }}>{t.label}</span>
-            {t.href === "/chats" && chatDot && (
-              <span className="absolute top-0 right-[22%] h-2 w-2 rounded-full border-[1.5px] border-well bg-pink" />
-            )}
-          </Link>
-        );
-      })}
-    </nav>
+    <>
+      <LiveLocation enabled={liveLocation} />
+      <nav className="sticky bottom-0 z-40 grid flex-none grid-cols-6 border-t border-line-soft bg-[rgba(19,18,17,.97)] px-1.5 pt-[7px] pb-[calc(4px+env(safe-area-inset-bottom))] backdrop-blur">
+        {TABS.map((t) => {
+          const on = path === t.href || path.startsWith(t.href + "/");
+          return (
+            <Link key={t.href} href={t.href} className="relative flex flex-col items-center gap-[3px] py-[3px]">
+              <span className="flex h-[21px] w-[21px] items-center justify-center text-[9px] font-bold text-white"
+                style={{ borderRadius: t.round ? "50%" : 7, background: on ? "var(--color-pink)" : "#4d4740" }}>
+                {t.glyph || initials(myName)}
+              </span>
+              <span className="text-[10px] font-bold" style={{ color: on ? "var(--color-pink)" : "var(--color-faint)" }}>{t.label}</span>
+              {t.href === "/chats" && chatDot && (
+                <span className="absolute top-0 right-[22%] h-2 w-2 rounded-full border-[1.5px] border-well bg-pink" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+    </>
   );
 }

@@ -97,6 +97,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
                 <div className="text-[12px] whitespace-nowrap text-muted">{now ? `now · until ${shortDate(t.ends_on)}` : dateRange(t.starts_on, t.ends_on)}</div>
                 <button type="button" aria-label="Remove trip" onClick={() => remove(t.id)} className="flex h-[22px] w-[22px] items-center justify-center text-[11px] text-faint">✕</button>
               </div>
+              {t.from_live && <div className="mt-1 text-[11.5px] text-faint">📍 Started by live distance · ends when you leave</div>}
               {t.trip_flights.sort((a, b) => a.direction.localeCompare(b.direction)).map((leg) => {
                 const pax = matches.filter((m) => m.flight_id === leg.id);
                 const from = leg.direction === "in" ? homeShort : cityShort(t.city_id);

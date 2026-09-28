@@ -120,8 +120,11 @@ test("stale positions stop counting after 30 minutes", async () => {
 test("a live position outside the city isn't used there", async () => {
   await setProfile("kenji", { share_live_location: true });
   assert.equal(await locate("kenji", SACRAMENTO), true);
-  const kenji = find(await nearby("arren"), "Kenji");
-  assert.equal(kenji.distance_live, false);
+  // He's now visiting Sacramento (see live-trips.test.mjs), so he's off SF Nearby...
+  assert.equal(find(await nearby("arren"), "Kenji"), undefined);
+  // ...and even back on SF Nearby, that far-off position isn't used for distance.
+  await db.query(`delete from public.trips where user_id = $1`, [U.kenji]);
+  assert.equal(find(await nearby("arren"), "Kenji").distance_live, false);
 });
 
 test("turning off live location, or distance, erases the position", async () => {
