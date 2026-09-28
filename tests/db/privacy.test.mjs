@@ -23,6 +23,9 @@ before(async () => {
       p_user: id, p_items: JSON.stringify([{ kind: "phone", hash: `${name}-phone-hash`.padEnd(64, "0").replace(/[^0-9a-f]/g, "a") }]),
     }));
   }
+  // Nearby only lists people with live distance on. Nobody reports a position
+  // here, so distances stay neighbourhood-based (live-distance.test.mjs covers the rest).
+  await db.query(`update public.profiles set share_live_location = true`);
 });
 
 const hashOf = (name) => `${name}-phone-hash`.padEnd(64, "0").replace(/[^0-9a-f]/g, "a");
@@ -138,6 +141,8 @@ test("in-app verification: consent, pod chat, one-tap confirm with intro, mutual
   assert.equal(b.verified.by.first_name, "Priya");
 
   await as(db, U.priya, () => rpc(db, "leave_chat", { p_chat: chat }));
+  // The test database's clock only ticks each millisecond; make sure the next message is after she left.
+  await new Promise((r) => setTimeout(r, 5));
   await as(db, U.arren, () => rpc(db, "send_message", { p_chat: chat, p_body: "Coffee Thursday?" }));
   await assert.rejects(as(db, U.priya, () => rpc(db, "send_message", { p_chat: chat, p_body: "hi" })));
   const priyaSees = await as(db, U.priya, () => db.query(`select body from public.messages where chat_id = $1`, [chat]));
