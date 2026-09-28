@@ -5,14 +5,25 @@ import { YouClient } from "./you-client";
 
 export default async function YouPage() {
   const { supabase, profile } = await requireProfile();
-  const [{ data: city }, { data: nextTrip }, { data: blocks }, { data: stats }] = await Promise.all([
+  const [{ data: city }, { data: trips }, { data: blocks }, { data: stats }] = await Promise.all([
     supabase.from("cities").select("name").eq("id", profile.home_city_id ?? "").maybeSingle(),
-    supabase.from("trips").select("starts_on, cities(name)").eq("user_id", profile.id).gte("starts_on", todayISO()).order("starts_on").limit(1).maybeSingle(),
+    supabase.from("trips").select("starts_on, ends_on, from_live, live_asked, cities(name)").eq("user_id", profile.id)
+      .gte("ends_on", todayISO()).order("starts_on").limit(3),
     supabase.rpc("my_blocks"),
     supabase.rpc("my_contact_stats"),
   ]);
-  const trip = nextTrip as unknown as { starts_on: string; cities: { name: string } } | null;
-  const sub = `${city?.name ?? "Somewhere"} now${trip ? ` · ${trip.cities.name} ${shortDate(trip.starts_on)}` : ""}`;
+  type T = { starts_on: string; ends_on: string; from_live: boolean; live_asked: boolean; cities: { name: string } };
+  const today = todayISO();
+  const all = (trips ?? []) as unknown as T[];
+  // Where you are now: a trip covering today (a live one first), else home.
+  const current = all.filter((t) => t.starts_on <= today).sort((a, b) => Number(b.from_live) - Number(a.from_live))[0];
+  const next = all.find((t) => t.starts_on > today);
+  // A live trip whose dates you haven't set yet has no real end date to show.
+  const open = current && current.from_live && !current.live_asked && current.ends_on === today;
+  const here = current
+    ? `${current.cities.name} ${open ? "now" : `until ${shortDate(current.ends_on)}`}`
+    : `${city?.name ?? "Somewhere"} now`;
+  const sub = `${here}${next ? ` · ${next.cities.name} ${shortDate(next.starts_on)}` : ""}`;
 
   return <YouClient profile={profile} sub={sub} blocks={(blocks ?? []) as Mini[]} contactMatches={stats?.matches ?? 0} />;
 }
