@@ -8,6 +8,7 @@ import type { City, Neighbourhood, Profile } from "@/lib/types";
 import { Card, ErrorNote, Flower, Pill, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { turnOnLiveDistance } from "@/components/live-location";
+import { CityPicker } from "@/components/city-picker";
 
 type Place = { id: string; city_name: string; years: string | null; kind: "lived" | "grew_up" };
 type School = { id: string; grad_year: number; level: string; schools: { name: string } };
@@ -39,6 +40,7 @@ export function ProfileEditor({
   const [avatarMode, setAvatarMode] = useState<"photo" | "doodle">("photo");
   const [photoBusy, setPhotoBusy] = useState(false);
   const [homeCity, setHomeCity] = useState(profile.home_city_id ?? "");
+  const [homeLaunched, setHomeLaunched] = useState(!!cities.find((c) => c.id === profile.home_city_id)?.is_launched);
   const [homeNb, setHomeNb] = useState(profile.home_neighbourhood_id ?? "");
   const [phone, setPhone] = useState("");
   const [hometown, setHometown] = useState(profile.hometown ?? "");
@@ -60,9 +62,6 @@ export function ProfileEditor({
   const [liveBusy, setLiveBusy] = useState(false);
   const [liveError, setLiveError] = useState("");
 
-  // Where you can say you live: the live-map cities, plus a short list of others.
-  const launched = cities.filter((c) => c.is_launched);
-  const others = cities.filter((c) => !c.is_launched && (c.is_home_option || c.id === profile.home_city_id));
   const cityNbs = neighbourhoods.filter((n) => n.city_id === homeCity);
   // A neighbourhood is optional.
   const canSave = firstName.trim() && homeCity && (avatarUrl || photo);
@@ -236,15 +235,8 @@ export function ProfileEditor({
 
       <SectionLabel className="mt-[18px]">Currently living in</SectionLabel>
       <div className="flex flex-col gap-2">
-        <select className="field" value={homeCity} onChange={(e) => { setHomeCity(e.target.value); setHomeNb(""); }}>
-          <option value="">Choose your city</option>
-          <optgroup label="Live map">
-            {launched.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </optgroup>
-          <optgroup label="More cities">
-            {others.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </optgroup>
-        </select>
+        <CityPicker value={homeCity} cities={cities}
+          onChange={(c) => { setHomeCity(c.id); setHomeLaunched(c.launched); setHomeNb(""); }} />
         {cityNbs.length > 0 && (
           <select className="field" value={homeNb} onChange={(e) => setHomeNb(e.target.value)}>
             <option value="">Choose your neighbourhood (optional)</option>
@@ -252,7 +244,7 @@ export function ProfileEditor({
           </select>
         )}
 
-        {homeCity && !launched.some((c) => c.id === homeCity) && (
+        {homeCity && !homeLaunched && (
           <div className="text-[11.5px] leading-snug text-faint">
             The live map is only in San Francisco and New York for now. Friends will still see you&apos;re here on their World page, and you can add trips.
           </div>
