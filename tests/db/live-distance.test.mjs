@@ -43,13 +43,17 @@ test("live location is off by default and nothing is stored", async () => {
   assert.equal(await locate("arren", TARTINE), false);
   const { rows } = await db.query(`select count(*)::int n from private.live_locations`);
   assert.equal(rows[0].n, 0);
-  assert.equal(find(await nearby("arren"), "Priya").distance_live, false);
+  // Nearby only lists people who have turned live distance on, so nobody shows yet.
+  assert.deepEqual(await nearby("arren"), []);
 });
 
 test("when both share, Nearby shows the real distance instead of neighbourhoods", async () => {
-  const before = find(await nearby("arren"), "Priya").distance_mi; // Mission <-> Noe Valley centres
   await setProfile("arren", { share_live_location: true });
   await setProfile("priya", { share_live_location: true });
+  // Sharing, but no fresh position yet: neighbourhood centres (Mission <-> Noe Valley).
+  const waiting = find(await nearby("arren"), "Priya");
+  assert.equal(waiting.distance_live, false);
+  const before = waiting.distance_mi;
   assert.equal(await locate("arren", TARTINE), true);
   assert.equal(await locate("priya", DOLORES), true);
 
@@ -68,9 +72,13 @@ test("profiles show live distance too", async () => {
   assert.ok(p.distance_mi > 0.6 && p.distance_mi < 1);
 });
 
-test("someone who doesn't share keeps the neighbourhood estimate", async () => {
-  const barbara = find(await nearby("arren"), "Barbara");
+test("someone who doesn't share is left off Nearby, but their profile keeps the neighbourhood estimate", async () => {
+  const list = await nearby("arren");
+  assert.equal(find(list, "Barbara"), undefined);
+  assert.equal(find(list, "Kenji"), undefined);
+  const barbara = await as(db, U.arren, () => rpc(db, "person", { p_id: U.barbara }));
   assert.equal(barbara.distance_live, false);
+  assert.equal(barbara.live_on, false);
   assert.ok(barbara.distance_mi > 0, "falls back to neighbourhood distance");
 });
 
@@ -128,13 +136,15 @@ test("turning off live location, or distance, erases the position", async () => 
   await setProfile("kenji", { share_live_location: false });
   let { rows } = await db.query(`select count(*)::int n from private.live_locations where user_id = $1`, [U.kenji]);
   assert.equal(rows[0].n, 0);
+  assert.equal(find(await nearby("arren"), "Kenji"), undefined, "live location off means off Nearby");
 
   await db.query(`insert into private.live_locations (user_id, lat, lng) values ($1, 37.7596, -122.4269)
                   on conflict (user_id) do update set updated_at = now()`, [U.priya]);
   await setProfile("priya", { show_distance: false });
   ({ rows } = await db.query(`select count(*)::int n from private.live_locations where user_id = $1`, [U.priya]));
   assert.equal(rows[0].n, 0);
-  const priya = find(await nearby("arren"), "Priya");
+  assert.equal(find(await nearby("arren"), "Priya"), undefined, "distance off means off Nearby");
+  const priya = await as(db, U.arren, () => rpc(db, "person", { p_id: U.priya }));
   assert.equal(priya.distance_mi, null, "distance off means no distance at all");
   assert.equal(priya.distance_live, false);
 });
