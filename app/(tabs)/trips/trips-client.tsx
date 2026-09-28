@@ -33,6 +33,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
   const [f, setF] = useState({
     city: presetCity ?? "", nb: "", from: "", to: "", vis: "fof" as Trip["visibility"], inNo: "", outNo: "", inDate: "", outDate: "",
   });
+  const [edit, setEdit] = useState<{ id: string; city: string; from: string; to: string; started: boolean } | null>(null);
   const cityName = (id: string) => cities.find((c) => c.id === id)?.name ?? id;
   const homeShort = cities.find((c) => c.id === homeCity)?.short_name ?? "Home";
   const cityShort = (id: string) => cities.find((c) => c.id === id)?.short_name ?? "";
@@ -69,6 +70,22 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
     router.refresh();
   }
 
+  // Setting dates on a live trip also answers its "Visiting …?" question.
+  async function saveDates() {
+    if (!edit) return;
+    setSaving(true);
+    setError("");
+    const { error } = await supabase.from("trips")
+      .update({ starts_on: edit.from, ends_on: edit.to, live_asked: true }).eq("id", edit.id);
+    setSaving(false);
+    if (error) return setError(error.message);
+    setEdit(null);
+    router.refresh();
+  }
+  const today = todayISO();
+  const canSaveDates = !!edit && !!edit.from && !!edit.to && edit.to >= edit.from && edit.to >= today
+    && (edit.started ? edit.from <= today : edit.from >= today);
+
   async function setVisibility(id: string, vis: Trip["visibility"]) {
     await supabase.from("trips").update({ visibility: vis }).eq("id", id);
     router.refresh();
@@ -97,7 +114,11 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
                 <div className="text-[12px] whitespace-nowrap text-muted">{now ? `now · until ${shortDate(t.ends_on)}` : dateRange(t.starts_on, t.ends_on)}</div>
                 <button type="button" aria-label="Remove trip" onClick={() => remove(t.id)} className="flex h-[22px] w-[22px] items-center justify-center text-[11px] text-faint">✕</button>
               </div>
-              {t.from_live && <div className="mt-1 text-[11.5px] text-faint">📍 Started by live distance · ends when you leave</div>}
+              <div className="mt-1.5 flex items-center gap-2">
+                {t.from_live && <div className="min-w-0 flex-1 text-[11.5px] text-faint">📍 Started by live distance · ends when you leave</div>}
+                <button type="button" onClick={() => { setError(""); setEdit({ id: t.id, city: cityName(t.city_id), from: t.starts_on, to: t.ends_on, started: now }); }}
+                  className="ml-auto rounded-full border-[1.5px] border-line bg-well px-2.5 py-1 text-[11.5px] font-bold text-soft">Edit dates</button>
+              </div>
               {t.trip_flights.sort((a, b) => a.direction.localeCompare(b.direction)).map((leg) => {
                 const pax = matches.filter((m) => m.flight_id === leg.id);
                 const from = leg.direction === "in" ? homeShort : cityShort(t.city_id);
@@ -198,6 +219,20 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
         <Segmented value={f.vis} options={VIS} onChange={(vis) => setF({ ...f, vis })} />
         <ErrorNote>{error}</ErrorNote>
         <PrimaryButton className="mt-4" disabled={!canSave || saving} onClick={save}>{saving ? "saving…" : "add trip"}</PrimaryButton>
+      </Sheet>
+      <Sheet open={!!edit} onClose={() => setEdit(null)} title={edit ? `${edit.city} dates` : ""}>
+        <SectionLabel className="mt-4">Dates</SectionLabel>
+        {edit && (
+          <div className="grid grid-cols-2 gap-2.5">
+            <input className="field" type="date" aria-label={edit.started ? "Arrived" : "Arriving"} value={edit.from}
+              min={edit.started ? undefined : today} max={edit.started ? today : undefined}
+              onChange={(e) => setEdit({ ...edit, from: e.target.value, to: edit.to < e.target.value ? e.target.value : edit.to })} />
+            <input className="field" type="date" aria-label="Leaving" value={edit.to} min={edit.from > today ? edit.from : today}
+              onChange={(e) => setEdit({ ...edit, to: e.target.value })} />
+          </div>
+        )}
+        <ErrorNote>{error}</ErrorNote>
+        <PrimaryButton className="mt-4" disabled={!canSaveDates || saving} onClick={saveDates}>{saving ? "saving…" : "save dates"}</PrimaryButton>
       </Sheet>
     </>
   );
