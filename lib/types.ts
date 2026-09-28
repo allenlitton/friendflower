@@ -123,7 +123,9 @@ export type FlightMatch = {
   person: Mini & { degree: number; via: string | null };
 };
 
-export type City = { id: string; name: string; short_name: string; country: string; is_launched: boolean; is_home_option?: boolean };
+export type City = { id: string; name: string; short_name: string; country: string; is_launched: boolean; is_home_option?: boolean; region?: string | null };
+/** A city search result: one we have (id), or one from the geocoder we'll add when picked (geonameId). */
+export type CityOption = { id?: string; geonameId?: number; name: string; detail: string; launched: boolean };
 export type Neighbourhood = { id: string; city_id: string; name: string };
 
 export type Units = "imperial" | "metric";
