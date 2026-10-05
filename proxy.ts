@@ -34,9 +34,28 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/signin";
     url.search = path === "/" ? "" : `?next=${encodeURIComponent(path + request.nextUrl.search)}`;
-    return NextResponse.redirect(url);
+    return redirectKeepingCookies(url, response);
+  }
+
+  // Already signed in: skip the sign-in screen. The home-screen app can reopen
+  // on an old sign-in page even though the session is still good.
+  if (signedIn && path === "/signin") {
+    const next = request.nextUrl.searchParams.get("next") ?? "/";
+    const url = new URL(next.startsWith("/") && !next.startsWith("//") ? next : "/", request.url);
+    return redirectKeepingCookies(url, response);
   }
   return response;
+}
+
+// A redirect is a new response, so carry over any refreshed session cookies.
+// Dropping them would leave the browser with a refresh token that's already used.
+function redirectKeepingCookies(url: URL, from: NextResponse) {
+  const redirect = NextResponse.redirect(url);
+  from.cookies.getAll().forEach((c) => redirect.cookies.set(c));
+  from.headers.forEach((v, k) => {
+    if (k === "cache-control" || k === "expires" || k === "pragma") redirect.headers.set(k, v);
+  });
+  return redirect;
 }
 
 export const config = {

@@ -1,19 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ErrorNote, PrimaryButton } from "@/components/ui";
+import { SIGNED_IN_COOKIE, SIGNED_IN_MAX_AGE } from "@/lib/signed-in-cookie";
+
+// The last email used to sign in on this device, so it's filled in next time.
+const EMAIL_KEY = "ff-email";
+const noSubscribe = () => () => {};
+const readSavedEmail = () => { try { return localStorage.getItem(EMAIL_KEY) ?? ""; } catch { return ""; } };
 
 export function SignInForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") ?? "/";
-  const [email, setEmail] = useState("");
+  // null until they type, so the saved email shows without a flash of mismatch.
+  const [typed, setEmail] = useState<string | null>(null);
+  const savedEmail = useSyncExternalStore(noSubscribe, readSavedEmail, () => "");
+  const email = typed ?? savedEmail;
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(params.get("error") === "link" ? "That sign-in link has expired. Try again." : "");
+
+  useEffect(() => {
+    // The home-screen app can reopen on this page after you've signed in.
+    // Re-checking sends you straight into the app if you're still signed in.
+    const recheck = () => { if (document.visibilityState === "visible") router.refresh(); };
+    document.addEventListener("visibilitychange", recheck);
+    return () => document.removeEventListener("visibilitychange", recheck);
+  }, [router]);
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
@@ -24,8 +41,9 @@ export function SignInForm() {
       options: { emailRedirectTo: `${location.origin}/auth/confirm?next=${encodeURIComponent(next)}` },
     });
     setBusy(false);
-    if (error) setError(error.message);
-    else setStep("code");
+    if (error) return setError(error.message);
+    try { localStorage.setItem(EMAIL_KEY, email.trim()); } catch {}
+    setStep("code");
   }
 
   async function verify(e: React.FormEvent) {
@@ -35,6 +53,7 @@ export function SignInForm() {
     const { error } = await supabaseBrowser().auth.verifyOtp({ email: email.trim(), token: code.trim(), type: "email" });
     setBusy(false);
     if (error) return setError("That code didn't work. Check the latest email and try again.");
+    document.cookie = `${SIGNED_IN_COOKIE}=1; path=/; max-age=${SIGNED_IN_MAX_AGE}; samesite=lax`;
     router.replace(next.startsWith("/") ? next : "/");
     router.refresh();
   }
