@@ -5,11 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ErrorNote, PrimaryButton } from "@/components/ui";
 import { SIGNED_IN_COOKIE, SIGNED_IN_MAX_AGE } from "@/lib/signed-in-cookie";
+import { readRememberedEmail, rememberEmail } from "@/lib/remembered-email";
 
-// The last email used to sign in on this device, so it's filled in next time.
-const EMAIL_KEY = "ff-email";
 const noSubscribe = () => () => {};
-const readSavedEmail = () => { try { return localStorage.getItem(EMAIL_KEY) ?? ""; } catch { return ""; } };
 
 export function SignInForm() {
   const router = useRouter();
@@ -17,7 +15,7 @@ export function SignInForm() {
   const next = params.get("next") ?? "/";
   // null until they type, so the saved email shows without a flash of mismatch.
   const [typed, setEmail] = useState<string | null>(null);
-  const savedEmail = useSyncExternalStore(noSubscribe, readSavedEmail, () => "");
+  const savedEmail = useSyncExternalStore(noSubscribe, readRememberedEmail, () => "");
   const email = typed ?? savedEmail;
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
@@ -42,7 +40,7 @@ export function SignInForm() {
     });
     setBusy(false);
     if (error) return setError(error.message);
-    try { localStorage.setItem(EMAIL_KEY, email.trim()); } catch {}
+    rememberEmail(email);
     setStep("code");
   }
 
