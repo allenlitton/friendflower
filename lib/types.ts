@@ -76,6 +76,13 @@ export type WorldCity = {
   my_trip: { id: string; starts_on: string; ends_on: string } | null;
 };
 
+export type ConciergeAlert = {
+  friend: Mini; city_id: string; city: string; short: string;
+  from: string; to: string; is_new: boolean;
+  /** visiting_you: they come to where you are. you_visiting: you go to where they live. both_away: you both travel there. */
+  kind: "visiting_you" | "you_visiting" | "both_away";
+};
+
 export type ChatSummary = {
   id: string; kind: "direct" | "pod"; last_message_at: string; left: boolean;
   members: (Mini & { left: boolean })[];
@@ -99,8 +106,22 @@ export type ChatDetail = {
 };
 
 export type Message = {
-  id: number; chat_id: string; sender_id: string | null; kind: "text" | "system" | "venue";
+  id: number; chat_id: string; sender_id: string | null; kind: "text" | "system" | "venue" | "times";
   body: string; venue_id: string | null; created_at: string;
+};
+
+export type MeetPart = "morning" | "lunch" | "evening" | "night";
+
+/** Days two people in a direct chat are in the same city (see meet_options). */
+export type MeetOptions = {
+  runs: { city_id: string; city: string; short: string; from: string; to: string; ongoing: boolean }[];
+  days: { day: string; city_id: string; city: string; short: string }[];
+};
+
+/** The times one "times" message suggested, with the people who said each works (see meet_state). */
+export type MeetState = {
+  message_id: number;
+  options: { day: string; part: MeetPart; city_id: string; city: string; by: string[] }[];
 };
 
 export type Inbox = {

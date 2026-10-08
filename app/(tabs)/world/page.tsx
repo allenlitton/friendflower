@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { requireProfile } from "@/lib/session";
-import type { WorldCity } from "@/lib/types";
-import { dateRange, shortDate } from "@/lib/format";
-import { Avatar, ComingSoon, PrimaryButton, ScreenTitle } from "@/components/ui";
+import type { ConciergeAlert, WorldCity } from "@/lib/types";
+import { dateRange, shortDate, todayISO } from "@/lib/format";
+import { Avatar, PrimaryButton, ScreenTitle, Tag } from "@/components/ui";
+import { MarkWatchSeen } from "./concierge-watch";
 
 const CHALK = ["#e9a3d2", "#9fd6c0", "#e6a8bd", "#a9c2ef", "#efa88c"];
 const PETALS = [
@@ -12,10 +13,51 @@ const PETALS = [
   [263, "M32.2 17 C25.6 15.2 21.4 7.2 26.8 3.8 C30 1.9 32.1 4.4 32.5 6.6 C34.2 3.6 38.8 3.6 40 7 C41.6 11.4 36.8 15.6 31.6 17.2 Z"],
 ] as const;
 
+function watchLine(a: ConciergeAlert) {
+  const today = todayISO();
+  const when = a.from <= today ? `until ${shortDate(a.to)}` : a.from === a.to ? `on ${shortDate(a.from)}` : dateRange(a.from, a.to);
+  const first = a.friend.first_name;
+  if (a.kind === "visiting_you") return `${first} ${a.from <= today ? "is" : "will be"} in ${a.city} ${when}.`;
+  if (a.kind === "you_visiting") return `${first} lives in ${a.city}, where you ${a.from <= today ? "are" : "will be"} ${when}.`;
+  return `You and ${first} ${a.from <= today ? "are both" : "will both be"} in ${a.city} ${when}.`;
+}
+
+function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
+  if (alerts.length === 0) {
+    return (
+      <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5">
+        <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Concierge watch</div>
+        <div className="mt-1 text-[12.5px] leading-snug text-muted">
+          Nothing to flag. We&apos;ll tell you the moment someone you&apos;ve saved lands in a city you&apos;re in — or one you&apos;re headed to.
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum px-[15px] py-3.5">
+      <div className="text-[11px] font-bold tracking-[.06em] text-pink uppercase">Concierge watch</div>
+      <div className="mt-2.5 flex flex-col gap-3">
+        {alerts.map((a) => (
+          <div key={`${a.friend.id}${a.city_id}${a.from}`} className="flex items-center gap-3">
+            <Avatar id={a.friend.id} name={a.friend.name} src={a.friend.avatar_url} size={40} />
+            <div className="min-w-0 flex-1 text-[13.5px] leading-snug">
+              {watchLine(a)} {a.is_new && <Tag tone="gold">New</Tag>}
+            </div>
+            <Link href={`/people/${a.friend.id}`} className="rounded-full border-[1.5px] border-plum-line bg-card px-[13px] py-2 text-[12px] font-bold whitespace-nowrap text-pink">
+              Say hi
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default async function WorldPage() {
   const { supabase } = await requireProfile();
-  const { data } = await supabase.rpc("world");
+  const [{ data }, { data: watch }] = await Promise.all([supabase.rpc("world"), supabase.rpc("concierge_watch")]);
   const cities = (data ?? []) as WorldCity[];
+  const alerts = (watch ?? []) as ConciergeAlert[];
 
   return (
     <>
@@ -25,6 +67,8 @@ export default async function WorldPage() {
         Who&apos;s where
       </ScreenTitle>
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pt-2.5 pb-3.5">
+        {alerts.length > 0 && <ConciergeWatch alerts={alerts} />}
+        <MarkWatchSeen hasNew={alerts.some((a) => a.is_new)} />
         {cities.length === 0 && (
           <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum p-[15px]">
             <div className="text-[14.5px] font-semibold">No saved friends yet</div>
@@ -75,9 +119,7 @@ export default async function WorldPage() {
             </div>
           );
         })}
-        <ComingSoon title="Concierge watch">
-          We&apos;ll tell you the moment someone in your circle lands in a city you&apos;re in — or one you&apos;re headed to.
-        </ComingSoon>
+        {alerts.length === 0 && <ConciergeWatch alerts={alerts} />}
       </div>
     </>
   );
