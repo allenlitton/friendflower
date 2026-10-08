@@ -7,6 +7,9 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { initials } from "@/lib/format";
 import { LiveLocation } from "@/components/live-trip-prompt";
 
+/** Fired once the World tab has marked the Concierge watch as seen, so the dot can go. */
+export const CONCIERGE_SEEN = "concierge-seen";
+
 const TABS = [
   { href: "/nearby", label: "Nearby", glyph: "❋", round: true },
   { href: "/world", label: "World", glyph: "⊕", round: true },
@@ -38,16 +41,20 @@ export function TabBar({ myName, liveLocation }: { myName: string; liveLocation:
   const path = usePathname();
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [chatDot, setChatDot] = useState(false);
+  const [watchDot, setWatchDot] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    Promise.all([supabase.rpc("my_chats"), supabase.rpc("inbox")]).then(([chats, inbox]) => {
+    Promise.all([supabase.rpc("my_chats"), supabase.rpc("inbox"), supabase.rpc("concierge_unseen_count")]).then(([chats, inbox, watch]) => {
       if (!alive) return;
+      setWatchDot(typeof watch.data === "number" && watch.data > 0);
       const unread = (chats.data ?? []).some((c: { unread: boolean }) => c.unread);
       const waiting = inbox.data && (inbox.data.friend_requests.length > 0 || inbox.data.verifications.length > 0);
       setChatDot(unread || !!waiting);
     });
-    return () => { alive = false; };
+    const cleared = () => setWatchDot(false);
+    window.addEventListener(CONCIERGE_SEEN, cleared);
+    return () => { alive = false; window.removeEventListener(CONCIERGE_SEEN, cleared); };
   }, [supabase, path]);
 
   return (
@@ -63,7 +70,7 @@ export function TabBar({ myName, liveLocation }: { myName: string; liveLocation:
                 {t.glyph || initials(myName)}
               </span>
               <span className="text-[13.5px] leading-none font-bold" style={{ color: on ? "var(--color-pink)" : "var(--color-faint)" }}>{t.label}</span>
-              {t.href === "/chats" && chatDot && (
+              {((t.href === "/chats" && chatDot) || (t.href === "/world" && watchDot)) && (
                 <span className="absolute top-0 right-[18%] h-2.5 w-2.5 rounded-full border-[1.5px] border-well bg-pink" />
               )}
             </Link>

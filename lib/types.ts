@@ -76,6 +76,13 @@ export type WorldCity = {
   my_trip: { id: string; starts_on: string; ends_on: string } | null;
 };
 
+export type ConciergeAlert = {
+  friend: Mini; city_id: string; city: string; short: string;
+  from: string; to: string; is_new: boolean;
+  /** visiting_you: they come to where you are. you_visiting: you go to where they live. both_away: you both travel there. */
+  kind: "visiting_you" | "you_visiting" | "both_away";
+};
+
 export type ChatSummary = {
   id: string; kind: "direct" | "pod"; last_message_at: string; left: boolean;
   members: (Mini & { left: boolean })[];
