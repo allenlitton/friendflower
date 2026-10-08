@@ -106,8 +106,22 @@ export type ChatDetail = {
 };
 
 export type Message = {
-  id: number; chat_id: string; sender_id: string | null; kind: "text" | "system" | "venue";
+  id: number; chat_id: string; sender_id: string | null; kind: "text" | "system" | "venue" | "times";
   body: string; venue_id: string | null; created_at: string;
+};
+
+export type MeetPart = "morning" | "lunch" | "evening" | "night";
+
+/** Days two people in a direct chat are in the same city (see meet_options). */
+export type MeetOptions = {
+  runs: { city_id: string; city: string; short: string; from: string; to: string; ongoing: boolean }[];
+  days: { day: string; city_id: string; city: string; short: string }[];
+};
+
+/** The times one "times" message suggested, with the people who said each works (see meet_state). */
+export type MeetState = {
+  message_id: number;
+  options: { day: string; part: MeetPart; city_id: string; city: string; by: string[] }[];
 };
 
 export type Inbox = {

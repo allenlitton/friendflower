@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ChatDetail, Message } from "@/lib/types";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ChatDetail, MeetOptions, MeetPart, MeetState, Message } from "@/lib/types";
 import { Avatar, ComingSoon, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
+import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
 
 type VenueRow = { id: string; name: string; kind: string; city_id: string; cities: { short_name: string } };
 
-export function ChatView({ chat, meId, homeCity, initial, venues }: {
+export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialTimes }: {
   chat: ChatDetail; meId: string; homeCity: string | null; initial: Message[]; venues: VenueRow[];
+  meet: MeetOptions | null; initialTimes: MeetState[];
 }) {
   const { call, busy, error, supabase, router } = useRpc();
   const [messages, setMessages] = useState(initial);
@@ -18,6 +20,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
   const [intro, setIntro] = useState("");
   const [placeOpen, setPlaceOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);
+  const [timeOpen, setTimeOpen] = useState(false);
+  const [times, setTimes] = useState(initialTimes);
   const bottom = useRef<HTMLDivElement>(null);
 
   const members = useMemo(() => Object.fromEntries(chat.members.map((m) => [m.id, m])), [chat.members]);
@@ -25,6 +29,13 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
   const others = chat.members.filter((m) => !m.is_me);
   const v = chat.verification;
   const mutualMustConfirm = v?.i_am_mutual && v.status === "pending_mutual";
+
+  const timesById = useMemo(() => Object.fromEntries(times.map((t) => [t.message_id, t])), [times]);
+  const activeIds = chat.members.filter((m) => !m.left).map((m) => m.id);
+  const loadTimes = useCallback(async () => {
+    const { data } = await supabase.rpc("meet_state", { p_chat: chat.id });
+    if (data) setTimes(data as MeetState[]);
+  }, [supabase, chat.id]);
 
   // Live updates: new messages arrive over Supabase Realtime (same privacy rules apply).
   useEffect(() => {
@@ -36,10 +47,14 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
           supabase.rpc("mark_read", { p_chat: chat.id });
           if (m.kind === "system") router.refresh();
+          if (m.kind === "times") loadTimes();
         })
+      // Someone tapping a suggested time touches its message, so both screens update.
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: `chat_id=eq.${chat.id}` },
+        (payload) => { if ((payload.new as Message).kind === "times") loadTimes(); })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [supabase, chat.id, router]);
+  }, [supabase, chat.id, router, loadTimes]);
 
   useEffect(() => { bottom.current?.scrollIntoView({ block: "end" }); }, [messages.length]);
 
@@ -54,6 +69,26 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
         id, chat_id: chat.id, sender_id: meId, kind: venueId ? "venue" : "text", body: text, venue_id: venueId ?? null, created_at: new Date().toISOString(),
       }]);
     }
+  }
+
+  async function suggest(slots: { day: string; part: MeetPart }[]) {
+    const id = await call<number>("propose_times", { p_chat: chat.id, p_slots: slots });
+    if (!id) return false;
+    await loadTimes();
+    setMessages((prev) => prev.some((x) => x.id === id) ? prev : [...prev, {
+      id, chat_id: chat.id, sender_id: meId, kind: "times", body: "Suggested times to meet", venue_id: null, created_at: new Date().toISOString(),
+    }]);
+    return true;
+  }
+
+  async function pickTime(messageId: number, day: string, part: MeetPart, on: boolean) {
+    // Show the tap straight away; the database has the final say.
+    setTimes((prev) => prev.map((t) => t.message_id !== messageId ? t : {
+      ...t, options: t.options.map((o) => o.day !== day || o.part !== part ? o
+        : { ...o, by: on ? [...o.by.filter((u) => u !== meId), meId] : o.by.filter((u) => u !== meId) }),
+    }));
+    await call("pick_time", { p_message: messageId, p_day: day, p_part: part, p_on: on });
+    loadTimes();
   }
 
   const other = chat.other;
@@ -97,6 +132,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
         {knowNote && (
           <div className="max-w-[88%] self-center rounded-full bg-raised px-3 py-[5px] text-center text-[11px] leading-snug text-[#958d82]">{knowNote}</div>
         )}
+        {meet && chat.can_post && <MeetNote meet={meet} onOpen={() => setTimeOpen(true)} />}
         {messages.map((m) => {
           if (m.kind === "system") {
             return <div key={m.id} className="max-w-[90%] self-center rounded-2xl bg-raised px-3 py-[5px] text-center text-[11.5px] leading-snug text-[#958d82]">{m.body}</div>;
@@ -114,7 +150,9 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
                   📍 {venue.name} · {venue.cities.short_name}
                 </Link>
               )}
-              {m.body}
+              {m.kind === "times"
+                ? <TimesCard state={timesById[m.id]} meId={meId} memberIds={activeIds} mine={mine} onPick={pickTime} />
+                : m.body}
             </div>
           );
         })}
@@ -146,6 +184,10 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
           <div className="flex gap-[7px] overflow-x-auto">
             <button type="button" onClick={() => send("Let's meet — I'm free most evenings this week.")}
               className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-gold">Let&apos;s meet…</button>
+            {meet && (
+              <button type="button" onClick={() => setTimeOpen(true)}
+                className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap text-leaf">Find a time</button>
+            )}
             <button type="button" onClick={() => setPlaceOpen(true)}
               className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap text-leaf">Share a place</button>
             <button type="button" onClick={() => setConciergeOpen(true)}
@@ -162,6 +204,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
         <div className="flex-none border-t border-line-soft bg-well px-4 py-3 text-center text-[12.5px] text-muted">You left this chat.</div>
       )}
 
+      {meet && <FindTimeSheet open={timeOpen} onClose={() => setTimeOpen(false)} meet={meet} busy={busy} onSuggest={suggest} />}
       <Sheet open={placeOpen} onClose={() => setPlaceOpen(false)} title="Share a place">
         <div className="mt-3 flex flex-col gap-1.5">
           {myVenues.map((x) => (
@@ -176,8 +219,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues }: {
       <Sheet open={conciergeOpen} onClose={() => setConciergeOpen(false)} title="Concierge">
         <div className="mt-3">
           <ComingSoon title="AI concierge">
-            Soon the concierge will find a time you&apos;re both free, book the table, and split the bill — right here in the chat.
-            For now, use <b>Share a place</b> to suggest somewhere from the list.
+            Soon the concierge will book the table and split the bill — right here in the chat.
+            For now, use <b>Find a time</b> to agree when, and <b>Share a place</b> to suggest where.
           </ComingSoon>
         </div>
       </Sheet>

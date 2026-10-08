@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireProfile } from "@/lib/session";
-import type { ChatDetail, Message } from "@/lib/types";
+import type { ChatDetail, MeetOptions, MeetState, Message } from "@/lib/types";
 import { ChatView } from "./chat-view";
 
 export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
@@ -25,6 +25,11 @@ export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
   }
   await supabase.rpc("mark_read", { p_chat: id });
 
+  // Shared days and suggested times only exist in 1:1 chats.
+  const [{ data: meet }, { data: times }] = chat.kind === "direct"
+    ? await Promise.all([supabase.rpc("meet_options", { p_chat: id }), supabase.rpc("meet_state", { p_chat: id })])
+    : [{ data: null }, { data: [] }];
+
   return (
     <ChatView
       chat={chat}
@@ -32,6 +37,8 @@ export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
       homeCity={profile.home_city_id}
       initial={((messages ?? []) as Message[]).reverse()}
       venues={venues}
+      meet={(meet ?? null) as MeetOptions | null}
+      initialTimes={(times ?? []) as MeetState[]}
     />
   );
 }

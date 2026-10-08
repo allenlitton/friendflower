@@ -32,7 +32,7 @@ export default async function ChatsPage() {
             const others = c.members;
             const first = others[0];
             const title = c.kind === "pod" ? others.map((m) => m.first_name).join(" · ") : first?.name;
-            const last = c.last ? (c.last.sender === "me" ? "You: " : c.last.sender && c.kind === "pod" ? `${c.last.sender.split(" ")[0]}: ` : "") + (c.last.kind === "venue" ? `📍 ${c.last.body}` : c.last.body) : "";
+            const last = c.last ? (c.last.sender === "me" ? "You: " : c.last.sender && c.kind === "pod" ? `${c.last.sender.split(" ")[0]}: ` : "") + (c.last.kind === "venue" ? `📍 ${c.last.body}` : c.last.kind === "times" ? `🗓 ${c.last.body}` : c.last.body) : "";
             return (
               <Link key={c.id} href={`/chat/${c.id}`} className="flex items-center gap-3 rounded-[15px] px-2.5 py-[11px] hover:bg-raised">
                 <div className="relative">

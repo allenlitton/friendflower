@@ -11,6 +11,13 @@ export function shortDate(iso: string | null | undefined) {
   return `${MONTHS[m - 1]} ${d}`;
 }
 
+/** '2026-10-03' -> 'Sat Oct 3'. */
+export function dayLabel(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const wd = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][new Date(y, m - 1, d).getDay()];
+  return `${wd} ${MONTHS[m - 1]} ${d}`;
+}
+
 export function dateRange(from: string, to: string) {
   return `${shortDate(from)} – ${shortDate(to)}`;
 }
