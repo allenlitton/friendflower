@@ -95,11 +95,11 @@ export default async function WorldPage() {
                 <div className="min-w-0 flex-1 font-display text-[24px]">{c.city}</div>
                 <div className="text-[11.5px] whitespace-nowrap text-muted">{meta}</div>
               </div>
-              <div className="mt-[11px] flex items-center">
-                {c.people.slice(0, 5).map((p, fi) => {
+              <div className="mt-[11px] grid grid-cols-4 gap-y-1">
+                {c.people.map((p, fi) => {
                   const col = CHALK[(ci * 2 + fi) % CHALK.length];
                   return (
-                    <Link key={p.id + p.presence} href={`/people/${p.id}`} className="relative -mr-3.5 flex h-[68px] w-[68px] flex-none items-center justify-center">
+                    <Link key={p.id + p.presence} href={`/people/${p.id}`} className="relative mx-auto flex h-[68px] w-[68px] items-center justify-center">
                       <svg width="68" height="68" viewBox="0 0 64 64" fill="none" className="pointer-events-none absolute inset-0 opacity-85 mix-blend-screen" aria-hidden>
                         <g stroke={col} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" transform={`rotate(${(fi * 17 + ci * 11) % 72} 32 32)`}>
                           {PETALS.map(([a, d]) => <path key={a} transform={`rotate(${a} 32 32)`} d={d} />)}
@@ -109,13 +109,13 @@ export default async function WorldPage() {
                     </Link>
                   );
                 })}
-                {c.people.length > 5 && <span className="ml-5 text-[12px] text-muted">+{c.people.length - 5}</span>}
-                <div className="flex-1" />
-                <Link href={cta.href} className="z-10 rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-2 text-[12px] font-bold whitespace-nowrap text-gold">
+              </div>
+              <div className="mt-[11px] flex items-center gap-3">
+                <div className="min-w-0 flex-1 text-[12.5px] leading-snug text-muted">{note}</div>
+                <Link href={cta.href} className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-2 text-[12px] font-bold whitespace-nowrap text-gold">
                   {cta.label}
                 </Link>
               </div>
-              {note && <div className="mt-[11px] text-[12.5px] leading-snug text-muted">{note}</div>}
             </div>
           );
         })}
