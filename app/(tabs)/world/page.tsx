@@ -95,17 +95,20 @@ export default async function WorldPage() {
                 <div className="min-w-0 flex-1 font-display text-[24px]">{c.city}</div>
                 <div className="text-[11.5px] whitespace-nowrap text-muted">{meta}</div>
               </div>
-              <div className="mt-[11px] grid grid-cols-4 gap-y-1">
+              <div className="mt-[11px] grid grid-cols-4 gap-y-2.5">
                 {c.people.map((p, fi) => {
                   const col = CHALK[(ci * 2 + fi) % CHALK.length];
                   return (
-                    <Link key={p.id + p.presence} href={`/people/${p.id}`} className="relative mx-auto flex h-[68px] w-[68px] items-center justify-center">
-                      <svg width="68" height="68" viewBox="0 0 64 64" fill="none" className="pointer-events-none absolute inset-0 opacity-85 mix-blend-screen" aria-hidden>
-                        <g stroke={col} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" transform={`rotate(${(fi * 17 + ci * 11) % 72} 32 32)`}>
-                          {PETALS.map(([a, d]) => <path key={a} transform={`rotate(${a} 32 32)`} d={d} />)}
-                        </g>
-                      </svg>
-                      <Avatar id={p.id} name={p.name} src={p.avatar_url} size={42} online={p.online} ring="2.5px solid var(--color-well)" />
+                    <Link key={p.id + p.presence} href={`/people/${p.id}`} className="mx-auto flex w-full flex-col items-center">
+                      <div className="relative flex h-[68px] w-[68px] items-center justify-center">
+                        <svg width="68" height="68" viewBox="0 0 64 64" fill="none" className="pointer-events-none absolute inset-0 opacity-85 mix-blend-screen" aria-hidden>
+                          <g stroke={col} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" transform={`rotate(${(fi * 17 + ci * 11) % 72} 32 32)`}>
+                            {PETALS.map(([a, d]) => <path key={a} transform={`rotate(${a} 32 32)`} d={d} />)}
+                          </g>
+                        </svg>
+                        <Avatar id={p.id} name={p.name} src={p.avatar_url} size={42} online={p.online} ring="2.5px solid var(--color-well)" />
+                      </div>
+                      <div className="-mt-0.5 w-full truncate text-center font-display text-[17px] leading-none">{p.first_name}</div>
                     </Link>
                   );
                 })}
