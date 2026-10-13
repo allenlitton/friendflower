@@ -8,6 +8,8 @@ import { Sheet } from "@/components/sheet";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
 import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
 
+const TRASH_W = 48;
+
 type VenueRow = { id: string; name: string; kind: string; city_id: string; cities: { short_name: string } };
 
 export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialTimes }: {
@@ -22,7 +24,11 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [times, setTimes] = useState(initialTimes);
-  const [selected, setSelected] = useState<number | null>(null);
+  // Swipe-left on your own message reveals a trash can: `open` is the revealed row, `drag` the live offset.
+  const [open, setOpen] = useState<number | null>(null);
+  const [drag, setDrag] = useState<{ id: number; dx: number } | null>(null);
+  const gesture = useRef<{ id: number; x: number; y: number; locked: boolean } | null>(null);
+  const swiped = useRef(false);
   const bottom = useRef<HTMLDivElement>(null);
 
   const members = useMemo(() => Object.fromEntries(chat.members.map((m) => [m.id, m])), [chat.members]);
@@ -79,7 +85,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   }
 
   async function remove(id: number) {
-    setSelected(null);
+    setOpen(null);
     const before = messages;
     setMessages((prev) => prev.filter((x) => x.id !== id));
     const ok = await call("delete_message", { p_message: id });
@@ -156,10 +162,43 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           const sender = m.sender_id ? members[m.sender_id] : null;
           const venue = m.venue_id ? venueById[m.venue_id] : null;
           return (
-            <div key={m.id} onClick={mine ? () => setSelected((s) => s === m.id ? null : m.id) : undefined}
-              className={`max-w-[78%] px-[13px] py-2.5 text-[14px] leading-[1.45] ${mine
-              ? "cursor-pointer self-end rounded-[16px_16px_5px_16px] bg-pink text-white"
-              : "self-start rounded-[16px_16px_16px_5px] border-[1.5px] border-[#2f2b27] bg-[#1f1c19] text-text"}`}>
+            <div key={m.id} className={`flex max-w-[78%] items-center gap-1.5 ${mine ? "self-end" : "self-start"}`}>
+              <div
+                {...(mine ? {
+                  onPointerDown: (e: React.PointerEvent) => {
+                    gesture.current = { id: m.id, x: e.clientX, y: e.clientY, locked: false };
+                    swiped.current = false;
+                  },
+                  onPointerMove: (e: React.PointerEvent) => {
+                    const g = gesture.current;
+                    if (!g || g.id !== m.id) return;
+                    const dx = e.clientX - g.x;
+                    if (!g.locked) {
+                      if (Math.abs(e.clientY - g.y) > 10 && Math.abs(e.clientY - g.y) > Math.abs(dx)) { gesture.current = null; return; }
+                      if (Math.abs(dx) < 8) return;
+                      g.locked = true;
+                      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+                    }
+                    setDrag({ id: m.id, dx: Math.max(-TRASH_W, Math.min(0, dx + (open === m.id ? -TRASH_W : 0))) });
+                  },
+                  onPointerUp: () => {
+                    const g = gesture.current; gesture.current = null;
+                    if (!g?.locked) return;
+                    swiped.current = true;
+                    setOpen((drag?.dx ?? 0) < -TRASH_W / 2 ? m.id : null);
+                    setDrag(null);
+                  },
+                  onPointerCancel: () => { gesture.current = null; setDrag(null); },
+                  onClick: () => { if (!swiped.current && open === m.id) setOpen(null); swiped.current = false; },
+                } : {})}
+                style={mine ? {
+                  touchAction: "pan-y",
+                  transform: `translateX(${drag?.id === m.id ? drag.dx : open === m.id ? -TRASH_W : 0}px)`,
+                  transition: drag?.id === m.id ? "none" : "transform 160ms ease-out",
+                } : undefined}
+                className={`min-w-0 px-[13px] py-2.5 text-[14px] leading-[1.45] select-none ${mine
+                  ? "rounded-[16px_16px_5px_16px] bg-pink text-white"
+                  : "rounded-[16px_16px_16px_5px] border-[1.5px] border-[#2f2b27] bg-[#1f1c19] text-text"}`}>
               {chat.kind === "pod" && !mine && sender && <div className="mb-[3px] text-[10.5px] font-bold opacity-70">{sender.first_name}</div>}
               {venue && (
                 <Link href={`/places?city=${venue.city_id}`} className={`mb-1 block rounded-lg px-2 py-1.5 text-[12px] font-semibold ${mine ? "bg-white/20" : "bg-well"}`}>
@@ -169,9 +208,15 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
               {m.kind === "times"
                 ? <TimesCard state={timesById[m.id]} meId={meId} memberIds={activeIds} mine={mine} onPick={pickTime} />
                 : m.body}
-              {mine && selected === m.id && (
-                <button type="button" disabled={busy} onClick={(e) => { e.stopPropagation(); remove(m.id); }}
-                  className="mt-2 block w-full rounded-lg bg-black/25 px-3 py-1.5 text-[12.5px] font-bold">Delete message</button>
+              </div>
+              {mine && (
+                <button type="button" aria-label="Delete message" disabled={busy} onClick={() => remove(m.id)}
+                  style={{ marginLeft: -TRASH_W, width: 40, opacity: open === m.id || drag?.id === m.id ? 1 : 0, pointerEvents: open === m.id ? "auto" : "none", transition: "opacity 160ms" }}
+                  className="flex h-10 flex-none items-center justify-center rounded-full bg-[#3a1d24] text-[#ff8a9b]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+                  </svg>
+                </button>
               )}
             </div>
           );
