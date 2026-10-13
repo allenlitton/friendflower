@@ -22,6 +22,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   const [conciergeOpen, setConciergeOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [times, setTimes] = useState(initialTimes);
+  const [selected, setSelected] = useState<number | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
 
   const members = useMemo(() => Object.fromEntries(chat.members.map((m) => [m.id, m])), [chat.members]);
@@ -52,6 +53,12 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
       // Someone tapping a suggested time touches its message, so both screens update.
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: `chat_id=eq.${chat.id}` },
         (payload) => { if ((payload.new as Message).kind === "times") loadTimes(); })
+      // Deletes carry only the id (no chat_id), so they can't be filtered; unknown ids are ignored.
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" },
+        (payload) => {
+          const id = (payload.old as { id?: number }).id;
+          if (id) setMessages((prev) => prev.filter((x) => x.id !== id));
+        })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [supabase, chat.id, router, loadTimes]);
@@ -69,6 +76,14 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
         id, chat_id: chat.id, sender_id: meId, kind: venueId ? "venue" : "text", body: text, venue_id: venueId ?? null, created_at: new Date().toISOString(),
       }]);
     }
+  }
+
+  async function remove(id: number) {
+    setSelected(null);
+    const before = messages;
+    setMessages((prev) => prev.filter((x) => x.id !== id));
+    const ok = await call("delete_message", { p_message: id });
+    if (ok === undefined) setMessages(before);
   }
 
   async function suggest(slots: { day: string; part: MeetPart }[]) {
@@ -141,8 +156,9 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           const sender = m.sender_id ? members[m.sender_id] : null;
           const venue = m.venue_id ? venueById[m.venue_id] : null;
           return (
-            <div key={m.id} className={`max-w-[78%] px-[13px] py-2.5 text-[14px] leading-[1.45] ${mine
-              ? "self-end rounded-[16px_16px_5px_16px] bg-pink text-white"
+            <div key={m.id} onClick={mine ? () => setSelected((s) => s === m.id ? null : m.id) : undefined}
+              className={`max-w-[78%] px-[13px] py-2.5 text-[14px] leading-[1.45] ${mine
+              ? "cursor-pointer self-end rounded-[16px_16px_5px_16px] bg-pink text-white"
               : "self-start rounded-[16px_16px_16px_5px] border-[1.5px] border-[#2f2b27] bg-[#1f1c19] text-text"}`}>
               {chat.kind === "pod" && !mine && sender && <div className="mb-[3px] text-[10.5px] font-bold opacity-70">{sender.first_name}</div>}
               {venue && (
@@ -153,6 +169,10 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
               {m.kind === "times"
                 ? <TimesCard state={timesById[m.id]} meId={meId} memberIds={activeIds} mine={mine} onPick={pickTime} />
                 : m.body}
+              {mine && selected === m.id && (
+                <button type="button" disabled={busy} onClick={(e) => { e.stopPropagation(); remove(m.id); }}
+                  className="mt-2 block w-full rounded-lg bg-black/25 px-3 py-1.5 text-[12.5px] font-bold">Delete message</button>
+              )}
             </div>
           );
         })}
