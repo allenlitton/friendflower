@@ -166,5 +166,10 @@ export type Trip = {
   visibility: "first" | "fof" | "nobody";
   /** Started automatically because live distance found you in this city. */
   from_live: boolean;
+  /** Open to carrying a small package for someone, and how much room is spare. */
+  deliver_open: boolean;
+  deliver_legs: "in" | "out" | "both" | null;
+  deliver_luggage: boolean | null;
+  deliver_space: "little" | "some" | "lot" | null;
   trip_flights: { id: string; direction: "in" | "out"; flight_no: string; flight_date: string }[];
 };

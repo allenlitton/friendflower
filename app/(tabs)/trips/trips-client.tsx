@@ -16,6 +16,18 @@ const VIS = [
   { value: "fof" as const, label: "Friends of friends" },
   { value: "nobody" as const, label: "Just me" },
 ];
+const LEGS = [
+  { value: "out" as const, label: "Outbound" },
+  { value: "in" as const, label: "Inbound" },
+  { value: "both" as const, label: "Either" },
+];
+const SPACE = [
+  { value: "little" as const, label: "A little extra space", hint: "a compact item no bigger than a hand" },
+  { value: "some" as const, label: "Some extra space", hint: "about 1/4 of a check-in suitcase empty" },
+  { value: "lot" as const, label: "A lot of extra space", hint: "half a suitcase or more empty" },
+];
+const SPACE_SHORT = { little: "a little space", some: "some space", lot: "a lot of space" };
+const NO_DELIVERY = { dOpen: false, dLegs: "both" as "in" | "out" | "both", dLuggage: "" as "" | "yes" | "no", dSpace: "" as "" | "little" | "some" | "lot" };
 const normFlight = (s: string) => s.toUpperCase().replace(/\s+/g, "");
 const validFlight = (s: string) => /^[A-Z0-9]{2,3}[0-9]{1,4}[A-Z]?$/.test(s);
 
@@ -31,14 +43,15 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
   const [saving, setSaving] = useState(false);
   const [cityLaunched, setCityLaunched] = useState(!!cities.find((c) => c.id === presetCity)?.is_launched);
   const [f, setF] = useState({
-    city: presetCity ?? "", nb: "", from: "", to: "", vis: "fof" as Trip["visibility"], inNo: "", outNo: "", inDate: "", outDate: "",
+    city: presetCity ?? "", nb: "", from: "", to: "", vis: "fof" as Trip["visibility"], inNo: "", outNo: "", inDate: "", outDate: "", ...NO_DELIVERY,
   });
   const [edit, setEdit] = useState<{ id: string; city: string; from: string; to: string; started: boolean } | null>(null);
   const cityName = (id: string) => cities.find((c) => c.id === id)?.name ?? id;
   const homeShort = cities.find((c) => c.id === homeCity)?.short_name ?? "Home";
   const cityShort = (id: string) => cities.find((c) => c.id === id)?.short_name ?? "";
   const legCount = trips.reduce((n, t) => n + t.trip_flights.length, 0);
-  const canSave = f.city && f.from && f.to && f.to >= f.from
+  const deliveryOk = !f.dOpen || (f.dLuggage === "no" || (f.dLuggage === "yes" && !!f.dSpace));
+  const canSave = f.city && f.from && f.to && f.to >= f.from && deliveryOk
     && (!f.inNo || validFlight(normFlight(f.inNo))) && (!f.outNo || validFlight(normFlight(f.outNo)));
 
   async function save() {
@@ -46,7 +59,9 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
     setSaving(true);
     setError("");
     const { data: trip, error } = await supabase.from("trips")
-      .insert({ user_id: userId, city_id: f.city, neighbourhood_id: f.nb || null, starts_on: f.from, ends_on: f.to, visibility: f.vis })
+      .insert({ user_id: userId, city_id: f.city, neighbourhood_id: f.nb || null, starts_on: f.from, ends_on: f.to, visibility: f.vis,
+        deliver_open: f.dOpen, deliver_legs: f.dOpen ? f.dLegs : null,
+        deliver_luggage: f.dOpen ? f.dLuggage === "yes" : null, deliver_space: f.dOpen && f.dLuggage === "yes" ? f.dSpace : null })
       .select("id").single();
     if (error) { setSaving(false); return setError(error.message); }
     const legs = [
@@ -59,7 +74,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
     }
     setSaving(false);
     setOpen(false);
-    setF({ city: "", nb: "", from: "", to: "", vis: "fof", inNo: "", outNo: "", inDate: "", outDate: "" });
+    setF({ city: "", nb: "", from: "", to: "", vis: "fof", inNo: "", outNo: "", inDate: "", outDate: "", ...NO_DELIVERY });
     router.replace("/trips");
     router.refresh();
   }
@@ -91,6 +106,26 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
     router.refresh();
   }
 
+  const [d, setD] = useState({ from: "", to: "", by: "", after: "", flex: false, item: "", scope: "network" as "network" | "circle" });
+  const [searching, setSearching] = useState(false);
+  const [dError, setDError] = useState("");
+  const [noMatch, setNoMatch] = useState(false);
+  const canSearch = !!d.from && !!d.to && d.from !== d.to && !!d.by && d.by >= todayISO() && (!d.flex || (!!d.after && d.after <= d.by));
+
+  async function findCarrier() {
+    if (!canSearch) return;
+    setSearching(true);
+    setDError("");
+    setNoMatch(false);
+    const { data, error } = await supabase.rpc("request_delivery", { p_from: d.from, p_to: d.to, p_by: d.by, p_scope: d.scope, p_after: d.flex ? d.after : null });
+    setSearching(false);
+    if (error) return setDError(error.message);
+    if (!data) return setNoMatch(true);
+    const what = d.item.trim() ? `a small package of ${d.item.trim()}` : "a small package";
+    const draft = `Hey! I have ${what} I need from ${cityName(d.from)}... in exchange for your help I'll take you out for dinner or Venmo you $[amount]!`;
+    router.push(`/chat/${(data as { chat: string }).chat}?${new URLSearchParams({ draft })}`);
+  }
+
   async function sayHi(m: FlightMatch) {
     const chat = await call<string>("open_direct_chat", { p_other: m.person.id });
     if (chat) {
@@ -102,7 +137,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
   return (
     <>
       <ScreenTitle right={<button type="button" onClick={() => setOpen(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold text-ink">+ Add trip</button>}>
-        Trips
+        Trips &amp; Deliveries
       </ScreenTitle>
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pt-2.5 pb-4">
         {trips.map((t) => {
@@ -158,6 +193,12 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
                   </div>
                 );
               })}
+              {t.deliver_open && (
+                <div className="mt-3 text-[12px] text-muted">
+                  📦 Open to carrying a package · {t.deliver_legs === "both" ? "either flight" : t.deliver_legs === "in" ? "inbound" : "outbound"}
+                  {t.deliver_space ? ` · ${SPACE_SHORT[t.deliver_space]}` : " · hand luggage only"}
+                </div>
+              )}
               <div className="mt-3 flex items-center gap-2">
                 <span className="text-[11px] font-bold tracking-[.05em] text-muted uppercase">Visible to</span>
                 <select value={t.visibility} onChange={(e) => setVisibility(t.id, e.target.value as Trip["visibility"])}
@@ -179,6 +220,52 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
         <div className="text-[11.5px] leading-normal text-faint">
           Flight matches only show people in your circles who&apos;ve added the same flight on the same day, and whose trip you&apos;re allowed to see.
           Seat numbers are never collected. {legCount === 0 && trips.length > 0 && "Add flight numbers to a trip to check for matches."}
+        </div>
+
+        <div className="mt-3 rounded-[18px] border-[1.5px] border-line bg-card px-[15px] py-3.5">
+          <div className="font-display text-[24px] leading-none">Deliveries</div>
+          <div className="mt-2 text-[12.5px] leading-normal text-muted">
+            Need a small package that might fit in someone&apos;s luggage? Connect to someone on the Friend Flower network who might have space in their luggage to bring you their package on their next trip to your city
+          </div>
+          <SectionLabel className="mt-3.5">Coming from</SectionLabel>
+          <CityPicker value={d.from} cities={cities} placeholder="Which city is the package in?"
+            onChange={(c) => { setD({ ...d, from: c.id }); setNoMatch(false); }} />
+          <SectionLabel className="mt-3">Needs to be sent to</SectionLabel>
+          <CityPicker value={d.to} cities={cities} placeholder="Which city does it need to reach?"
+            onChange={(c) => { setD({ ...d, to: c.id }); setNoMatch(false); }} />
+          <SectionLabel className="mt-3">{d.flex ? "Needs to arrive between" : "Needs to arrive by"}</SectionLabel>
+          {d.flex ? (
+            <div className="grid grid-cols-2 gap-2.5">
+              <input className="field" type="date" aria-label="Arrive no earlier than" value={d.after} min={todayISO()}
+                onChange={(e) => { setD({ ...d, after: e.target.value, by: d.by && d.by < e.target.value ? e.target.value : d.by }); setNoMatch(false); }} />
+              <input className="field" type="date" aria-label="Arrive no later than" value={d.by} min={d.after || todayISO()}
+                onChange={(e) => { setD({ ...d, by: e.target.value }); setNoMatch(false); }} />
+            </div>
+          ) : (
+            <input className="field" type="date" aria-label="Arrive by" value={d.by} min={todayISO()}
+              onChange={(e) => { setD({ ...d, by: e.target.value }); setNoMatch(false); }} />
+          )}
+          <label className="mt-2 flex items-center gap-2 text-[12.5px] text-soft">
+            <input type="checkbox" className="h-4 w-4 accent-[var(--color-pink)]" checked={d.flex}
+              onChange={(e) => { setD({ ...d, flex: e.target.checked, after: "" }); setNoMatch(false); }} />
+            My dates are flexible
+          </label>
+          <SectionLabel className="mt-3">What is it? (optional)</SectionLabel>
+          <input className="field" placeholder="e.g. jewellery" maxLength={60} value={d.item} onChange={(e) => setD({ ...d, item: e.target.value })} />
+          {d.from && d.from === d.to && <div className="mt-1.5 text-[11.5px] text-faint">Pick two different cities.</div>}
+          <SectionLabel className="mt-3">Search</SectionLabel>
+          <Segmented value={d.scope} options={[{ value: "network", label: "Whole network" }, { value: "circle", label: "My circles only" }]}
+            onChange={(scope) => { setD({ ...d, scope }); setNoMatch(false); }} />
+          <ErrorNote>{dError}</ErrorNote>
+          {noMatch && (
+            <div className="mt-3 rounded-xl bg-well px-3 py-2.5 text-[12.5px] leading-snug text-muted">
+              {d.scope === "circle" ? "No one in your circles has a trip that fits yet. Try a later date, or search the whole network." : "No one on the network has a trip that fits yet. Try a later date — new trips are added all the time."}
+            </div>
+          )}
+          <PrimaryButton className="mt-4" disabled={!canSearch || searching} onClick={findCarrier}>{searching ? "searching the network…" : "find someone"}</PrimaryButton>
+          <div className="mt-2 text-[11px] leading-normal text-faint">
+            We search {d.scope === "circle" ? "people in your circles" : "everyone on Friend Flower"} who&apos;ve said they&apos;re open to carrying a package, then open a chat with the best match. Only people who opted in on a trip can be found.
+          </div>
         </div>
       </div>
 
@@ -215,6 +302,35 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
           </div>
         </div>
         <div className="mt-1.5 text-[11px] text-faint">Flights are optional. We&apos;ll check whether anyone in your circles is on the same one.</div>
+        <SectionLabel className="mt-3.5">Help with a delivery? (optional)</SectionLabel>
+        <label className="flex items-start gap-2.5 text-[13px] leading-snug text-soft">
+          <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--color-pink)]" checked={f.dOpen}
+            onChange={(e) => setF({ ...f, dOpen: e.target.checked })} />
+          <span>I&apos;m open to helping another Friend Flower member deliver a small package on this trip</span>
+        </label>
+        {f.dOpen && (
+          <div className="mt-2.5 rounded-xl bg-well px-3 py-3">
+            <SectionLabel>On which flight?</SectionLabel>
+            <Segmented value={f.dLegs} options={LEGS} onChange={(dLegs) => setF({ ...f, dLegs })} />
+            <SectionLabel className="mt-3">Are you checking in luggage?</SectionLabel>
+            <Segmented value={f.dLuggage || ("" as "yes" | "no")} options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }] as { value: "yes" | "no"; label: string }[]}
+              onChange={(dLuggage) => setF({ ...f, dLuggage, dSpace: dLuggage === "no" ? "" : f.dSpace })} />
+            {f.dLuggage === "yes" && (
+              <div className="mt-2.5 flex flex-col gap-1.5">
+                {SPACE.map((o) => (
+                  <button key={o.value} type="button" onClick={() => setF({ ...f, dSpace: o.value })}
+                    className={`rounded-xl border-[1.5px] px-3 py-2 text-left ${f.dSpace === o.value ? "border-pink bg-plum" : "border-line"}`}>
+                    <div className="text-[13px] font-bold text-soft">{o.label}</div>
+                    <div className="text-[11.5px] text-muted">({o.hint})</div>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div className="mt-2.5 text-[11px] leading-normal text-faint">
+              Members searching for a delivery can find this trip even if it&apos;s set to &ldquo;Just me&rdquo;. They&apos;ll message you first; you choose what to carry.
+            </div>
+          </div>
+        )}
         <SectionLabel className="mt-3.5">Who can see this trip</SectionLabel>
         <Segmented value={f.vis} options={VIS} onChange={(vis) => setF({ ...f, vis })} />
         <ErrorNote>{error}</ErrorNote>

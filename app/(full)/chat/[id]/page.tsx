@@ -3,8 +3,10 @@ import { requireProfile } from "@/lib/session";
 import type { ChatDetail, MeetOptions, MeetState, Message } from "@/lib/types";
 import { ChatView } from "./chat-view";
 
-export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
+export default async function ChatPage({ params, searchParams }: PageProps<"/chat/[id]">) {
   const { id } = await params;
+  const sp = await searchParams;
+  const draft = typeof sp.draft === "string" ? sp.draft.slice(0, 1000) : "";
   const { supabase, profile } = await requireProfile();
   const { data } = await supabase.rpc("chat_detail", { p_chat: id });
   const chat = data as ChatDetail | null;
@@ -39,6 +41,7 @@ export default async function ChatPage({ params }: PageProps<"/chat/[id]">) {
       venues={venues}
       meet={(meet ?? null) as MeetOptions | null}
       initialTimes={(times ?? []) as MeetState[]}
+      initialDraft={draft}
     />
   );
 }

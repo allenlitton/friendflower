@@ -7,7 +7,7 @@ export default async function TripsPage({ searchParams }: PageProps<"/trips">) {
   const { supabase, profile } = await requireProfile();
   const sp = await searchParams;
   const [trips, matches, cities, nbs] = await Promise.all([
-    supabase.from("trips").select("id, city_id, neighbourhood_id, starts_on, ends_on, visibility, from_live, trip_flights(id, direction, flight_no, flight_date)")
+    supabase.from("trips").select("id, city_id, neighbourhood_id, starts_on, ends_on, visibility, from_live, deliver_open, deliver_legs, deliver_luggage, deliver_space, trip_flights(id, direction, flight_no, flight_date)")
       .eq("user_id", profile.id).gte("ends_on", todayISO()).order("starts_on"),
     supabase.rpc("flight_matches"),
     supabase.from("cities").select("id, name, short_name, country, region, is_launched").order("name"),
