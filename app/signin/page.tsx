@@ -14,7 +14,7 @@ export default function SignInPage() {
         <SignInForm />
       </Suspense>
       <p className="mx-auto mt-4 max-w-[268px] text-center font-logo text-[14.5px] leading-relaxed text-[#b9b2a7]">
-        Keep track of where in the world your friends are, and meet friends of friends wherever you are.
+        Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
     </main>
   );
