@@ -12,13 +12,13 @@ const TRASH_W = 48;
 
 type VenueRow = { id: string; name: string; kind: string; city_id: string; cities: { short_name: string } };
 
-export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialTimes }: {
+export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialTimes, initialDraft = "" }: {
   chat: ChatDetail; meId: string; homeCity: string | null; initial: Message[]; venues: VenueRow[];
-  meet: MeetOptions | null; initialTimes: MeetState[];
+  meet: MeetOptions | null; initialTimes: MeetState[]; initialDraft?: string;
 }) {
   const { call, busy, error, supabase, router } = useRpc();
   const [messages, setMessages] = useState(initial);
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState(initialDraft);
   const [intro, setIntro] = useState("");
   const [placeOpen, setPlaceOpen] = useState(false);
   const [conciergeOpen, setConciergeOpen] = useState(false);

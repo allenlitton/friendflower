@@ -8,7 +8,7 @@ export default async function TabsLayout({ children }: LayoutProps<"/">) {
   return (
     <>
       <main className="flex min-h-0 flex-1 flex-col">{children}</main>
-      <TabBar myName={profile.first_name} liveLocation={profile.share_live_location && profile.show_distance} />
+      <TabBar myName={profile.first_name} myId={profile.id} avatarUrl={profile.avatar_url} liveLocation={profile.share_live_location && profile.show_distance} />
       <HomeScreenPrompt />
       {user.email && <RememberEmail email={user.email} />}
     </>
