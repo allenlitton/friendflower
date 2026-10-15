@@ -12,31 +12,33 @@ export const CONCIERGE_SEEN = "concierge-seen";
 
 /** Icons only: the label is kept for screen readers. */
 const TABS = [
-  { href: "/nearby", label: "Nearby", glyph: "" },
-  { href: "/world", label: "World", glyph: "" },
-  { href: "/trips", label: "Trips & Deliveries", glyph: "✈" },
-  { href: "/places", label: "Places", glyph: "☕" },
-  { href: "/chats", label: "Chats", glyph: "✉" },
-  { href: "/you", label: "You", glyph: "" },
+  { href: "/nearby", label: "Nearby" },
+  { href: "/world", label: "World" },
+  { href: "/trips", label: "Trips & Deliveries" },
+  { href: "/places", label: "Places" },
+  { href: "/chats", label: "Chats" },
+  { href: "/you", label: "You" },
 ];
 
-function Globe({ size }: { size: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={1.7} strokeLinecap="round" aria-hidden>
-      <circle cx="12" cy="12" r="9.5" />
-      <ellipse cx="12" cy="12" rx="4" ry="9.5" />
-      <path d="M2.5 12h19M4 7.2h16M4 16.8h16" />
-    </svg>
-  );
-}
+/** Every tab icon is drawn at this size, so they all line up. */
+const ICON = 30;
 
-function TabIcon({ href, glyph, on, myName, myId, avatarUrl }: { href: string; glyph: string; on: boolean; myName: string; myId: string; avatarUrl: string | null }) {
-  if (href === "/nearby") return <Flower size={42} stroke="#fff" strokeWidth={3.4} center="#fff" />;
-  if (href === "/world") return <Globe size={32} />;
-  if (href === "/you") return <Avatar id={myId} name={myName} src={avatarUrl} size={26} ring={on ? "2px solid var(--color-pink)" : "2px solid transparent"} />;
+/** White line icons on a 24-unit grid; the open tab turns pink. */
+const PATHS: Record<string, React.ReactNode> = {
+  "/world": (<><circle cx="12" cy="12" r="9.5" /><ellipse cx="12" cy="12" rx="4" ry="9.5" /><path d="M2.5 12h19M4 7.2h16M4 16.8h16" /></>),
+  "/trips": <path d="M10.2 13.8 3 11.5l1.4-1.4 8.1.8 4.3-4.3c.8-.8 2.2-.9 2.9-.2.7.7.6 2.1-.2 2.9l-4.3 4.3.8 8.1-1.4 1.4-2.3-7.2-3.4 3.4.3 2.6-1.1 1.1-1.6-3.2-3.2-1.6 1.1-1.1 2.6.3z" />,
+  "/places": (<><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z" /><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17" /><path d="M8 3.5v2.5M11 3.5v2.5M14 3.5v2.5" /></>),
+  "/chats": (<><rect x="3" y="5.5" width="18" height="13" rx="2.5" /><path d="m3.8 7 8.2 6 8.2-6" /></>),
+};
+
+function TabIcon({ href, on, myName, myId, avatarUrl }: { href: string; on: boolean; myName: string; myId: string; avatarUrl: string | null }) {
+  const color = on ? "var(--color-pink)" : "#fff";
+  if (href === "/nearby") return <Flower size={ICON} stroke={color} strokeWidth={3.4} center={color} />;
+  if (href === "/you") return <Avatar id={myId} name={myName} src={avatarUrl} size={ICON} ring={on ? "2px solid var(--color-pink)" : "2px solid transparent"} />;
   return (
-    <span className="flex h-[32px] w-[32px] items-center justify-center rounded-[9px] text-[17px] font-bold text-white"
-      style={{ background: on ? "var(--color-pink)" : "#4d4740" }}>{glyph}</span>
+    <svg width={ICON} height={ICON} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      {PATHS[href]}
+    </svg>
   );
 }
 
@@ -86,12 +88,9 @@ export function TabBar({ myName, myId, avatarUrl, liveLocation }: { myName: stri
           const on = path === t.href || path.startsWith(t.href + "/");
           return (
             <Link key={t.href} href={t.href} aria-label={t.label} className="relative flex h-[46px] items-center justify-center">
-              <span className="flex items-center justify-center rounded-full"
-                style={t.href === "/nearby" || t.href === "/world" ? { width: 44, height: 44, background: on ? "var(--color-pink)" : "transparent" } : undefined}>
-                <TabIcon href={t.href} glyph={t.glyph} on={on} myName={myName} myId={myId} avatarUrl={avatarUrl} />
-              </span>
+              <TabIcon href={t.href} on={on} myName={myName} myId={myId} avatarUrl={avatarUrl} />
               {((t.href === "/chats" && chatDot) || (t.href === "/world" && watchDot)) && (
-                <span className="absolute top-0 right-[22%] h-2.5 w-2.5 rounded-full border-[1.5px] border-well bg-pink" />
+                <span className="absolute top-[3px] right-[22%] h-2.5 w-2.5 rounded-full border-[1.5px] border-well bg-pink" />
               )}
             </Link>
           );
