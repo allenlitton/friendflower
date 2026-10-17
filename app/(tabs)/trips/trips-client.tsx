@@ -137,7 +137,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
 
   return (
     <>
-      <ScreenTitle right={<button type="button" onClick={() => setOpen(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold text-ink">+ Add trip</button>}>
+      <ScreenTitle right={<button type="button" onClick={() => setOpen(true)} className="rounded-full bg-pink px-[13px] py-2 text-[15px] font-bold text-ink">+ Add trip</button>}>
         Trips &amp; Deliveries
       </ScreenTitle>
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pt-2.5 pb-4">
@@ -147,13 +147,13 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
             <div key={t.id} className="rounded-[18px] border-[1.5px] border-line bg-card px-[15px] py-3.5">
               <div className="flex items-baseline gap-2">
                 <div className="min-w-0 flex-1 font-display text-[24px] leading-none">{cityName(t.city_id)}</div>
-                <div className="text-[12px] whitespace-nowrap text-muted">{now ? `now · until ${shortDate(t.ends_on)}` : dateRange(t.starts_on, t.ends_on)}</div>
-                <button type="button" aria-label="Remove trip" onClick={() => remove(t.id)} className="flex h-[22px] w-[22px] items-center justify-center text-[11px] text-faint">✕</button>
+                <div className="text-[14.4px] whitespace-nowrap text-muted">{now ? `now · until ${shortDate(t.ends_on)}` : dateRange(t.starts_on, t.ends_on)}</div>
+                <button type="button" aria-label="Remove trip" onClick={() => remove(t.id)} className="flex h-[22px] w-[22px] items-center justify-center text-[13.2px] text-faint">✕</button>
               </div>
               <div className="mt-1.5 flex items-center gap-2">
-                {t.from_live && <div className="min-w-0 flex-1 text-[11.5px] text-faint">📍 Started by live distance · ends when you leave</div>}
+                {t.from_live && <div className="min-w-0 flex-1 text-[13.8px] text-faint">📍 Started by live distance · ends when you leave</div>}
                 <button type="button" onClick={() => { setError(""); setEdit({ id: t.id, city: cityName(t.city_id), from: t.starts_on, to: t.ends_on, started: now }); }}
-                  className="ml-auto rounded-full border-[1.5px] border-line bg-well px-2.5 py-1 text-[11.5px] font-bold text-soft">Edit dates</button>
+                  className="ml-auto rounded-full border-[1.5px] border-line bg-well px-2.5 py-1 text-[13.8px] font-bold text-soft">Edit dates</button>
               </div>
               {t.trip_flights.sort((a, b) => a.direction.localeCompare(b.direction)).map((leg) => {
                 const pax = matches.filter((m) => m.flight_id === leg.id);
@@ -161,71 +161,71 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
                 const to = leg.direction === "in" ? cityShort(t.city_id) : homeShort;
                 return (
                   <div key={leg.id}>
-                    <div className="mt-[11px] text-[11px] font-bold tracking-[.05em] text-pink uppercase">
+                    <div className="mt-[11px] text-[13.2px] font-bold tracking-[.05em] text-pink uppercase">
                       {leg.direction === "in" ? `Inbound · to ${cityName(t.city_id)}` : `Outbound · from ${cityName(t.city_id)}`}
                     </div>
                     <div className="mt-1.5 rounded-[14px] border-[1.5px] border-dashed border-[#3a352e] bg-well px-[13px] py-3">
-                      <div className="text-[11px] font-bold tracking-[.05em] text-muted uppercase">Flight {leg.flight_no} · {shortDate(leg.flight_date)}</div>
+                      <div className="text-[13.2px] font-bold tracking-[.05em] text-muted uppercase">Flight {leg.flight_no} · {shortDate(leg.flight_date)}</div>
                       <div className="mt-2 flex items-center gap-2.5">
                         <div className="font-display text-[30px] leading-none tracking-[1px]">{from}</div>
                         <div className="flex flex-1 items-center gap-1.5">
-                          <span className="h-0 flex-1 border-t-[1.5px] border-dashed border-[#4d4740]" /><span className="text-[13px] text-pink">✈</span><span className="h-0 flex-1 border-t-[1.5px] border-dashed border-[#4d4740]" />
+                          <span className="h-0 flex-1 border-t-[1.5px] border-dashed border-[#4d4740]" /><span className="text-[15.6px] text-pink">✈</span><span className="h-0 flex-1 border-t-[1.5px] border-dashed border-[#4d4740]" />
                         </div>
                         <div className="font-display text-[30px] leading-none tracking-[1px]">{to}</div>
                       </div>
                     </div>
                     {pax.length > 0 ? (
                       <div className="mt-3">
-                        <div className="mb-2 text-[12.5px] font-bold text-pink">{pax.length} from your circles on this flight</div>
+                        <div className="mb-2 text-[15px] font-bold text-pink">{pax.length} from your circles on this flight</div>
                         {pax.map((m) => (
                           <div key={m.person.id} className="flex items-center gap-2.5 py-1">
                             <Link href={`/people/${m.person.id}`}><Avatar id={m.person.id} name={m.person.name} src={m.person.avatar_url} size={34} /></Link>
                             <Link href={`/people/${m.person.id}`} className="min-w-0 flex-1">
-                              <div className="text-[13.5px] font-semibold">{m.person.name}</div>
-                              <div className="text-[11px] text-muted">{m.person.degree === 1 ? "1st degree" : `2nd degree${m.person.via ? ` · via ${m.person.via}` : ""}`}</div>
+                              <div className="text-[16.2px] font-semibold">{m.person.name}</div>
+                              <div className="text-[13.2px] text-muted">{m.person.degree === 1 ? "1st degree" : `2nd degree${m.person.via ? ` · via ${m.person.via}` : ""}`}</div>
                             </Link>
-                            <button type="button" onClick={() => sayHi(m)} className="rounded-full border-[1.5px] border-plum-line bg-plum px-3 py-[7px] text-[12px] font-bold text-pink">Say hi</button>
+                            <button type="button" onClick={() => sayHi(m)} className="rounded-full border-[1.5px] border-plum-line bg-plum px-3 py-[7px] text-[14.4px] font-bold text-pink">Say hi</button>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="mt-[11px] text-[12px] text-muted">No one in your circles has shared this flight yet.</div>
+                      <div className="mt-[11px] text-[14.4px] text-muted">No one in your circles has shared this flight yet.</div>
                     )}
                   </div>
                 );
               })}
               {t.deliver_open && (
-                <div className="mt-3 text-[12px] text-muted">
+                <div className="mt-3 text-[14.4px] text-muted">
                   📦 Open to carrying a package · {t.deliver_legs === "both" ? "either flight" : t.deliver_legs === "in" ? "inbound" : "outbound"}
                   {t.deliver_space ? ` · ${SPACE_SHORT[t.deliver_space]}` : " · hand luggage only"}
                 </div>
               )}
               <div className="mt-3 flex items-center gap-2">
-                <span className="text-[11px] font-bold tracking-[.05em] text-muted uppercase">Visible to</span>
+                <span className="text-[13.2px] font-bold tracking-[.05em] text-muted uppercase">Visible to</span>
                 <select value={t.visibility} onChange={(e) => setVisibility(t.id, e.target.value as Trip["visibility"])}
-                  className="rounded-lg border-[1.5px] border-line bg-well px-2 py-1 text-[12px] text-soft">
+                  className="rounded-lg border-[1.5px] border-line bg-well px-2 py-1 text-[14.4px] text-soft">
                   {VIS.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}
                 </select>
                 <div className="flex-1" />
-                <Link href={`/nearby?trip=${t.id}`} className="text-[12.5px] font-bold text-pink">See who&apos;s there ›</Link>
+                <Link href={`/nearby?trip=${t.id}`} className="text-[15px] font-bold text-pink">See who&apos;s there ›</Link>
               </div>
             </div>
           );
         })}
         {trips.length === 0 && (
           <button type="button" onClick={() => setOpen(true)}
-            className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-4 py-[22px] text-center text-[13px] leading-normal text-muted">
+            className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-4 py-[22px] text-center text-[15.6px] leading-normal text-muted">
             Add an upcoming trip to see who you know there — and which friends and friends of friends are on your flight.
           </button>
         )}
-        <div className="text-[11.5px] leading-normal text-faint">
+        <div className="text-[13.8px] leading-normal text-faint">
           Flight matches only show people in your circles who&apos;ve added the same flight on the same day, and whose trip you&apos;re allowed to see.
           Seat numbers are never collected. {legCount === 0 && trips.length > 0 && "Add flight numbers to a trip to check for matches."}
         </div>
 
         <div className="mt-3 rounded-[18px] border-[1.5px] border-line bg-card px-[15px] py-3.5">
           <div className="font-display text-[24px] leading-none">Deliveries</div>
-          <div className="mt-2 text-[12.5px] leading-normal text-muted">
+          <div className="mt-2 text-[15px] leading-normal text-muted">
             Need a small package that might fit in someone&apos;s luggage? Connect to someone on the Friend Flower network who might have space in their luggage to bring you their package on their next trip to your city
           </div>
           <SectionLabel className="mt-3.5">Coming from</SectionLabel>
@@ -246,25 +246,25 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
             <input className="field" type="date" aria-label="Arrive by" value={d.by} min={todayISO()}
               onChange={(e) => { setD({ ...d, by: e.target.value }); setNoMatch(false); }} />
           )}
-          <label className="mt-2 flex items-center gap-2 text-[12.5px] text-soft">
+          <label className="mt-2 flex items-center gap-2 text-[15px] text-soft">
             <input type="checkbox" className="h-4 w-4 accent-[var(--color-pink)]" checked={d.flex}
               onChange={(e) => { setD({ ...d, flex: e.target.checked, after: "" }); setNoMatch(false); }} />
             My dates are flexible
           </label>
           <SectionLabel className="mt-3">What is it? (optional)</SectionLabel>
           <input className="field" placeholder="e.g. jewellery" maxLength={60} value={d.item} onChange={(e) => setD({ ...d, item: e.target.value })} />
-          {d.from && d.from === d.to && <div className="mt-1.5 text-[11.5px] text-faint">Pick two different cities.</div>}
+          {d.from && d.from === d.to && <div className="mt-1.5 text-[13.8px] text-faint">Pick two different cities.</div>}
           <SectionLabel className="mt-3">Search</SectionLabel>
           <Segmented value={d.scope} options={[{ value: "network", label: "Whole network" }, { value: "circle", label: "My circles only" }]}
             onChange={(scope) => { setD({ ...d, scope }); setNoMatch(false); }} />
           <ErrorNote>{dError}</ErrorNote>
           {noMatch && (
-            <div className="mt-3 rounded-xl bg-well px-3 py-2.5 text-[12.5px] leading-snug text-muted">
+            <div className="mt-3 rounded-xl bg-well px-3 py-2.5 text-[15px] leading-snug text-muted">
               {d.scope === "circle" ? "No one in your circles has a trip that fits yet. Try a later date, or search the whole network." : "No one on the network has a trip that fits yet. Try a later date — new trips are added all the time."}
             </div>
           )}
           <PrimaryButton className="mt-4" disabled={!canSearch || searching} onClick={findCarrier}>{searching ? "searching the network…" : "find someone"}</PrimaryButton>
-          <div className="mt-2 text-[11px] leading-normal text-faint">
+          <div className="mt-2 text-[13.2px] leading-normal text-faint">
             We search {d.scope === "circle" ? "people in your circles" : "everyone on Friend Flower"} who&apos;ve said they&apos;re open to carrying a package, then open a chat with the best match. Only people who opted in on a trip can be found.
           </div>
         </div>
@@ -279,7 +279,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
         <CityPicker value={f.city} cities={cities} exclude={homeCity} placeholder="Where are you going?"
           onChange={(c) => { setF({ ...f, city: c.id, nb: "" }); setCityLaunched(c.launched); }} />
         {f.city && !cityLaunched && (
-          <div className="mt-1.5 text-[11.5px] leading-snug text-faint">
+          <div className="mt-1.5 text-[13.8px] leading-snug text-faint">
             No live map there yet. Friends will still see you&apos;re in this city on their World page.
           </div>
         )}
@@ -306,9 +306,9 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
             {f.outNo && <input className="field mt-1.5 !h-10 !text-[14px]" type="date" aria-label="Outbound flight date" value={f.outDate || f.to} onChange={(e) => setF({ ...f, outDate: e.target.value })} />}
           </div>
         </div>
-        <div className="mt-1.5 text-[11px] text-faint">Flights are optional. We&apos;ll check whether anyone in your circles is on the same one.</div>
+        <div className="mt-1.5 text-[13.2px] text-faint">Flights are optional. We&apos;ll check whether anyone in your circles is on the same one.</div>
         <SectionLabel className="mt-3.5">Help with a delivery? (optional)</SectionLabel>
-        <label className="flex items-start gap-2.5 text-[13px] leading-snug text-soft">
+        <label className="flex items-start gap-2.5 text-[15.6px] leading-snug text-soft">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--color-pink)]" checked={f.dOpen}
             onChange={(e) => setF({ ...f, dOpen: e.target.checked })} />
           <span>I&apos;m open to helping another Friend Flower member deliver a small package on this trip</span>
@@ -325,13 +325,13 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
                 {SPACE.map((o) => (
                   <button key={o.value} type="button" onClick={() => setF({ ...f, dSpace: o.value })}
                     className={`rounded-xl border-[1.5px] px-3 py-2 text-left ${f.dSpace === o.value ? "border-pink bg-plum" : "border-line"}`}>
-                    <div className="text-[13px] font-bold text-soft">{o.label}</div>
-                    <div className="text-[11.5px] text-muted">({o.hint})</div>
+                    <div className="text-[15.6px] font-bold text-soft">{o.label}</div>
+                    <div className="text-[13.8px] text-muted">({o.hint})</div>
                   </button>
                 ))}
               </div>
             )}
-            <div className="mt-2.5 text-[11px] leading-normal text-faint">
+            <div className="mt-2.5 text-[13.2px] leading-normal text-faint">
               Members searching for a delivery can find this trip even if it&apos;s set to &ldquo;Just me&rdquo;. They&apos;ll message you first; you choose what to carry.
             </div>
           </div>

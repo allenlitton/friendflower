@@ -26,8 +26,8 @@ function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
   if (alerts.length === 0) {
     return (
       <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5">
-        <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Fo Concierge watch</div>
-        <div className="mt-1 text-[12.5px] leading-snug text-muted">
+        <div className="text-[13.2px] font-bold tracking-[.06em] text-faint uppercase">Fo Concierge watch</div>
+        <div className="mt-1 text-[15px] leading-snug text-muted">
           Nothing to flag. Fo Concierge will tell you the moment someone you&apos;ve saved lands in a city you&apos;re in — or one you&apos;re headed to.
         </div>
       </div>
@@ -35,15 +35,15 @@ function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
   }
   return (
     <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum px-[15px] py-3.5">
-      <div className="text-[11px] font-bold tracking-[.06em] text-pink uppercase">Fo Concierge watch</div>
+      <div className="text-[13.2px] font-bold tracking-[.06em] text-pink uppercase">Fo Concierge watch</div>
       <div className="mt-2.5 flex flex-col gap-3">
         {alerts.map((a) => (
           <div key={`${a.friend.id}${a.city_id}${a.from}`} className="flex items-center gap-3">
             <Avatar id={a.friend.id} name={a.friend.name} src={a.friend.avatar_url} size={40} />
-            <div className="min-w-0 flex-1 text-[13.5px] leading-snug">
+            <div className="min-w-0 flex-1 text-[16.2px] leading-snug">
               {watchLine(a)} {a.is_new && <Tag tone="gold">New</Tag>}
             </div>
-            <Link href={`/people/${a.friend.id}`} className="rounded-full border-[1.5px] border-plum-line bg-card px-[13px] py-2 text-[12px] font-bold whitespace-nowrap text-pink">
+            <Link href={`/people/${a.friend.id}`} className="rounded-full border-[1.5px] border-plum-line bg-card px-[13px] py-2 text-[14.4px] font-bold whitespace-nowrap text-pink">
               Say hi
             </Link>
           </div>
@@ -62,7 +62,7 @@ export default async function WorldPage() {
   return (
     <>
       <ScreenTitle right={
-        <Link href="/connect#find" className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold whitespace-nowrap text-ink">+ Add friend</Link>
+        <Link href="/connect#find" className="rounded-full bg-pink px-[13px] py-2 text-[15px] font-bold whitespace-nowrap text-ink">+ Add friend</Link>
       }>
         Who&apos;s where
       </ScreenTitle>
@@ -71,8 +71,8 @@ export default async function WorldPage() {
         <MarkWatchSeen hasNew={alerts.some((a) => a.is_new)} />
         {cities.length === 0 && (
           <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum p-[15px]">
-            <div className="text-[14.5px] font-semibold">No saved friends yet</div>
-            <p className="mt-1 text-[12.5px] leading-snug text-plum-text">
+            <div className="text-[17.4px] font-semibold">No saved friends yet</div>
+            <p className="mt-1 text-[15px] leading-snug text-plum-text">
               Tap <b>Add friend</b> on someone&apos;s profile or in a chat. Once they accept, you&apos;ll see where in the world they are here.
             </p>
             <PrimaryButton href="/connect" className="mt-3 !h-[46px] !text-[20px]">find your friends</PrimaryButton>
@@ -93,7 +93,7 @@ export default async function WorldPage() {
             <div key={c.city_id} className="rounded-[18px] border-[1.5px] border-line bg-card px-[15px] py-3.5">
               <div className="flex items-baseline gap-2">
                 <div className="min-w-0 flex-1 font-display text-[24px]">{c.city}</div>
-                <div className="text-[11.5px] whitespace-nowrap text-muted">{meta}</div>
+                <div className="text-[13.8px] whitespace-nowrap text-muted">{meta}</div>
               </div>
               <div className="mt-[11px] grid grid-cols-4 gap-y-2.5">
                 {c.people.map((p, fi) => {
@@ -114,8 +114,8 @@ export default async function WorldPage() {
                 })}
               </div>
               <div className="mt-[11px] flex items-center gap-3">
-                <div className="min-w-0 flex-1 text-[12.5px] leading-snug text-muted">{note}</div>
-                <Link href={cta.href} className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-2 text-[12px] font-bold whitespace-nowrap text-gold">
+                <div className="min-w-0 flex-1 text-[15px] leading-snug text-muted">{note}</div>
+                <Link href={cta.href} className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-2 text-[14.4px] font-bold whitespace-nowrap text-gold">
                   {cta.label}
                 </Link>
               </div>

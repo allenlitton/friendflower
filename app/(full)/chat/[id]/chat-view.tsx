@@ -126,12 +126,12 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   return (
     <div className="flex min-h-0 flex-1 flex-col" style={{ height: "100dvh" }}>
       <div className="flex flex-none items-center gap-[11px] border-b border-line-soft bg-well px-3.5 py-[9px]">
-        <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[17px] text-soft">‹</Link>
+        <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
         <Link href={chat.kind === "direct" && other ? `/people/${other.id}` : "#"} className="flex min-w-0 flex-1 items-center gap-2.5">
           {others[0] && <Avatar id={others[0].id} name={others[0].name} src={chat.kind === "pod" ? null : others[0].avatar_url} size={36} />}
           <div className="min-w-0">
             <div className="truncate font-display text-[20px] leading-[1.1]">{title}</div>
-            <div className="truncate text-[11px] text-muted">{presence}</div>
+            <div className="truncate text-[13.2px] text-muted">{presence}</div>
           </div>
         </Link>
         {chat.kind === "direct" && other && (
@@ -141,7 +141,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           </>
         )}
         {chat.kind === "pod" && chat.can_post && (
-          <button type="button" className="text-[12px] font-semibold text-faint" disabled={busy}
+          <button type="button" className="text-[14.4px] font-semibold text-faint" disabled={busy}
             onClick={async () => { if (confirm("Leave this chat? The other two can keep talking.")) { await call("leave_chat", { p_chat: chat.id }); router.push("/chats"); } }}>
             Leave
           </button>
@@ -150,12 +150,12 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
 
       <div className="flex min-h-0 flex-1 flex-col gap-[7px] overflow-y-auto px-[15px] pt-3.5 pb-2">
         {knowNote && (
-          <div className="max-w-[88%] self-center rounded-full bg-raised px-3 py-[5px] text-center text-[11px] leading-snug text-[#958d82]">{knowNote}</div>
+          <div className="max-w-[88%] self-center rounded-full bg-raised px-3 py-[5px] text-center text-[13.2px] leading-snug text-[#958d82]">{knowNote}</div>
         )}
         {meet && chat.can_post && <MeetNote meet={meet} onOpen={() => setTimeOpen(true)} />}
         {messages.map((m) => {
           if (m.kind === "system") {
-            return <div key={m.id} className="max-w-[90%] self-center rounded-2xl bg-raised px-3 py-[5px] text-center text-[11.5px] leading-snug text-[#958d82]">{m.body}</div>;
+            return <div key={m.id} className="max-w-[90%] self-center rounded-2xl bg-raised px-3 py-[5px] text-center text-[13.8px] leading-snug text-[#958d82]">{m.body}</div>;
           }
           const mine = m.sender_id === meId;
           const sender = m.sender_id ? members[m.sender_id] : null;
@@ -195,12 +195,12 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
                   transform: `translateX(${drag?.id === m.id ? drag.dx : open === m.id ? -TRASH_W : 0}px)`,
                   transition: drag?.id === m.id ? "none" : "transform 160ms ease-out",
                 } : undefined}
-                className={`min-w-0 px-[13px] py-2.5 text-[14px] leading-[1.45] select-none ${mine
+                className={`min-w-0 px-[13px] py-2.5 text-[16.8px] leading-[1.45] select-none ${mine
                   ? "rounded-[16px_16px_5px_16px] bg-pink text-white"
                   : "rounded-[16px_16px_16px_5px] border-[1.5px] border-[#2f2b27] bg-[#1f1c19] text-text"}`}>
-              {chat.kind === "pod" && !mine && sender && <div className="mb-[3px] text-[10.5px] font-bold opacity-70">{sender.first_name}</div>}
+              {chat.kind === "pod" && !mine && sender && <div className="mb-[3px] text-[12.6px] font-bold opacity-70">{sender.first_name}</div>}
               {venue && (
-                <Link href={`/places?city=${venue.city_id}`} className={`mb-1 block rounded-lg px-2 py-1.5 text-[12px] font-semibold ${mine ? "bg-white/20" : "bg-well"}`}>
+                <Link href={`/places?city=${venue.city_id}`} className={`mb-1 block rounded-lg px-2 py-1.5 text-[14.4px] font-semibold ${mine ? "bg-white/20" : "bg-well"}`}>
                   📍 {venue.name} · {venue.cities.short_name}
                 </Link>
               )}
@@ -223,7 +223,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
 
         {mutualMustConfirm && (
           <div className="mt-1 rounded-2xl border-[1.5px] border-plum-line bg-plum px-3.5 py-[13px]">
-            <div className="text-[13.5px] leading-normal text-[#f3d6df]">
+            <div className="text-[16.2px] leading-normal text-[#f3d6df]">
               Do you know <b>{v!.requester.first_name}</b> and <b>{v!.target.first_name}</b>? Confirming marks them as verified on both profiles.
             </div>
             <textarea className="field mt-2.5 !min-h-[64px] !bg-well !text-[14px]" maxLength={500} value={intro} onChange={(e) => setIntro(e.target.value)}
@@ -247,25 +247,25 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
         <div className="flex flex-none flex-col gap-2 border-t border-line-soft bg-well px-[13px] pt-2 pb-[calc(13px+env(safe-area-inset-bottom))]">
           <div className="flex gap-[7px] overflow-x-auto">
             <button type="button" onClick={() => send("Let's meet — I'm free most evenings this week.")}
-              className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-gold">Let&apos;s meet…</button>
+              className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-[7px] text-[15px] font-bold whitespace-nowrap text-gold">Let&apos;s meet…</button>
             {meet && (
               <button type="button" onClick={() => setTimeOpen(true)}
-                className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap text-leaf">Find a time</button>
+                className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[15px] font-semibold whitespace-nowrap text-leaf">Find a time</button>
             )}
             <button type="button" onClick={() => setPlaceOpen(true)}
-              className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap text-leaf">Share a place</button>
+              className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[15px] font-semibold whitespace-nowrap text-leaf">Share a place</button>
             <Link href={`/fo?draft=${encodeURIComponent(`Book a table for me and ${others.filter((m) => !m.left).map((m) => m.first_name).join(" and ") || "a friend"}`)}`}
-              className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</Link>
+              className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[15px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</Link>
           </div>
           <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Say hello…" maxLength={2000}
-              className="h-11 min-w-0 flex-1 rounded-full border-[1.5px] border-line bg-card px-4 text-[16px] outline-none" />
+              className="h-11 min-w-0 flex-1 rounded-full border-[1.5px] border-line bg-card px-4 text-[19.2px] outline-none" />
             <button type="submit" aria-label="Send" disabled={busy || !draft.trim()}
-              className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[17px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
+              className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[20.4px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
           </form>
         </div>
       ) : (
-        <div className="flex-none border-t border-line-soft bg-well px-4 py-3 text-center text-[12.5px] text-muted">You left this chat.</div>
+        <div className="flex-none border-t border-line-soft bg-well px-4 py-3 text-center text-[15px] text-muted">You left this chat.</div>
       )}
 
       {meet && <FindTimeSheet open={timeOpen} onClose={() => setTimeOpen(false)} meet={meet} busy={busy} onSuggest={suggest} />}
@@ -274,8 +274,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           {myVenues.map((x) => (
             <button key={x.id} type="button" onClick={() => { setPlaceOpen(false); send(`How about ${x.name}?`, x.id); }}
               className="flex items-center justify-between rounded-xl border-[1.5px] border-line bg-card px-3 py-2.5 text-left">
-              <span className="text-[14px] font-semibold">{x.name}</span>
-              <span className="text-[11.5px] text-muted capitalize">{x.kind} · {x.cities.short_name}</span>
+              <span className="text-[16.8px] font-semibold">{x.name}</span>
+              <span className="text-[13.8px] text-muted capitalize">{x.kind} · {x.cities.short_name}</span>
             </button>
           ))}
         </div>

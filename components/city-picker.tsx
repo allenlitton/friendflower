@@ -74,7 +74,7 @@ export function CityPicker({ value, cities, onChange, exclude, placeholder = "Se
         ))}
       </div>
       {value && !launched.some((c) => c.id === value) && label && (
-        <div className="rounded-xl border-[1.5px] border-pink bg-card px-3.5 py-2.5 text-[14px] font-semibold">📍 {label}</div>
+        <div className="rounded-xl border-[1.5px] border-pink bg-card px-3.5 py-2.5 text-[16.8px] font-semibold">📍 {label}</div>
       )}
       <input className="field" type="search" autoComplete="off" placeholder={value ? "Somewhere else? Search any city" : placeholder}
         value={q} onChange={(e) => { setQ(e.target.value); if (e.target.value.trim().length < 2) setResults([]); }} />
@@ -83,18 +83,18 @@ export function CityPicker({ value, cities, onChange, exclude, placeholder = "Se
           {results.map((o) => (
             <button key={o.id ?? `g${o.geonameId}`} type="button" disabled={adding} onClick={() => choose(o)}
               className="flex w-full items-baseline gap-2 border-b border-line-soft px-3.5 py-2.5 text-left last:border-b-0 hover:bg-well disabled:opacity-60">
-              <span className="text-[14px] font-semibold">{o.name}</span>
-              <span className="min-w-0 flex-1 truncate text-[12px] text-muted">{o.detail}</span>
-              {o.launched && <span className="text-[10.5px] font-bold text-pink">live map</span>}
+              <span className="text-[16.8px] font-semibold">{o.name}</span>
+              <span className="min-w-0 flex-1 truncate text-[14.4px] text-muted">{o.detail}</span>
+              {o.launched && <span className="text-[12.6px] font-bold text-pink">live map</span>}
             </button>
           ))}
           {!results.length && (
-            <div className="px-3.5 py-2.5 text-[12.5px] text-muted">{searching ? "Searching…" : "No cities found. Try another spelling."}</div>
+            <div className="px-3.5 py-2.5 text-[15px] text-muted">{searching ? "Searching…" : "No cities found. Try another spelling."}</div>
           )}
         </div>
       )}
-      {adding && <div className="text-[12px] text-muted">Adding city…</div>}
-      {error && <div className="text-[12px] text-plum-text">{error}</div>}
+      {adding && <div className="text-[14.4px] text-muted">Adding city…</div>}
+      {error && <div className="text-[14.4px] text-plum-text">{error}</div>}
     </div>
   );
 }

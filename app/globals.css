@@ -33,7 +33,7 @@
 
   --font-display: var(--font-vt323), "Noto Serif", serif;
   --font-logo: var(--font-doto), "Noto Serif", serif;
-  --font-sans: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-noto-serif), "Noto Serif", Georgia, serif;
 }
 
 html, body {
@@ -43,6 +43,7 @@ html, body {
 
 body {
   font-family: var(--font-sans);
+  font-size: 19.2px;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -61,7 +62,7 @@ input::placeholder, textarea::placeholder { color: #a9a094; }
   border: 1.5px solid var(--color-line);
   background: var(--color-card);
   padding: 0 14px;
-  font-size: 16px; /* 16px stops iOS zooming into inputs */
+  font-size: 19.2px; /* >=16px stops iOS zooming into inputs */
   color: var(--color-text);
   outline: none;
 }

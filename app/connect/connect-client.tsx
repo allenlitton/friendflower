@@ -70,13 +70,13 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
       <FindFriend inviteCode={inviteCode} myName={myName} />
       <Card className="p-[15px]">
         <div className="flex items-center gap-3">
-          <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#8a8f6b] text-[14px] font-bold">☎</span>
+          <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#8a8f6b] text-[16.8px] font-bold">☎</span>
           <div className="flex-1">
-            <div className="text-[14.5px] font-semibold">Contacts</div>
-            <div className="text-[11.5px] text-muted">Matched on phone number or email only</div>
+            <div className="text-[17.4px] font-semibold">Contacts</div>
+            <div className="text-[13.8px] text-muted">Matched on phone number or email only</div>
           </div>
         </div>
-        <p className="mt-3 text-[12.5px] leading-normal text-muted">
+        <p className="mt-3 text-[15px] leading-normal text-muted">
           Numbers and emails are scrambled into codes on our server, and the originals are thrown away. Nobody — including us —
           can see your contact list, and it&apos;s never shown to other people.
         </p>
@@ -87,7 +87,7 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
             <input type="file" accept=".vcf,text/vcard,text/x-vcard" className="hidden" onChange={upload} disabled={busy} />
           </label>
           {!canPick && (
-            <details className="text-[11.5px] leading-normal text-faint">
+            <details className="text-[13.8px] leading-normal text-faint">
               <summary className="cursor-pointer text-pink">How do I export my contacts on iPhone?</summary>
               Open the Contacts app → tap <b>Lists</b> (top left) → press and hold <b>All Contacts</b> → <b>Export</b> →
               save the file, then upload it here. On a Mac: Contacts → select all → File → Export → Export vCard.
@@ -103,20 +103,20 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
         </div>
         <ErrorNote>{error}</ErrorNote>
         {result && (
-          <div className="mt-3 rounded-xl bg-leaf-bg px-3 py-2.5 text-[12.5px] leading-normal text-leaf">
+          <div className="mt-3 rounded-xl bg-leaf-bg px-3 py-2.5 text-[15px] leading-normal text-leaf">
             Checked {result.checked} contacts · {result.on_app} on Friend Flower · {result.new_matches} new mutual match
             {result.new_matches === 1 ? "" : "es"}.
             {result.on_app > result.new_matches && " People who don't have your number yet appear below — add them as friends."}
           </div>
         )}
         {(stats.uploaded > 0 || result) && (
-          <div className="mt-3 flex items-center justify-between text-[11.5px] text-faint">
+          <div className="mt-3 flex items-center justify-between text-[13.8px] text-faint">
             <span>{stats.matches} mutual contact matches</span>
             <button type="button" onClick={wipe} className="font-semibold text-faint underline">Delete my uploaded contacts</button>
           </div>
         )}
         {!stats.has_phone && (
-          <div className="mt-3 text-[11.5px] leading-normal text-faint">
+          <div className="mt-3 text-[13.8px] leading-normal text-faint">
             Tip: add your phone number in <a href="/you/edit">Edit profile</a> so friends who have it can find you.
           </div>
         )}
@@ -129,9 +129,9 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
             {suggestions.map((s) => (
               <div key={s.id} className="flex items-center gap-3 border-b border-rule py-2.5 last:border-0">
                 <Avatar id={s.id} name={s.name} src={s.avatar_url} size={40} />
-                <div className="flex-1 text-[14.5px] font-semibold">{s.name}</div>
+                <div className="flex-1 text-[17.4px] font-semibold">{s.name}</div>
                 <button type="button" onClick={() => addFriend(s.id)} disabled={!!added[s.id]}
-                  className="rounded-full bg-pink px-3 py-1.5 text-[12.5px] font-bold text-ink disabled:bg-leaf-bg disabled:text-leaf">
+                  className="rounded-full bg-pink px-3 py-1.5 text-[15px] font-bold text-ink disabled:bg-leaf-bg disabled:text-leaf">
                   {added[s.id] === "accepted" ? "Friends" : added[s.id] ? "Requested" : "Add friend"}
                 </button>
               </div>

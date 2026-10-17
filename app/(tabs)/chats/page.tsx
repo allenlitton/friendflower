@@ -30,17 +30,17 @@ export default async function ChatsPage() {
           <FoFace size={48} />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
-              <span className="truncate text-[15px] font-semibold">Fo</span>
-              {foLast && <span className="flex-none text-[11px] text-faint">{timeAgo(foLast.created_at)}</span>}
+              <span className="truncate text-[18px] font-semibold">Fo</span>
+              {foLast && <span className="flex-none text-[13.2px] text-faint">{timeAgo(foLast.created_at)}</span>}
             </div>
-            <div className="mt-0.5 truncate text-[13px] text-muted">
+            <div className="mt-0.5 truncate text-[15.6px] text-muted">
               {fo?.status === "working" ? (fo.progress ?? "Fo is on it…") : foLast ? `${foLast.role === "me" ? "You: " : ""}${foLast.body}` : "Your concierge: tables, trips, deliveries"}
             </div>
           </div>
         </Link>
 
         {list.length === 0 && (
-          <div className="px-4 py-10 text-center text-[13px] leading-normal text-muted">
+          <div className="px-4 py-10 text-center text-[15.6px] leading-normal text-muted">
             No chats yet. Open someone&apos;s profile on <Link href="/nearby" className="text-pink">Nearby</Link> and say hello.
           </div>
         )}
@@ -55,15 +55,15 @@ export default async function ChatsPage() {
                 <div className="relative">
                   {first && <Avatar id={first.id} name={first.name} src={c.kind === "pod" ? null : first.avatar_url} size={48} />}
                   {c.kind === "pod" && (
-                    <span className="absolute -right-0.5 -bottom-0.5 rounded-full border-[1.5px] border-[#f4e9f2] bg-white px-[5px] py-px text-[9px] font-bold text-pink">pod</span>
+                    <span className="absolute -right-0.5 -bottom-0.5 rounded-full border-[1.5px] border-[#f4e9f2] bg-white px-[5px] py-px text-[10.8px] font-bold text-pink">pod</span>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="truncate text-[15px] font-semibold">{title}</span>
-                    <span className="flex-none text-[11px] text-faint">{timeAgo(c.last_message_at)}</span>
+                    <span className="truncate text-[18px] font-semibold">{title}</span>
+                    <span className="flex-none text-[13.2px] text-faint">{timeAgo(c.last_message_at)}</span>
                   </div>
-                  <div className="mt-0.5 truncate text-[13px] text-muted">{last}</div>
+                  <div className="mt-0.5 truncate text-[15.6px] text-muted">{last}</div>
                 </div>
                 {c.unread && <span className="h-[9px] w-[9px] flex-none rounded-full bg-pink" />}
               </Link>

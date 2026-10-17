@@ -66,7 +66,7 @@ export function HomeScreenPrompt() {
 
   return (
     <Sheet open={open} onClose={() => setOpen(false)} title="Add to home screen?">
-      <p className="mt-2 text-[14px] leading-relaxed text-soft">
+      <p className="mt-2 text-[16.8px] leading-relaxed text-soft">
         Open Friend Flower from an icon on your home screen, like any other app. It stays signed in.
       </p>
 
@@ -77,7 +77,7 @@ export function HomeScreenPrompt() {
         </div>
       ) : (
         <>
-          <ol className="mt-4 flex flex-col gap-2.5 text-[14px] leading-snug text-text">
+          <ol className="mt-4 flex flex-col gap-2.5 text-[16.8px] leading-snug text-text">
             {os === "ios" ? (
               <>
                 <Step n={1}>Tap the <b>Share</b> button <ShareIcon /> in Safari.</Step>
@@ -91,7 +91,7 @@ export function HomeScreenPrompt() {
               </>
             )}
           </ol>
-          <p className="mt-3 text-[12.5px] leading-normal text-muted">
+          <p className="mt-3 text-[15px] leading-normal text-muted">
             The icon keeps its own sign-in, so you&apos;ll sign in once more there. Type the 6-digit code from the email
             rather than tapping the link.
           </p>
@@ -101,7 +101,7 @@ export function HomeScreenPrompt() {
         </>
       )}
 
-      <button type="button" onClick={never} className="mx-auto mt-3 block text-[12.5px] font-semibold text-muted">
+      <button type="button" onClick={never} className="mx-auto mt-3 block text-[15px] font-semibold text-muted">
         Don&apos;t ask again
       </button>
     </Sheet>

@@ -16,7 +16,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-8 text-center">
         <div className="font-display text-[30px]">Where are you based?</div>
-        <p className="text-[13.5px] text-muted">Add the city you live in, or a trip, to see who you know there.</p>
+        <p className="text-[16.2px] text-muted">Add the city you live in, or a trip, to see who you know there.</p>
         <PrimaryButton href="/you/edit">edit profile</PrimaryButton>
       </div>
     );
@@ -31,8 +31,8 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
           <h1 className="font-display text-[30px] leading-[1.1]">{lens.cityName}</h1>
         </div>
         <div className="mt-4 rounded-[18px] border-[1.5px] border-gold-line bg-gold-bg p-[15px]">
-          <div className="text-[14.5px] font-semibold text-gold">The live map isn&apos;t in {lens.cityName} yet</div>
-          <p className="mt-1.5 text-[13px] leading-normal text-body">
+          <div className="text-[17.4px] font-semibold text-gold">The live map isn&apos;t in {lens.cityName} yet</div>
+          <p className="mt-1.5 text-[15.6px] leading-normal text-body">
             For now it runs in San Francisco and New York. Your friends can still see you&apos;re in {lens.cityName} on their
             World page, and you can see where your friends are on yours.
           </p>
@@ -41,11 +41,11 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
           <PrimaryButton href="/world">see who&apos;s where</PrimaryButton>
           {liveTrips.map((t) => (
             <Link key={t.tripId} href={`/nearby?trip=${t.tripId}`}
-              className="rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-3 text-[14px] font-semibold">
+              className="rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-3 text-[16.8px] font-semibold">
               ✈ Your {t.cityName} trip · {dateRange(t.from, t.to)} <span className="float-right text-pink">›</span>
             </Link>
           ))}
-          <Link href="/trips?add=1" className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-3.5 py-3 text-center text-[13px] font-semibold text-pink">
+          <Link href="/trips?add=1" className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-3.5 py-3 text-center text-[15.6px] font-semibold text-pink">
             + Add a trip to San Francisco or New York
           </Link>
         </div>
@@ -69,12 +69,12 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
       footer={
         <Link href={`/places?city=${lens.cityId}`}
           className="mt-2.5 flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-[13px] hover:border-[#5a534b]">
-          <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#2b2118] text-[15px]">☕</span>
+          <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#2b2118] text-[18px]">☕</span>
           <div className="min-w-0 flex-1">
-            <div className="text-[14px] font-semibold">Where to meet in {lens.short}</div>
-            <div className="text-[11.5px] text-muted">Places your circle actually goes</div>
+            <div className="text-[16.8px] font-semibold">Where to meet in {lens.short}</div>
+            <div className="text-[13.8px] text-muted">Places your circle actually goes</div>
           </div>
-          <span className="text-[17px] text-pink">›</span>
+          <span className="text-[20.4px] text-pink">›</span>
         </Link>
       }
     />

@@ -23,12 +23,12 @@ export default async function HowPage({ params }: PageProps<"/people/[id]/how">)
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <BackBar href={`/people/${p.id}`} title={<span className="text-[11.5px] font-bold tracking-[.06em] text-muted uppercase font-sans">{p.degree === 1 ? "1st" : "2nd"} degree connection</span>} />
+      <BackBar href={`/people/${p.id}`} title={<span className="text-[13.8px] font-bold tracking-[.06em] text-muted uppercase font-sans">{p.degree === 1 ? "1st" : "2nd"} degree connection</span>} />
       <div className="flex-1 overflow-y-auto px-[22px] pt-1 pb-[18px]">
         <h1 className="mt-2 font-display text-[35px] leading-[1.15]">
           {p.degree === 1 ? "You already know each other" : "You know each other from…"}
         </h1>
-        <div className="mt-1.5 text-[13px] text-muted">
+        <div className="mt-1.5 text-[15.6px] text-muted">
           {p.degree === 1 ? `A direct friend · ${p.mutuals.length} mutuals in common` : via ? "One person stands between you" : "You share a network"}
         </div>
 
@@ -43,7 +43,7 @@ export default async function HowPage({ params }: PageProps<"/people/[id]/how">)
           )}
           {p.via_kind === "school" && (
             <>
-              <div className="rounded-full bg-leaf-bg px-3 py-1.5 text-[12px] font-bold text-leaf">{p.via_school}</div>
+              <div className="rounded-full bg-leaf-bg px-3 py-1.5 text-[14.4px] font-bold text-leaf">{p.via_school}</div>
               <Dash />
             </>
           )}
@@ -53,10 +53,10 @@ export default async function HowPage({ params }: PageProps<"/people/[id]/how">)
         <div className="mt-[18px] flex flex-col gap-2">
           {evidence.map((e, i) => (
             <div key={i} className="flex items-center gap-[11px] rounded-[15px] border-[1.5px] border-line bg-card px-3.5 py-3">
-              <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[10px] text-[11px] font-bold text-white" style={{ background: e.bg }}>{e.icon}</span>
+              <span className="flex h-[30px] w-[30px] flex-none items-center justify-center rounded-[10px] text-[13.2px] font-bold text-white" style={{ background: e.bg }}>{e.icon}</span>
               <div className="min-w-0 flex-1">
-                <div className="text-[13.5px] font-semibold">{e.title}</div>
-                <div className="text-[11.5px] leading-snug text-muted">{e.note}</div>
+                <div className="text-[16.2px] font-semibold">{e.title}</div>
+                <div className="text-[13.8px] leading-snug text-muted">{e.note}</div>
               </div>
             </div>
           ))}
@@ -72,7 +72,7 @@ function Node({ id, name, src, label }: { id: string; name: string; src: string 
   return (
     <div className="flex flex-col items-center gap-1.5">
       <PetalHalo size={94}><Avatar id={id} name={name} src={src} size={60} /></PetalHalo>
-      <div className="text-[12.5px] font-bold text-soft">{label}</div>
+      <div className="text-[15px] font-bold text-soft">{label}</div>
     </div>
   );
 }

@@ -198,11 +198,11 @@ export function ProfileEditor({
               : <span className="text-[22px] text-faint">+</span>}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-[14px] font-semibold">
+            <div className="text-[16.8px] font-semibold">
               {photoBusy ? (avatarMode === "doodle" ? "Drawing your doodle…" : "Uploading…")
                 : !avatarUrl ? "How your friends will see you" : avatarMode === "doodle" ? "Your doodle" : "Your photo"}
             </div>
-            <div className="mt-0.5 text-[11.5px] leading-snug text-muted">
+            <div className="mt-0.5 text-[13.8px] leading-snug text-muted">
               {avatarMode === "doodle" && photo
                 ? "Drawn from your photo in the same ink style as everyone else. Only the doodle is uploaded — your photo stays on your phone."
                 : "A real photo of you, or a doodle we draw from it. No logos, pets or landscapes."}
@@ -213,13 +213,13 @@ export function ProfileEditor({
           <div className="mt-3 flex gap-0.5 rounded-xl bg-well p-[3px]">
             {(["photo", "doodle"] as const).map((m) => (
               <button key={m} type="button" onClick={() => switchMode(m)} disabled={photoBusy}
-                className={`flex-1 rounded-[9px] py-[9px] text-[12.5px] font-bold ${avatarMode === m ? "bg-pink text-ink" : "text-soft"}`}>
+                className={`flex-1 rounded-[9px] py-[9px] text-[15px] font-bold ${avatarMode === m ? "bg-pink text-ink" : "text-soft"}`}>
                 {m === "photo" ? "Real photo" : "Doodle of me"}
               </button>
             ))}
           </div>
         )}
-        <label className={`mt-3 flex h-11 cursor-pointer items-center justify-center rounded-[13px] text-[13.5px] font-bold ${avatarUrl ? "text-pink" : "bg-pink text-ink"}`}>
+        <label className={`mt-3 flex h-11 cursor-pointer items-center justify-center rounded-[13px] text-[16.2px] font-bold ${avatarUrl ? "text-pink" : "bg-pink text-ink"}`}>
           {avatarUrl ? "Use a different photo" : "Upload a real photo of you"}
           <input type="file" accept="image/*" className="hidden" onChange={pickPhoto} />
         </label>
@@ -245,7 +245,7 @@ export function ProfileEditor({
         )}
 
         {homeCity && !homeLaunched && (
-          <div className="text-[11.5px] leading-snug text-faint">
+          <div className="text-[13.8px] leading-snug text-faint">
             The live map is only in San Francisco and New York for now. Friends will still see you&apos;re here on their World page, and you can add trips.
           </div>
         )}
@@ -254,7 +254,7 @@ export function ProfileEditor({
       <SectionLabel className="mt-[18px]">Your phone number</SectionLabel>
       <input className="field" type="tel" autoComplete="tel" placeholder={hasPhone ? "Saved · enter a new one to change" : "Optional"}
         value={phone} onChange={(e) => setPhone(e.target.value)} />
-      <div className="mt-1.5 text-[11.5px] leading-snug text-faint">
+      <div className="mt-1.5 text-[13.8px] leading-snug text-faint">
         Lets friends who have your number in their contacts find you. It&apos;s never shown to anyone.
       </div>
 
@@ -262,7 +262,7 @@ export function ProfileEditor({
       <div className="flex flex-wrap gap-[7px]">
         {schools.map((s) => (
           <button key={s.id} type="button" onClick={() => confirm(`Remove ${s.schools.name}?`) && removeSchool(s.id)}
-            className="rounded-full border-[1.5px] border-pink bg-pink px-[13px] py-2 text-[12.5px] font-semibold text-ink">
+            className="rounded-full border-[1.5px] border-pink bg-pink px-[13px] py-2 text-[15px] font-semibold text-ink">
             {s.schools.name} ’{String(s.grad_year).slice(-2)} · {LEVELS.find((l) => l.value === s.level)?.short}
           </button>
         ))}
@@ -275,10 +275,10 @@ export function ProfileEditor({
           <div key={p.id} className="flex items-center gap-2.5 border-b border-rule py-[11px]">
             <span>🏠</span>
             <div className="min-w-0 flex-1">
-              <div className="text-[14px] font-semibold">{p.city_name}</div>
-              <div className="text-[11.5px] text-muted">{p.kind === "grew_up" ? "grew up" : ""}{p.kind === "grew_up" && p.years ? " · " : ""}{p.years}</div>
+              <div className="text-[16.8px] font-semibold">{p.city_name}</div>
+              <div className="text-[13.8px] text-muted">{p.kind === "grew_up" ? "grew up" : ""}{p.kind === "grew_up" && p.years ? " · " : ""}{p.years}</div>
             </div>
-            <button type="button" className="text-[12px] font-semibold text-faint" onClick={() => removePlace(p.id)}>Remove</button>
+            <button type="button" className="text-[14.4px] font-semibold text-faint" onClick={() => removePlace(p.id)}>Remove</button>
           </div>
         ))}
         <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_auto] items-center gap-2 py-[11px]">
@@ -287,9 +287,9 @@ export function ProfileEditor({
           <input className="field !h-10 !text-[14px]" placeholder="Years" value={newPlace.years}
             onChange={(e) => setNewPlace({ ...newPlace, years: e.target.value })} />
           <button type="button" onClick={addPlace} disabled={!newPlace.city.trim()}
-            className="h-10 rounded-[11px] bg-pink px-[13px] text-[13px] font-bold text-ink disabled:opacity-45">Add</button>
+            className="h-10 rounded-[11px] bg-pink px-[13px] text-[15.6px] font-bold text-ink disabled:opacity-45">Add</button>
         </div>
-        <label className="flex items-center gap-2 pb-2.5 text-[12px] text-muted">
+        <label className="flex items-center gap-2 pb-2.5 text-[14.4px] text-muted">
           <input type="checkbox" checked={newPlace.grewUp} onChange={(e) => setNewPlace({ ...newPlace, grewUp: e.target.checked })} />
           I grew up here
         </label>
@@ -307,7 +307,7 @@ export function ProfileEditor({
         <input className="field" placeholder="Instagram @handle" value={instagram} maxLength={60} onChange={(e) => setInstagram(e.target.value)} />
         <input className="field" placeholder="Facebook name" value={facebook} maxLength={80} onChange={(e) => setFacebook(e.target.value)} />
       </div>
-      <div className="mt-1.5 text-[11.5px] text-faint">Shown on your profile. Instagram &amp; Facebook linking is coming soon.</div>
+      <div className="mt-1.5 text-[13.8px] text-faint">Shown on your profile. Instagram &amp; Facebook linking is coming soon.</div>
 
       <SectionLabel className="mt-[18px]">Bio</SectionLabel>
       <textarea className="field" maxLength={500} value={bio} onChange={(e) => setBio(e.target.value)}
@@ -319,7 +319,7 @@ export function ProfileEditor({
           {saving ? "saving…" : mode === "onboarding" ? "save profile" : "save changes"}
         </PrimaryButton>
         {!canSave && (
-          <div className="text-center text-[11.5px] text-faint">
+          <div className="text-center text-[13.8px] text-faint">
             {!avatarUrl && !photo ? "Add a profile picture so friends recognise you" : !firstName.trim() ? "Add your first name" : "Choose the city you live in"}
           </div>
         )}
@@ -327,10 +327,10 @@ export function ProfileEditor({
       {mode === "onboarding" && <div className="mt-[18px] flex justify-center"><Flower size={34} stroke="#fff" strokeWidth={3.2} /></div>}
 
       <Sheet open={livePrompt} onClose={finishOnboarding} title="Turn on live distance?">
-        <p className="mt-2 text-[13.5px] leading-normal text-body">
+        <p className="mt-2 text-[16.2px] leading-normal text-body">
           Turn on Live Distance to help you and your friend flowers find each other
         </p>
-        <p className="mt-2 text-[12px] leading-snug text-muted">You can change this any time on the You page.</p>
+        <p className="mt-2 text-[14.4px] leading-snug text-muted">You can change this any time on the You page.</p>
         <div className="mt-4 flex flex-col gap-2">
           <ErrorNote>{liveError}</ErrorNote>
           <PrimaryButton onClick={enableLive} disabled={liveBusy}>{liveBusy ? "turning on…" : "turn on live distance"}</PrimaryButton>
@@ -348,12 +348,12 @@ export function ProfileEditor({
         <div className="flex gap-0.5 rounded-xl bg-card p-[3px]">
           {LEVELS.map((l) => (
             <button key={l.value} type="button" onClick={() => setNewSchool({ ...newSchool, level: l.value })}
-              className={`flex-1 rounded-[9px] py-[9px] text-[13px] font-semibold ${newSchool.level === l.value ? "bg-pink text-ink" : "text-soft"}`}>
+              className={`flex-1 rounded-[9px] py-[9px] text-[15.6px] font-semibold ${newSchool.level === l.value ? "bg-pink text-ink" : "text-soft"}`}>
               {l.label}
             </button>
           ))}
         </div>
-        <div className="mt-2 text-[11.5px] text-faint">People from the same school within a year of you can appear as friends of friends.</div>
+        <div className="mt-2 text-[13.8px] text-faint">People from the same school within a year of you can appear as friends of friends.</div>
         <PrimaryButton className="mt-[18px]" onClick={saveSchool} disabled={!newSchool.name.trim() || newSchool.year.length !== 4}>add school</PrimaryButton>
       </Sheet>
     </div>

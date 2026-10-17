@@ -51,20 +51,20 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
       {/* Left rail, as in the design: city, next trip, how you're connected, chat. */}
       <div className="flex w-16 flex-none flex-col items-center gap-3.5 border-r border-line-soft bg-card pt-3 pb-4">
         <Link href={p.is_me ? "/you" : "/nearby"} aria-label="Back"
-          className="flex h-[34px] w-[34px] items-center justify-center rounded-full border-[1.5px] border-line bg-card text-[17px] text-soft">‹</Link>
+          className="flex h-[34px] w-[34px] items-center justify-center rounded-full border-[1.5px] border-line bg-card text-[20.4px] text-soft">‹</Link>
         <RailItem glyph="📍" label={p.now?.short ?? "—"} sub={railDistance} />
         <RailItem glyph="✈" label={nextTrip?.city ?? "—"} />
         {!p.is_me && (
           <Link href={`/people/${p.id}/how`} className="flex flex-col items-center gap-[3px]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-pink text-[12px] font-bold text-ink">{degShort}</span>
-            <span className="text-[10px] font-bold text-pink">how</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-pink text-[14.4px] font-bold text-ink">{degShort}</span>
+            <span className="text-[12px] font-bold text-pink">how</span>
           </Link>
         )}
         <div className="flex-1" />
         {p.is_me ? (
           <Link href="/you/edit" className="flex flex-col items-center gap-[3px]">
-            <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[11px] bg-pink text-[14px] font-bold text-ink">✎</span>
-            <span className="text-[10px] font-bold text-pink">edit</span>
+            <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[11px] bg-pink text-[16.8px] font-bold text-ink">✎</span>
+            <span className="text-[12px] font-bold text-pink">edit</span>
           </Link>
         ) : <ChatRailButton personId={p.id} />}
       </div>
@@ -76,7 +76,7 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
             ? <img src={p.avatar_url} alt="" className="absolute inset-0 h-full w-full bg-white object-cover" />
             : <div className="absolute inset-0 flex items-center justify-center font-display text-[62px] text-white/90">{initials(p.name)}</div>}
           {p.online && !p.is_me && (
-            <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[10.5px] font-bold text-[#2c7a45]">
+            <div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[12.6px] font-bold text-[#2c7a45]">
               <span className="h-[7px] w-[7px] rounded-full bg-online" />online
             </div>
           )}
@@ -84,7 +84,7 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
 
         <div className="flex flex-col gap-3.5 px-[18px] pt-3.5 pb-[18px]">
           {p.is_me && (
-            <div className="rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2 text-[12px] leading-snug text-plum-text">
+            <div className="rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2 text-[14.4px] leading-snug text-plum-text">
               This is how friends and friends of friends see your profile.
             </div>
           )}
@@ -94,27 +94,27 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
               {p.verified && <Tag tone={p.verified.method === "self" ? "grey" : "leaf"}>✓ verified</Tag>}
             </div>
             {(schoolLine || idLine) && (
-              <div className="mt-1 text-[13px] leading-normal text-muted">{[schoolLine, idLine].filter(Boolean).join(" · ")}</div>
+              <div className="mt-1 text-[15.6px] leading-normal text-muted">{[schoolLine, idLine].filter(Boolean).join(" · ")}</div>
             )}
           </div>
 
           {distance && (
             <div className="flex items-center gap-2.5 rounded-[14px] border-[1.5px] border-line bg-card px-[13px] py-2.5">
-              <span className="text-[15px]">{distance.icon}</span>
+              <span className="text-[18px]">{distance.icon}</span>
               <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-semibold">{distance.big}</div>
-                {distance.small && <div className="text-[11.5px] text-muted">{distance.small}</div>}
+                <div className="text-[16.8px] font-semibold">{distance.big}</div>
+                {distance.small && <div className="text-[13.8px] text-muted">{distance.small}</div>}
               </div>
               {p.now?.presence === "visiting" && !p.is_me && (
-                <span className="rounded-full bg-gold-bg px-2 py-0.5 text-[10.5px] font-bold whitespace-nowrap text-gold">until {shortDate(p.now.until)}</span>
+                <span className="rounded-full bg-gold-bg px-2 py-0.5 text-[12.6px] font-bold whitespace-nowrap text-gold">until {shortDate(p.now.until)}</span>
               )}
             </div>
           )}
 
           {flightsTrip && (
             <div className="flex items-center gap-2.5 rounded-[14px] border-[1.5px] border-plum-line bg-plum px-[13px] py-[11px]">
-              <span className="text-[14px] text-pink">✈</span>
-              <span className="text-[13px] leading-snug font-semibold text-[#f3d6df]">
+              <span className="text-[16.8px] text-pink">✈</span>
+              <span className="text-[15.6px] leading-snug font-semibold text-[#f3d6df]">
                 You&apos;re both in {flightsTrip.city} {dateRange(flightsTrip.from, flightsTrip.to)}
               </span>
             </div>
@@ -122,25 +122,25 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
 
           {!p.is_me && (
             <Link href={`/people/${p.id}/how`} className="flex items-center gap-[11px] rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-3 hover:border-[#5a534b]">
-              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-plum text-[11.5px] font-bold text-pink">{degShort}</span>
+              <span className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-plum text-[13.8px] font-bold text-pink">{degShort}</span>
               <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-semibold">{mutualLine}</div>
-                <div className="text-[11.5px] text-muted">
+                <div className="text-[16.8px] font-semibold">{mutualLine}</div>
+                <div className="text-[13.8px] text-muted">
                   {p.degree === 2 && !p.verified ? "Not verified yet · tap to see how you know each other" : "Tap to see how you know each other"}
                 </div>
               </div>
-              <span className="text-[17px] text-pink">›</span>
+              <span className="text-[20.4px] text-pink">›</span>
             </Link>
           )}
 
-          {p.bio && <p className="text-[14.5px] leading-[1.55] text-body">{p.bio}</p>}
+          {p.bio && <p className="text-[17.4px] leading-[1.55] text-body">{p.bio}</p>}
 
           {cities.length > 0 && (
             <div>
               <SectionLabel>Cities</SectionLabel>
               <div className="flex flex-col gap-1.5">
                 {cities.map((c, i) => (
-                  <div key={i} className="flex items-center gap-2 text-[13.5px]">
+                  <div key={i} className="flex items-center gap-2 text-[16.2px]">
                     <span className="w-4 flex-none text-center text-muted">{c.glyph}</span>
                     <span className="font-semibold">{c.city}</span>
                     <span className="text-muted">{c.years}</span>
@@ -155,28 +155,28 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
               <SectionLabel>Where they&apos;d take you</SectionLabel>
               <div className="flex flex-wrap gap-[7px]">
                 {p.spots.map((s) => (
-                  <span key={s} className="rounded-full border-[1.5px] border-line bg-card px-3 py-[7px] text-[12.5px] font-semibold text-body">{s}</span>
+                  <span key={s} className="rounded-full border-[1.5px] border-line bg-card px-3 py-[7px] text-[15px] font-semibold text-body">{s}</span>
                 ))}
               </div>
             </div>
           )}
 
           {p.languages.length > 0 && (
-            <div className="text-[13px] text-muted"><span className="font-bold text-soft">Speaks</span> · {p.languages.join(", ")}</div>
+            <div className="text-[15.6px] text-muted"><span className="font-bold text-soft">Speaks</span> · {p.languages.join(", ")}</div>
           )}
 
           {(p.instagram || p.facebook) && (
             <div className="flex flex-wrap gap-2">
               {p.instagram && (
                 <a href={`https://instagram.com/${p.instagram.replace(/^@/, "")}`} target="_blank" rel="noreferrer"
-                  className="flex items-center gap-[7px] rounded-xl border-[1.5px] border-line bg-card px-[13px] py-[9px] text-[12.5px] font-semibold text-body">
-                  <span className="flex h-[18px] w-[18px] items-center justify-center rounded-md bg-[linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)] text-[8px] font-bold text-white">IG</span>
+                  className="flex items-center gap-[7px] rounded-xl border-[1.5px] border-line bg-card px-[13px] py-[9px] text-[15px] font-semibold text-body">
+                  <span className="flex h-[18px] w-[18px] items-center justify-center rounded-md bg-[linear-gradient(135deg,#7b5cd6,#e0566f,#f2a24b)] text-[9.6px] font-bold text-white">IG</span>
                   {p.instagram}
                 </a>
               )}
               {p.facebook && (
-                <span className="flex items-center gap-[7px] rounded-xl border-[1.5px] border-line bg-card px-[13px] py-[9px] text-[12.5px] font-semibold text-body">
-                  <span className="flex h-[18px] w-[18px] items-center justify-center rounded-md bg-[#3b6fd4] font-serif text-[10px] font-bold text-white">f</span>
+                <span className="flex items-center gap-[7px] rounded-xl border-[1.5px] border-line bg-card px-[13px] py-[9px] text-[15px] font-semibold text-body">
+                  <span className="flex h-[18px] w-[18px] items-center justify-center rounded-md bg-[#3b6fd4] font-serif text-[12px] font-bold text-white">f</span>
                   {p.facebook}
                 </span>
               )}
@@ -201,9 +201,9 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
 function RailItem({ glyph, label, sub }: { glyph: string; label: string; sub?: string | null }) {
   return (
     <div className="flex flex-col items-center gap-[3px] px-1">
-      <span className="text-[15px]">{glyph}</span>
-      <span className="text-center text-[10px] leading-[1.15] font-bold text-soft">{label}</span>
-      {sub && <span className="text-center text-[9.5px] leading-[1.1] font-bold text-pink">{sub}</span>}
+      <span className="text-[18px]">{glyph}</span>
+      <span className="text-center text-[12px] leading-[1.15] font-bold text-soft">{label}</span>
+      {sub && <span className="text-center text-[11.4px] leading-[1.1] font-bold text-pink">{sub}</span>}
     </div>
   );
 }

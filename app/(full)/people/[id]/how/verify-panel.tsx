@@ -30,7 +30,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
 
   const box = (children: React.ReactNode) => (
     <div className="mt-3.5 rounded-2xl bg-card px-[15px] py-3.5">
-      <div className="text-[11.5px] font-bold tracking-[.06em] text-muted uppercase">Verify the link</div>
+      <div className="text-[13.8px] font-bold tracking-[.06em] text-muted uppercase">Verify the link</div>
       {children}
       <ErrorNote>{error}</ErrorNote>
     </div>
@@ -38,7 +38,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
 
   if (p.degree === 1) {
     return box(<>
-      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-body">You two already know each other directly — nothing to verify.</p>
+      <p className="mt-1.5 text-[16.2px] leading-[1.55] text-body">You two already know each other directly — nothing to verify.</p>
       <SayHello personId={p.id} className="mt-3 !h-[46px] !text-[19px]" label={`Message ${p.first_name}`} />
     </>);
   }
@@ -46,7 +46,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
   if (p.verified) {
     const by = p.verified.by?.first_name;
     return box(<>
-      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-body">
+      <p className="mt-1.5 text-[16.2px] leading-[1.55] text-body">
         {p.verified.method === "self"
           ? `${by} confirmed this off the app with ${p.verified.mutual_name ?? "a mutual friend"}. Self-reported — a mutual friend hasn't confirmed it in the app.`
           : `Verified by ${by}${p.verified.method === "link" ? " (by link)" : ""}. They confirmed they know you both.`}
@@ -58,15 +58,15 @@ export function VerifyPanel({ person: p }: { person: Person }) {
   if (link) {
     const text = `Hi ${whoName}! Can you confirm you know me and ${p.first_name}? It's one tap: ${link}`;
     return box(<>
-      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-body">
+      <p className="mt-1.5 text-[16.2px] leading-[1.55] text-body">
         Send this link to {whoName} by text, WhatsApp or however you usually talk. It works for 7 days and only once.
       </p>
-      <div className="mt-2.5 rounded-xl bg-well p-3 text-[12.5px] leading-snug break-all text-soft">{text}</div>
+      <div className="mt-2.5 rounded-xl bg-well p-3 text-[15px] leading-snug break-all text-soft">{text}</div>
       <PrimaryButton className="mt-3 !h-[46px] !text-[19px]" onClick={async () => {
         if (navigator.share) await navigator.share({ text }).catch(() => {});
         else await navigator.clipboard?.writeText(text);
       }}>share the link</PrimaryButton>
-      <a href={`sms:?&body=${encodeURIComponent(text)}`} className="mt-2 block text-center text-[12.5px] font-semibold text-pink">Open in Messages</a>
+      <a href={`sms:?&body=${encodeURIComponent(text)}`} className="mt-2 block text-center text-[15px] font-semibold text-pink">Open in Messages</a>
     </>);
   }
 
@@ -74,7 +74,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
     const mName = v.mutual?.first_name ?? v.mutual?.name ?? "your mutual friend";
     if (v.role === "target" && v.status === "pending_target") {
       return box(<>
-        <p className="mt-1.5 text-[13.5px] leading-[1.55] text-body">
+        <p className="mt-1.5 text-[16.2px] leading-[1.55] text-body">
           {p.first_name} asked {mName} to confirm you both know them. If you agree, a chat opens with the three of you.
           Expires {shortDate(v.expires_at.slice(0, 10))}.
         </p>
@@ -88,7 +88,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
       </>);
     }
     return box(<>
-      <p className="mt-1.5 text-[13.5px] leading-[1.55] text-body">
+      <p className="mt-1.5 text-[16.2px] leading-[1.55] text-body">
         {v.status === "pending_target"
           ? `Waiting for ${p.first_name} to agree to a chat with ${mName}.`
           : v.method === "link" ? `Waiting for ${mName} to tap the link you sent.`
@@ -96,7 +96,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
       </p>
       {v.chat_id && <PrimaryButton href={`/chat/${v.chat_id}`} className="mt-3 !h-[46px] !text-[19px]">open the chat</PrimaryButton>}
       {v.role === "requester" && (
-        <button type="button" className="mt-3 w-full text-center text-[12.5px] font-semibold text-faint" disabled={busy}
+        <button type="button" className="mt-3 w-full text-center text-[15px] font-semibold text-faint" disabled={busy}
           onClick={async () => { await call("cancel_verification", { p_id: v.id }); router.refresh(); }}>
           Cancel{v.method === "link" ? " and send a new link" : " this request"}
         </button>
@@ -120,12 +120,12 @@ export function VerifyPanel({ person: p }: { person: Person }) {
   const noMutualOnApp = p.via_kind === "school" || p.mutuals.length === 0;
 
   return box(<>
-    <p className="mt-1.5 text-[13.5px] leading-[1.55] text-body">
+    <p className="mt-1.5 text-[16.2px] leading-[1.55] text-body">
       {noMutualOnApp
         ? `You're connected through the ${p.via_school ?? "same"} network, not a mutual friend. If you know someone in common, you can still verify through them.`
         : `Ask someone you both know to confirm the connection is real. Nobody sees anyone's contacts.`}
     </p>
-    {lastNote && <p className="mt-2 text-[12px] text-faint">{lastNote}</p>}
+    {lastNote && <p className="mt-2 text-[14.4px] text-faint">{lastNote}</p>}
 
     {p.mutuals.length > 0 && (
       <div className="mt-3 flex flex-col gap-1.5">
@@ -133,12 +133,12 @@ export function VerifyPanel({ person: p }: { person: Person }) {
           <button key={m.id} type="button" onClick={() => setMutualId(m.id)}
             className={`flex items-center gap-2.5 rounded-xl border-[1.5px] bg-well px-3 py-2 text-left ${mutualId === m.id ? "border-pink" : "border-line"}`}>
             <Avatar id={m.id} name={m.name} src={m.avatar_url} size={30} />
-            <span className="flex-1 text-[13.5px] font-semibold">{m.name}</span>
+            <span className="flex-1 text-[16.2px] font-semibold">{m.name}</span>
             {mutualId === m.id && <span className="text-pink">✓</span>}
           </button>
         ))}
         <button type="button" onClick={() => setMutualId("")}
-          className={`rounded-xl border-[1.5px] bg-well px-3 py-2 text-left text-[13px] ${!mutualId ? "border-pink text-text" : "border-line text-muted"}`}>
+          className={`rounded-xl border-[1.5px] bg-well px-3 py-2 text-left text-[15.6px] ${!mutualId ? "border-pink text-text" : "border-line text-muted"}`}>
           Someone else (not on Friend Flower yet)
         </button>
       </div>
@@ -162,7 +162,7 @@ export function VerifyPanel({ person: p }: { person: Person }) {
       onClick={() => method && go(method)}>
       {method === "link" ? "create the link" : method === "self" ? "mark as checked" : `ask ${whoName} to verify`}
     </PrimaryButton>
-    <p className="mt-2 text-center text-[11px] text-faint">You can still chat with {p.first_name} before verifying. <Link className="text-pink" href={`/people/${p.id}`}>Back to profile</Link></p>
+    <p className="mt-2 text-center text-[13.2px] text-faint">You can still chat with {p.first_name} before verifying. <Link className="text-pink" href={`/people/${p.id}`}>Back to profile</Link></p>
   </>);
 }
 
@@ -170,8 +170,8 @@ function MethodButton({ on, onClick, title, note }: { on: boolean; onClick: () =
   return (
     <button type="button" onClick={onClick}
       className={`rounded-xl border-[1.5px] px-3 py-2.5 text-left ${on ? "border-pink bg-plum" : "border-line bg-well"}`}>
-      <div className="text-[13.5px] font-semibold">{title}</div>
-      <div className="mt-0.5 text-[11.5px] leading-snug text-muted">{note}</div>
+      <div className="text-[16.2px] font-semibold">{title}</div>
+      <div className="mt-0.5 text-[13.8px] leading-snug text-muted">{note}</div>
     </button>
   );
 }

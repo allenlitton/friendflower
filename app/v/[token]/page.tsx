@@ -22,7 +22,7 @@ export default async function VerifyLinkPage({ params }: PageProps<"/v/[token]">
     <main className="flex flex-1 flex-col items-center justify-center gap-4 px-7 py-10 text-center">
       <Flower size={48} stroke="#fff" strokeWidth={2.4} />
       {!v ? (
-        <p className="text-[14px] text-muted">This link isn&apos;t valid. Ask your friend to send a new one.</p>
+        <p className="text-[16.8px] text-muted">This link isn&apos;t valid. Ask your friend to send a new one.</p>
       ) : (
         <>
           <div className="flex items-center">
@@ -32,7 +32,7 @@ export default async function VerifyLinkPage({ params }: PageProps<"/v/[token]">
           <h1 className="font-display text-[32px] leading-[1.1]">
             Do you know {v.requester.first_name} and {v.target.first_name}?
           </h1>
-          <p className="max-w-[320px] text-[13.5px] leading-normal text-muted">
+          <p className="max-w-[320px] text-[16.2px] leading-normal text-muted">
             {v.requester.name} asked you to confirm that you know both of them, so they can meet up knowing the connection is real.
             Only say yes if you know them both.
           </p>

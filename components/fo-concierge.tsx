@@ -77,29 +77,29 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex flex-none items-center gap-[11px] border-b border-line-soft bg-well px-3.5 py-[9px]">
-        <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[17px] text-soft">‹</Link>
+        <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
         <FoFace size={36} />
         <div className="min-w-0">
           <div className="truncate font-display text-[20px] leading-[1.1]">Fo</div>
-          <div className="truncate text-[11px] text-muted">Your concierge · only you see this chat</div>
+          <div className="truncate text-[13.2px] text-muted">Your concierge · only you see this chat</div>
         </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-[7px] overflow-y-auto px-4 py-3.5">
         {thread.messages.length === 0 && (
-          <p className="px-2 py-4 text-center text-[13px] leading-normal text-muted">
+          <p className="px-2 py-4 text-center text-[15.6px] leading-normal text-muted">
             Fo finds the place, books the table, and sorts flights and deliveries.
           </p>
         )}
         {thread.messages.map((m) => (
-          <div key={m.id} className={`max-w-[85%] px-[13px] py-2.5 text-[14px] leading-[1.45] whitespace-pre-wrap ${m.role === "me"
+          <div key={m.id} className={`max-w-[85%] px-[13px] py-2.5 text-[16.8px] leading-[1.45] whitespace-pre-wrap ${m.role === "me"
             ? "self-end rounded-[16px_16px_5px_16px] bg-pink text-white"
             : "self-start rounded-[16px_16px_16px_5px] border-[1.5px] border-plum-line bg-plum text-[#f3d6df]"}`}>
             {m.body}
           </div>
         ))}
         {working && (
-          <div className="self-start rounded-2xl bg-raised px-3 py-2 text-[12.5px] leading-snug text-muted" role="status">
+          <div className="self-start rounded-2xl bg-raised px-3 py-2 text-[15px] leading-snug text-muted" role="status">
             <span className="animate-pulse">✦</span> {thread.progress ?? "Fo is on it…"}
           </div>
         )}
@@ -111,7 +111,7 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
           <div className="mb-2.5 flex flex-wrap gap-[7px]">
             {ideas.map((idea) => (
               <button key={idea} type="button" onClick={() => setDraft(idea)}
-                className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-left text-[12.5px] font-semibold text-pink">{idea}</button>
+                className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-left text-[15px] font-semibold text-pink">{idea}</button>
             ))}
           </div>
         )}
@@ -120,9 +120,9 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
           <textarea value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={2000} rows={1}
             placeholder={working ? "Fo is working on your request…" : "Ask Fo…"} disabled={working}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
-            className="min-h-11 min-w-0 flex-1 resize-none rounded-[18px] border-[1.5px] border-line bg-card px-4 py-2.5 text-[16px] outline-none disabled:opacity-60" />
+            className="min-h-11 min-w-0 flex-1 resize-none rounded-[18px] border-[1.5px] border-line bg-card px-4 py-2.5 text-[19.2px] outline-none disabled:opacity-60" />
           <button type="submit" aria-label="Send to Fo" disabled={working || !draft.trim()}
-            className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[17px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
+            className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[20.4px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
         </form>
       </div>
     </div>

@@ -49,7 +49,7 @@ export function LiveLocation({ enabled }: { enabled: boolean }) {
 
   return (
     <Sheet open={!!trip} onClose={() => answer(null)} title={trip ? `Visiting ${trip.city}?` : ""}>
-      <div className="mt-1.5 text-[13px] leading-normal text-muted">
+      <div className="mt-1.5 text-[15.6px] leading-normal text-muted">
         Set your trip dates <span className="text-faint">(optional)</span>. Live distance already shows you&apos;re here, so friends in {trip?.city} can find you. Dates let them see how long you&apos;re around.
       </div>
       <SectionLabel className="mt-4">Dates</SectionLabel>

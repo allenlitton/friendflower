@@ -20,7 +20,7 @@ export default async function InvitePage({ params }: PageProps<"/invite/[code]">
       <h1 className="font-display text-[34px] leading-[1.1]">
         {inviter ? `${inviter.first_name} invited you to friend flower` : "friend flower"}
       </h1>
-      <p className="max-w-[300px] text-[14px] leading-normal text-muted">
+      <p className="max-w-[300px] text-[16.8px] leading-normal text-muted">
         Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
       <AcceptInvite code={code} valid={!!inviter} signedIn={!!user} />

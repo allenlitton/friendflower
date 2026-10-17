@@ -17,13 +17,13 @@ export function ConfirmLink({ token, status, canConfirm, needsName, confirmedBy,
     const yes = done ?? status === "confirmed";
     return (
       <div className="flex w-full max-w-[320px] flex-col gap-3">
-        <p className="text-[14px] text-body">{yes ? `Thanks${confirmedBy && done === null ? ` — ${confirmedBy} already confirmed this` : ""}! They're now verified.` : "Thanks for letting them know."}</p>
+        <p className="text-[16.8px] text-body">{yes ? `Thanks${confirmedBy && done === null ? ` — ${confirmedBy} already confirmed this` : ""}! They're now verified.` : "Thanks for letting them know."}</p>
         <PrimaryButton href={onboarded ? "/nearby" : "/onboarding"}>{onboarded ? "open friend flower" : "create your profile"}</PrimaryButton>
       </div>
     );
   }
-  if (status === "expired" || status === "cancelled") return <p className="text-[14px] text-muted">This request has expired.</p>;
-  if (!canConfirm) return <p className="text-[14px] text-muted">This link is for the mutual friend to open — send it to them.</p>;
+  if (status === "expired" || status === "cancelled") return <p className="text-[16.8px] text-muted">This request has expired.</p>;
+  if (!canConfirm) return <p className="text-[16.8px] text-muted">This link is for the mutual friend to open — send it to them.</p>;
 
   async function answer(yes: boolean) {
     if (needsName) {

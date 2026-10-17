@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Doto, Playfair_Display, VT323 } from "next/font/google";
+import { Doto, Noto_Serif, VT323 } from "next/font/google";
 import "./globals.css";
 
 const vt323 = VT323({ weight: "400", subsets: ["latin"], variable: "--font-vt323" });
 const doto = Doto({ weight: ["700", "800"], subsets: ["latin"], variable: "--font-doto" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const notoSerif = Noto_Serif({ subsets: ["latin"], variable: "--font-noto-serif" });
 
 export const metadata: Metadata = {
   // Link previews (opengraph-image.tsx) need absolute URLs.
@@ -24,7 +24,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${vt323.variable} ${doto.variable} ${playfair.variable} antialiased`}>
+    <html lang="en" className={`${vt323.variable} ${doto.variable} ${notoSerif.variable} antialiased`}>
       <body>
         {/* The app is designed as a phone screen; on a desktop it sits in a centred column. */}
         <div className="mx-auto flex min-h-dvh w-full max-w-[440px] flex-col bg-bg pt-[env(safe-area-inset-top)] sm:border-x sm:border-line-soft">

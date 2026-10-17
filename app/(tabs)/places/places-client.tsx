@@ -69,13 +69,13 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
   return (
     <>
       <ScreenTitle right={neighbourhoods.length > 0 && (
-          <button type="button" onClick={() => setAdding(true)} className="rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold whitespace-nowrap text-ink">+ Add a place</button>
+          <button type="button" onClick={() => setAdding(true)} className="rounded-full bg-pink px-[13px] py-2 text-[15px] font-bold whitespace-nowrap text-ink">+ Add a place</button>
         )}>Places to meet</ScreenTitle>
       {cities.length > 1 && (
         <div className="flex flex-none gap-2 px-5 pt-1.5">
           {cities.map((c) => (
             <Link key={c.id} href={`/places?city=${c.id}`}
-              className={`text-[12px] font-bold ${c.id === city.id ? "text-pink" : "text-faint"}`}>{c.name}</Link>
+              className={`text-[14.4px] font-bold ${c.id === city.id ? "text-pink" : "text-faint"}`}>{c.name}</Link>
           ))}
         </div>
       )}
@@ -84,7 +84,7 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
       </div>
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pb-3.5">
         {venues.length === 0 && (
-          <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5 text-[13px] leading-normal text-muted">
+          <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5 text-[15.6px] leading-normal text-muted">
             We&apos;re still hand-picking places in {city.name}. In the meantime, ask your circle where they&apos;d take you.
           </div>
         )}
@@ -97,18 +97,18 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
           return (
             <div key={v.id} className="flex flex-col rounded-[18px] border-[1.5px] border-line bg-card">
               <div className="flex h-[88px] flex-none items-end rounded-t-2xl px-[13px] py-2.5" style={{ background: KIND_GRAD[v.kind] }}>
-                <span className="rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold text-[#6b645b]">{KIND_LABEL[v.kind]}</span>
+                <span className="rounded-full bg-white/95 px-2.5 py-1 text-[13.2px] font-bold text-[#6b645b]">{KIND_LABEL[v.kind]}</span>
               </div>
               <div className="px-[15px] pt-[13px] pb-3.5">
                 <div className="flex items-baseline gap-2">
                   <div className="min-w-0 flex-1 font-display text-[23px]">{v.name}</div>
-                  <div className="text-[11.5px] whitespace-nowrap text-muted">
+                  <div className="text-[13.8px] whitespace-nowrap text-muted">
                     {v.walk_min != null ? (v.walk_min <= 45 ? `${Math.max(2, v.walk_min)} min walk` : v.neighbourhood) : v.neighbourhood}
                   </div>
                 </div>
-                {v.note && <div className="mt-1 text-[13px] leading-snug text-muted">{v.note}</div>}
+                {v.note && <div className="mt-1 text-[15.6px] leading-snug text-muted">{v.note}</div>}
                 {v.added_by && (
-                  <div className="mt-1.5 flex items-center gap-2 text-[11.5px] text-faint">
+                  <div className="mt-1.5 flex items-center gap-2 text-[13.8px] text-faint">
                     <span>{v.mine ? "Added by you" : `Added by ${v.added_by.name}`}{v.neighbourhood ? ` · ${v.neighbourhood}` : ""}</span>
                     {v.mine && (
                       <button type="button" className="font-semibold text-pink" onClick={async () => {
@@ -123,9 +123,9 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
                       <div key={r.id} className="-mr-2"><Avatar id={r.id} name={r.name} src={r.avatar_url} size={26} ring="2px solid #fff" /></div>
                     ))}
                   </div>
-                  <span className={`min-w-0 flex-1 text-[11.5px] text-muted ${v.regulars.length ? "ml-3" : ""}`}>{vouch}</span>
+                  <span className={`min-w-0 flex-1 text-[13.8px] text-muted ${v.regulars.length ? "ml-3" : ""}`}>{vouch}</span>
                   <button type="button" onClick={() => toggleGo(v)}
-                    className={`rounded-full px-3 py-2 text-[12px] font-bold whitespace-nowrap ${v.i_go ? "bg-leaf-bg text-leaf" : "bg-[#262220] text-soft"}`}>
+                    className={`rounded-full px-3 py-2 text-[14.4px] font-bold whitespace-nowrap ${v.i_go ? "bg-leaf-bg text-leaf" : "bg-[#262220] text-soft"}`}>
                     {v.i_go ? "✓ I go here" : "I go here"}
                   </button>
                   <button type="button" onClick={() => setSuggest(v)}
@@ -137,12 +137,12 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
         })}
         <div className="mt-1">
           <AskFoButton />
-          <div className="mt-2 text-center text-[11.5px] leading-snug text-faint">Fo finds a spot and books the table. Hospitality partner perks are coming soon.</div>
+          <div className="mt-2 text-center text-[13.8px] leading-snug text-faint">Fo finds a spot and books the table. Hospitality partner perks are coming soon.</div>
         </div>
       </div>
 
       <Sheet open={adding} onClose={() => setAdding(false)} title="Add a place">
-        <p className="mt-1.5 text-[13px] leading-normal text-muted">
+        <p className="mt-1.5 text-[15.6px] leading-normal text-muted">
           Somewhere you&apos;d take a new friend in {city.name}. Your friends and friends of friends will see it here.
         </p>
         <SectionLabel className="mt-3.5">Name</SectionLabel>
@@ -166,12 +166,12 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
 
       <Sheet open={!!suggest} onClose={() => setSuggest(null)} title={`Suggest ${suggest?.name ?? ""}`}>
         <div className="mt-3 flex flex-col gap-1.5">
-          {chats.length === 0 && <div className="text-[13px] text-muted">Start a chat with someone first, then suggest a place.</div>}
+          {chats.length === 0 && <div className="text-[15.6px] text-muted">Start a chat with someone first, then suggest a place.</div>}
           {chats.map((c) => (
             <button key={c.id} type="button" onClick={() => sendTo(c.id)}
               className="flex items-center gap-2.5 rounded-xl border-[1.5px] border-line bg-card px-3 py-2 text-left">
               {c.members[0] && <Avatar id={c.members[0].id} name={c.members[0].name} src={c.members[0].avatar_url} size={32} />}
-              <span className="text-[14px] font-semibold">{c.members.map((m) => m.first_name).join(" · ")}</span>
+              <span className="text-[16.8px] font-semibold">{c.members.map((m) => m.first_name).join(" · ")}</span>
             </button>
           ))}
         </div>
