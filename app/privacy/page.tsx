@@ -42,6 +42,11 @@ export default function PrivacyPage() {
             after, or straight away when you turn live distance off. People in your circle who also share theirs see how far away you
             are (to 0.1 mi) — never your location itself.
           </p>
+          <p className="mt-2">
+            When you ask <b>Fo Concierge</b> for something while live distance is on, your latest position (rounded to about 100 m)
+            and the nearest neighbourhood go with your request, so Fo can find places near you. Fo runs on Friend Flower&apos;s own
+            Fo account. Nothing about your location is sent when live distance is off.
+          </p>
         </div>
         <div>
           <SectionLabel>Safety</SectionLabel>
