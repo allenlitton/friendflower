@@ -88,6 +88,30 @@ test("outside chats, each member has one more thread of their own", async () => 
   assert.equal((await db.query(`select count(*)::int n from public.fo_threads where user_id = $1 and chat_id is null`, [U.outsider])).rows[0].n, 1);
 });
 
+test("with Live distance on, Fo gets your fresh live position and the nearest neighbourhood", async () => {
+  const nb = (await db.query(`select name, lat, lng from public.neighbourhoods where id = 'sf-mission'`)).rows[0];
+  const ask = async () => { const r = await begin("arren", "Coffee near me?"); await update("arren", "complete", "Sure."); return r.location; };
+  const setLive = (on) => db.query(`update public.profiles set share_live_location = $2, show_distance = $2 where id = $1`, [U.arren, on]);
+  const putLive = (ago = "0 minutes") => db.query(
+    `insert into private.live_locations (user_id, lat, lng, updated_at) values ($1, $2, $3, now() - $4::interval)
+     on conflict (user_id) do update set lat = excluded.lat, lng = excluded.lng, updated_at = excluded.updated_at`,
+    [U.arren, Math.round(nb.lat * 1000) / 1000, Math.round(nb.lng * 1000) / 1000, ago]);
+
+  assert.equal(await ask(), null);                       // off: nothing
+  await setLive(true);
+  await putLive();
+  const loc = await ask();
+  assert.equal(loc.neighbourhood, nb.name);
+  assert.equal(loc.city, "San Francisco");
+  assert.equal(loc.lat, Math.round(nb.lat * 1000) / 1000);
+  await putLive("45 minutes");
+  assert.equal(await ask(), null);                       // stale: nothing
+  await putLive();
+  await setLive(false);                                  // turning it off erases it
+  assert.equal(await ask(), null);
+  assert.equal((await db.query(`select count(*)::int n from private.live_locations where user_id = $1`, [U.arren])).rows[0].n, 0);
+});
+
 test("the daily limit", async () => {
   await db.query(`delete from public.fo_messages`);
   for (let i = 0; i < 20; i++) {

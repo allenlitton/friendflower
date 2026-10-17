@@ -111,10 +111,16 @@ const ABOUT: Record<FoPage, string> = {
   places: "help finding a place to meet or booking a table",
 };
 
-export function withContext(text: string, who: { me: string; home_city: string | null; others: string[] }, page: FoPage) {
+type FoLocation = { lat: number; lng: number; neighbourhood: string | null; city: string | null };
+
+export function withContext(text: string, who: { me: string; home_city: string | null; others: string[]; location?: FoLocation | null }, page: FoPage) {
   const meeting = who.others.length ? ` They are planning to meet ${who.others.join(" and ")}.` : "";
+  // Only there when they have Live distance on and the app sent a position in the last 30 minutes.
+  const loc = who.location;
+  const area = loc && [loc.neighbourhood && `near ${loc.neighbourhood}`, loc.city && `in ${loc.city}`].filter(Boolean).join(" ");
   return [
     `[Friend Flower · Fo Concierge] A request from ${who.me}${who.home_city ? `, who lives in ${who.home_city}` : ""}.${meeting}`,
+    ...(loc ? [`Where they are right now (live from the app, to about 100 m): ${area ? `${area}, ` : ""}${loc.lat.toFixed(3)}, ${loc.lng.toFixed(3)}. Use this instead of asking where they are.`] : []),
     `They are a member of the Friend Flower app asking for ${ABOUT[page]}, not the owner of this Wajo account.`,
     "Check with them before spending money, and don't share the account owner's personal details.",
     "",
