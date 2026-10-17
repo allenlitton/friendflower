@@ -7,7 +7,6 @@ import { Avatar, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/
 import { Sheet } from "@/components/sheet";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
 import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
-import { FoConciergeSheet } from "@/components/fo-concierge";
 
 const TRASH_W = 48;
 
@@ -22,7 +21,6 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   const [draft, setDraft] = useState(initialDraft);
   const [intro, setIntro] = useState("");
   const [placeOpen, setPlaceOpen] = useState(false);
-  const [conciergeOpen, setConciergeOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [times, setTimes] = useState(initialTimes);
   // Swipe-left on your own message reveals a trash can: `open` is the revealed row, `drag` the live offset.
@@ -256,8 +254,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
             )}
             <button type="button" onClick={() => setPlaceOpen(true)}
               className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap text-leaf">Share a place</button>
-            <button type="button" onClick={() => setConciergeOpen(true)}
-              className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</button>
+            <Link href={`/fo?draft=${encodeURIComponent(`Book a table for me and ${others.filter((m) => !m.left).map((m) => m.first_name).join(" and ") || "a friend"}`)}`}
+              className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</Link>
           </div>
           <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Say hello…" maxLength={2000}
@@ -282,8 +280,6 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           ))}
         </div>
       </Sheet>
-      <FoConciergeSheet open={conciergeOpen} onClose={() => setConciergeOpen(false)} chatId={chat.id}
-        others={others.filter((m) => !m.left).map((m) => m.first_name)} />
     </div>
   );
 }

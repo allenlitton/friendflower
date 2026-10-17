@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => ({}));
   const chat: string | null = typeof body?.chat === "string" && body.chat ? body.chat : null;
-  const page: FoPage = chat ? "chat" : body?.page === "trips" ? "trips" : "places";
+  const page: FoPage = chat ? "chat" : "general";
   const text = typeof body?.text === "string" ? body.text.trim().slice(0, 2000) : "";
 
   const admin = supabaseAdmin();

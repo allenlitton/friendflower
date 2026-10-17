@@ -270,7 +270,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
         </div>
 
         <div className="mt-1">
-          <AskFoButton page="trips" />
+          <AskFoButton />
         </div>
       </div>
 

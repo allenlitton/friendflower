@@ -136,7 +136,7 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
           );
         })}
         <div className="mt-1">
-          <AskFoButton page="places" />
+          <AskFoButton />
           <div className="mt-2 text-center text-[11.5px] leading-snug text-faint">Fo finds a spot and books the table. Hospitality partner perks are coming soon.</div>
         </div>
       </div>

@@ -104,10 +104,11 @@ export function foReply(conversationId: string | null, waitSeconds: number) {
  * Fo runs from a shared account and hears from many members, so every request
  * says who it's from and what it's for.
  */
-export type FoPage = "chat" | "trips" | "places";
+export type FoPage = "chat" | "trips" | "places" | "general";
 const ABOUT: Record<FoPage, string> = {
   chat: "help with a meetup (finding a place, booking a table, timing)",
   trips: "help with their trips, flights or getting a small package delivered",
+  general: "help with meetups, trips, flights, deliveries, finding a place or booking a table",
   places: "help finding a place to meet or booking a table",
 };
 
