@@ -33,7 +33,7 @@
 
   --font-display: var(--font-vt323), "Noto Serif", serif;
   --font-logo: var(--font-doto), "Noto Serif", serif;
-  --font-sans: var(--font-playfair), "Playfair Display", Georgia, serif;
+  --font-sans: var(--font-noto-serif), "Noto Serif", Georgia, serif;
 }
 
 html, body {
