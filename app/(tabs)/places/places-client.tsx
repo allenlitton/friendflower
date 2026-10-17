@@ -6,6 +6,7 @@ import type { ChatSummary, Neighbourhood, Venue } from "@/lib/types";
 import { Avatar, ErrorNote, Pill, PrimaryButton, ScreenTitle, SectionLabel } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { useRpc } from "@/components/person-actions";
+import { AskFoButton } from "@/components/fo-concierge";
 
 const FILTERS = [
   { label: "All", kinds: null },
@@ -134,9 +135,9 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
             </div>
           );
         })}
-        <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5">
-          <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Fo Concierge</div>
-          <div className="mt-1 text-[12.5px] leading-snug text-muted">Open a chat and tap <b className="text-soft">Ask Fo Concierge</b> to have Fo find a spot and book the table. Hospitality partner perks are coming soon.</div>
+        <div className="mt-1">
+          <AskFoButton page="places" />
+          <div className="mt-2 text-center text-[11.5px] leading-snug text-faint">Fo finds a spot and books the table. Hospitality partner perks are coming soon.</div>
         </div>
       </div>
 

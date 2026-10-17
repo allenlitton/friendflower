@@ -7,7 +7,7 @@ import { Avatar, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/
 import { Sheet } from "@/components/sheet";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
 import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
-import { FoConciergeSheet } from "./fo-concierge";
+import { FoConciergeSheet } from "@/components/fo-concierge";
 
 const TRASH_W = 48;
 

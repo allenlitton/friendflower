@@ -28,6 +28,8 @@
   --color-leaf-bg: #182419;
   --color-leaf-line: #2c412f;
   --color-online: #4cd471;
+  --color-ecru: #c2b280;
+  --color-ecru-deep: #a8986a;
 
   --font-display: var(--font-vt323), "Noto Serif", serif;
   --font-logo: var(--font-doto), "Noto Serif", serif;

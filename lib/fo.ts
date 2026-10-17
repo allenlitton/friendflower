@@ -104,11 +104,18 @@ export function foReply(conversationId: string | null, waitSeconds: number) {
  * Fo runs from a shared account and hears from many members, so every request
  * says who it's from and what it's for.
  */
-export function withContext(text: string, who: { me: string; home_city: string | null; others: string[] }) {
+export type FoPage = "chat" | "trips" | "places";
+const ABOUT: Record<FoPage, string> = {
+  chat: "help with a meetup (finding a place, booking a table, timing)",
+  trips: "help with their trips, flights or getting a small package delivered",
+  places: "help finding a place to meet or booking a table",
+};
+
+export function withContext(text: string, who: { me: string; home_city: string | null; others: string[] }, page: FoPage) {
   const meeting = who.others.length ? ` They are planning to meet ${who.others.join(" and ")}.` : "";
   return [
     `[Friend Flower · Fo Concierge] A request from ${who.me}${who.home_city ? `, who lives in ${who.home_city}` : ""}.${meeting}`,
-    "They are a member of the Friend Flower app asking for help with a meetup (finding a place, booking a table, timing), not the owner of this Wajo account.",
+    `They are a member of the Friend Flower app asking for ${ABOUT[page]}, not the owner of this Wajo account.`,
     "Check with them before spending money, and don't share the account owner's personal details.",
     "",
     text,
