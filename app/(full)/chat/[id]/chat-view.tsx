@@ -256,7 +256,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
             <button type="button" onClick={() => setPlaceOpen(true)}
               className="rounded-full border-[1.5px] border-leaf-line bg-leaf-bg px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap text-leaf">Share a place</button>
             <button type="button" onClick={() => setConciergeOpen(true)}
-              className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-pink">Ask concierge</button>
+              className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[12.5px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</button>
           </div>
           <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Say hello…" maxLength={2000}
@@ -281,10 +281,10 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           ))}
         </div>
       </Sheet>
-      <Sheet open={conciergeOpen} onClose={() => setConciergeOpen(false)} title="Concierge">
+      <Sheet open={conciergeOpen} onClose={() => setConciergeOpen(false)} title="Fo Concierge">
         <div className="mt-3">
-          <ComingSoon title="AI concierge">
-            Soon the concierge will book the table and split the bill — right here in the chat.
+          <ComingSoon title="Fo Concierge is on the way">
+            Soon Fo Concierge will book the table and split the bill — right here in the chat.
             For now, use <b>Find a time</b> to agree when, and <b>Share a place</b> to suggest where.
           </ComingSoon>
         </div>

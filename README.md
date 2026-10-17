@@ -93,5 +93,5 @@ npm run lint
 ```
 
 ## 4. Not in this version
-The AI concierge (shown as "coming soon"; the non-AI Concierge watch on the World tab is live), payments / Bloom plan, Instagram / Facebook / LinkedIn login and matching,
+The AI Fo Concierge (shown as "coming soon"; the non-AI Fo Concierge watch on the World tab is live), payments / Bloom plan, Instagram / Facebook / LinkedIn login and matching,
 push notifications, reservations and partner venues, venue/business accounts, app languages, live location (never).
