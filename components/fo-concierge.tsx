@@ -56,9 +56,22 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
 
   useEffect(() => { bottom.current?.scrollIntoView({ block: "end" }); }, [thread]);
 
+  // Fo can't cancel a request, so this frees the chat; a message sent afterwards
+  // goes to Fo as an update to the one that was stopped.
+  async function stop() {
+    setError("");
+    shown.current = false; // end the current wait; follow() restarts it for the next request
+    setSending(false);
+    setThread((t) => ({ ...t, status: "idle", progress: null }));
+    await fetch("/api/fo", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat: chatId, page, stop: true }) }).catch(() => {});
+    shown.current = true;
+    await load();
+  }
+
   async function send(text: string) {
     text = text.trim();
-    if (!text || sending) return;
+    if (!text || (sending && !working)) return;
+    if (working) await stop();
     setSending(true);
     setError("");
     setDraft("");
@@ -118,11 +131,18 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
         <ErrorNote>{error}</ErrorNote>
         <form className="flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
           <textarea value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={2000} rows={1}
-            placeholder={working ? "Fo is working on your request…" : "Ask Fo…"} disabled={working}
+            placeholder={working ? "Add more, or stop Fo…" : "Ask Fo…"}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
-            className="min-h-11 min-w-0 flex-1 resize-none rounded-[18px] border-[1.5px] border-line bg-card px-4 py-2.5 text-[19.2px] outline-none disabled:opacity-60" />
-          <button type="submit" aria-label="Send to Fo" disabled={working || !draft.trim()}
-            className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[20.4px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
+            className="min-h-11 min-w-0 flex-1 resize-none rounded-[18px] border-[1.5px] border-line bg-card px-4 py-2.5 text-[19.2px] outline-none" />
+          {working && !draft.trim() ? (
+            <button type="button" onClick={stop} aria-label="Stop Fo"
+              className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-ink hover:bg-pink-deep">
+              <span className="h-3.5 w-3.5 rounded-[3px] bg-ink" />
+            </button>
+          ) : (
+            <button type="submit" aria-label={working ? "Stop Fo and send" : "Send to Fo"} disabled={!draft.trim()}
+              className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[20.4px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
+          )}
         </form>
       </div>
     </div>
