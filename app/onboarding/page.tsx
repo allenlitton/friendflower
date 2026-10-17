@@ -12,7 +12,7 @@ export default async function OnboardingPage() {
   return (
     <main className="flex-1 overflow-y-auto px-6 pt-1.5 pb-6">
       <h1 className="font-display text-[36px] leading-[1.1]">Create your profile</h1>
-      <p className="mt-2 mb-[18px] text-[13.5px] leading-normal text-muted">
+      <p className="mt-2 mb-[18px] text-[16.2px] leading-normal text-muted">
         Set how friends and friends of friends might find you.
       </p>
       <ProfileEditor mode="onboarding" profile={profile} {...data} />

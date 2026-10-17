@@ -17,7 +17,7 @@ export default async function ConnectPage({ searchParams }: PageProps<"/connect"
         {welcome && (
           <>
             <h1 className="font-display text-[36px] leading-[1.1]">Find your friends</h1>
-            <p className="mt-2 text-[13.5px] leading-normal text-muted">
+            <p className="mt-2 text-[16.2px] leading-normal text-muted">
               Your circle is built from people who have each other in their contacts, plus friends you add or invite.
             </p>
           </>

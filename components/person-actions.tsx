@@ -43,8 +43,8 @@ export function ChatRailButton({ personId }: { personId: string }) {
       const id = await call<string>("open_direct_chat", { p_other: personId });
       if (id) router.push(`/chat/${id}`);
     }}>
-      <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[11px] border-[1.5px] border-line bg-card text-[14px]">💬</span>
-      <span className="text-[10px] font-bold text-soft">chat</span>
+      <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[11px] border-[1.5px] border-line bg-card text-[16.8px]">💬</span>
+      <span className="text-[12px] font-bold text-soft">chat</span>
     </button>
   );
 }
@@ -58,8 +58,8 @@ export function FriendButton({ personId, state, compact }: { personId: string; s
   const sent = state.request?.direction === "sent";
   const label = state.isFriend ? "✓ Friends" : received ? "Accept friend" : sent ? "Requested" : "+ Add friend";
   const cls = compact
-    ? `rounded-full px-3 py-1.5 text-[12px] font-bold whitespace-nowrap ${state.isFriend ? "bg-leaf-bg text-leaf" : sent ? "bg-raised text-muted" : "bg-pink text-ink"}`
-    : `flex h-[46px] w-full items-center justify-center rounded-[13px] text-[14px] font-bold ${state.isFriend ? "border-[1.5px] border-leaf-line bg-leaf-bg text-leaf" : sent ? "border-[1.5px] border-line bg-card text-muted" : "border-[1.5px] border-plum-line bg-plum text-pink"}`;
+    ? `rounded-full px-3 py-1.5 text-[14.4px] font-bold whitespace-nowrap ${state.isFriend ? "bg-leaf-bg text-leaf" : sent ? "bg-raised text-muted" : "bg-pink text-ink"}`
+    : `flex h-[46px] w-full items-center justify-center rounded-[13px] text-[16.8px] font-bold ${state.isFriend ? "border-[1.5px] border-leaf-line bg-leaf-bg text-leaf" : sent ? "border-[1.5px] border-line bg-card text-muted" : "border-[1.5px] border-plum-line bg-plum text-pink"}`;
   return (
     <>
       <button type="button" className={cls} disabled={busy || sent} onClick={async () => {
@@ -98,13 +98,13 @@ export function ReportBlock({ personId, name, trigger = "text" }: { personId: st
   return (
     <>
       <button type="button" onClick={() => setOpen(true)}
-        className={trigger === "dots" ? "flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-soft" : "text-[12.5px] font-semibold text-faint"}>
+        className={trigger === "dots" ? "flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-soft" : "text-[15px] font-semibold text-faint"}>
         {trigger === "dots" ? "•••" : "Report or block"}
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title={done ? "Thanks for telling us" : `Report or block ${name}`}>
         {done ? (
           <>
-            <p className="mt-3 text-[13.5px] leading-normal text-muted">
+            <p className="mt-3 text-[16.2px] leading-normal text-muted">
               {block ? `${name} can no longer see you or message you, and you won't see them.` : "We'll take a look."} Our team reviews every report.
             </p>
             <PrimaryButton className="mt-4" onClick={() => { setOpen(false); router.push(block ? "/nearby" : "."); router.refresh(); }}>done</PrimaryButton>
@@ -114,7 +114,7 @@ export function ReportBlock({ personId, name, trigger = "text" }: { personId: st
             <SectionLabel className="mt-4">What&apos;s wrong?</SectionLabel>
             <div className="flex flex-col gap-1.5">
               {REASONS.map((r) => (
-                <label key={r.value} className={`flex items-center gap-2.5 rounded-xl border-[1.5px] px-3 py-2.5 text-[14px] ${reason === r.value ? "border-pink" : "border-line"} bg-card`}>
+                <label key={r.value} className={`flex items-center gap-2.5 rounded-xl border-[1.5px] px-3 py-2.5 text-[16.8px] ${reason === r.value ? "border-pink" : "border-line"} bg-card`}>
                   <input type="radio" name="reason" value={r.value} checked={reason === r.value} onChange={() => setReason(r.value)} />
                   {r.label}
                 </label>
@@ -122,7 +122,7 @@ export function ReportBlock({ personId, name, trigger = "text" }: { personId: st
             </div>
             <textarea className="field mt-2.5 !min-h-[70px] !text-[14px]" placeholder="Anything else we should know? (optional)"
               maxLength={1000} value={details} onChange={(e) => setDetails(e.target.value)} />
-            <label className="mt-2.5 flex items-center gap-2 text-[13px] text-soft">
+            <label className="mt-2.5 flex items-center gap-2 text-[15.6px] text-soft">
               <input type="checkbox" checked={block} onChange={(e) => setBlock(e.target.checked)} /> Also block {name}
             </label>
             <ErrorNote>{error}</ErrorNote>
@@ -130,7 +130,7 @@ export function ReportBlock({ personId, name, trigger = "text" }: { personId: st
               const ok = await call("report_user", { p_other: personId, p_reason: reason, p_details: details, p_block: block });
               if (ok !== undefined) setDone(true);
             }}>send report</PrimaryButton>
-            <button type="button" disabled={busy} className="mt-3 w-full text-center text-[13px] font-semibold text-pink" onClick={async () => {
+            <button type="button" disabled={busy} className="mt-3 w-full text-center text-[15.6px] font-semibold text-pink" onClick={async () => {
               if (!confirm(`Block ${name}? You won't see each other anywhere on Friend Flower.`)) return;
               const ok = await call("block_user", { p_other: personId });
               if (ok !== undefined) { setBlock(true); setDone(true); }

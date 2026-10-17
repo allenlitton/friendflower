@@ -59,7 +59,7 @@ export function SignInForm() {
   if (step === "code") {
     return (
       <form onSubmit={verify} className="flex flex-col gap-2.5">
-        <div className="text-[13.5px] leading-normal text-muted">
+        <div className="text-[16.2px] leading-normal text-muted">
           We sent a code to <span className="text-text">{email}</span>. Enter it here, or tap the link in the email.
           It can take a minute — check spam too.
         </div>
@@ -67,7 +67,7 @@ export function SignInForm() {
           maxLength={10} placeholder="······" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} autoFocus />
         <ErrorNote>{error}</ErrorNote>
         <PrimaryButton type="submit" disabled={busy || code.length < 6}>{busy ? "checking…" : "sign in"}</PrimaryButton>
-        <button type="button" className="text-[12.5px] font-semibold text-pink" onClick={() => { setStep("email"); setCode(""); }}>
+        <button type="button" className="text-[15px] font-semibold text-pink" onClick={() => { setStep("email"); setCode(""); }}>
           Use a different email
         </button>
       </form>

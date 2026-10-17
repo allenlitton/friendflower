@@ -44,10 +44,10 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         <PetalHalo size={88}><Avatar id={p.id} name={p.first_name} src={p.avatar_url} size={56} /></PetalHalo>
         <div className="min-w-0 flex-1">
           <div className="font-display text-[23px]">{p.first_name}{p.last_initial ? ` ${p.last_initial}.` : ""}</div>
-          <div className="text-[12.5px] leading-snug text-muted">{sub}</div>
-          <Link href={`/people/${p.id}`} className="text-[12px] font-semibold text-pink">See how others see you</Link>
+          <div className="text-[15px] leading-snug text-muted">{sub}</div>
+          <Link href={`/people/${p.id}`} className="text-[14.4px] font-semibold text-pink">See how others see you</Link>
         </div>
-        <Link href="/you/edit" className="flex-none rounded-full bg-pink px-[13px] py-2 text-[12.5px] font-bold whitespace-nowrap text-ink">Edit profile</Link>
+        <Link href="/you/edit" className="flex-none rounded-full bg-pink px-[13px] py-2 text-[15px] font-bold whitespace-nowrap text-ink">Edit profile</Link>
       </div>
 
       <div>
@@ -56,24 +56,24 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
           {toggles.map((t) => (
             <div key={t.k} className="flex items-center gap-[11px] border-b border-rule px-[15px] py-3 last:border-0">
               <div className="min-w-0 flex-1">
-                <div className="text-[14px] font-semibold">{t.label}</div>
-                <div className="text-[11.5px] leading-snug text-muted">{t.note}</div>
+                <div className="text-[16.8px] font-semibold">{t.label}</div>
+                <div className="text-[13.8px] leading-snug text-muted">{t.note}</div>
               </div>
               <Toggle label={t.label} on={p[t.k]} onChange={(v) => update({ [t.k]: v })} />
             </div>
           ))}
           <div className="flex items-center gap-[11px] px-[15px] py-3">
             <div className="min-w-0 flex-1">
-              <div className="text-[14px] font-semibold">Live distance</div>
-              <div className="text-[11.5px] leading-snug text-muted">
+              <div className="text-[16.8px] font-semibold">Live distance</div>
+              <div className="text-[13.8px] leading-snug text-muted">
                 While the app is open, people in your circle who share theirs see how far away you are, to {p.units === "metric" ? "about 150 m" : "0.1 mi"}
               </div>
-              {liveError && <div className="mt-1 text-[11.5px] leading-snug text-plum-text">{liveError}</div>}
+              {liveError && <div className="mt-1 text-[13.8px] leading-snug text-plum-text">{liveError}</div>}
             </div>
             <Toggle label="Live distance" on={p.share_live_location} onChange={setLive} />
           </div>
         </div>
-        <div className="mt-2 text-[11.5px] leading-snug text-faint">
+        <div className="mt-2 text-[13.8px] leading-snug text-faint">
           People see the city you live in, trips you declare, and — if you add one — your neighbourhood. With live distance on,
           they see how far away you are, never where you are.
         </div>
@@ -83,7 +83,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         <SectionLabel>Who can see me</SectionLabel>
         <Segmented value={p.visibility} onChange={(v) => update({ visibility: v })}
           options={[{ value: "first", label: "1st only" }, { value: "fof", label: "Friends of friends" }]} />
-        <div className="mt-2 text-[12px] leading-snug text-muted">
+        <div className="mt-2 text-[14.4px] leading-snug text-muted">
           {p.visibility === "first"
             ? "Only people you're directly connected to can see you."
             : "Friends and friends of friends can see you. Friends of friends are marked unverified until a mutual friend confirms."}
@@ -97,7 +97,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
 
       <div>
         <SectionLabel>Notifications</SectionLabel>
-        <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3 text-[12.5px] leading-snug text-muted">
+        <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3 text-[15px] leading-snug text-muted">
           Push notifications are coming soon. For now, new messages, friend requests and verification requests show as a pink dot on Chats.
         </div>
       </div>
@@ -109,8 +109,8 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
             {blocks.map((b) => (
               <div key={b.id} className="flex items-center gap-3 border-b border-rule py-2.5 last:border-0">
                 <Avatar id={b.id} name={b.name} src={b.avatar_url} size={32} />
-                <span className="flex-1 text-[14px]">{b.name}</span>
-                <button type="button" className="text-[12px] font-semibold text-pink" onClick={async () => {
+                <span className="flex-1 text-[16.8px]">{b.name}</span>
+                <button type="button" className="text-[14.4px] font-semibold text-pink" onClick={async () => {
                   await supabase.from("blocks").delete().eq("blocker_id", p.id).eq("blocked_id", b.id);
                   router.refresh();
                 }}>Unblock</button>
@@ -123,11 +123,11 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
       <RowLink href="/you/settings" icon="⚙" title="Settings" note="Language and units" />
       <RowLink href="/privacy" icon="🔒" title="How we handle your data" note="What's shared, with whom, and what's never stored" />
       <a href="mailto:hello@friendflower.app" className="flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5 hover:border-[#5a534b]">
-        <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-plum text-[16px] font-bold text-pink">?</span>
-        <div className="min-w-0 flex-1"><div className="text-[14.5px] font-semibold">Need help?</div><div className="text-[11.5px] text-muted">Contact the Friend Flower team</div></div>
-        <span className="text-[17px] text-pink">›</span>
+        <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-plum text-[19.2px] font-bold text-pink">?</span>
+        <div className="min-w-0 flex-1"><div className="text-[17.4px] font-semibold">Need help?</div><div className="text-[13.8px] text-muted">Contact the Friend Flower team</div></div>
+        <span className="text-[20.4px] text-pink">›</span>
       </a>
-      <button type="button" className="rounded-[14px] border-[1.5px] border-line bg-card p-[13px] text-[14px] font-semibold text-pink hover:bg-[#241a22]"
+      <button type="button" className="rounded-[14px] border-[1.5px] border-line bg-card p-[13px] text-[16.8px] font-semibold text-pink hover:bg-[#241a22]"
         onClick={async () => { await supabase.auth.signOut(); router.replace("/signin"); router.refresh(); }}>
         Sign out
       </button>

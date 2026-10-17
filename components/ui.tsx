@@ -64,7 +64,7 @@ export function ScreenTitle({ children, sub, right, flower }: { children: ReactN
           <h1 className="font-display text-[31px] leading-[1.1]">{children}</h1>
           {flower && <Flower />}
         </div>
-        {sub && <div className="text-[11.5px] text-muted">{sub}</div>}
+        {sub && <div className="text-[13.8px] text-muted">{sub}</div>}
       </div>
       {right}
     </div>
@@ -75,7 +75,7 @@ export function BackBar({ href, title, right }: { href: string; title?: ReactNod
   return (
     <div className="flex flex-none items-center gap-3 border-b border-line-soft px-4 py-2.5">
       <Link href={href} aria-label="Back"
-        className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[17px] text-soft">‹</Link>
+        className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
       <div className="min-w-0 flex-1 font-display text-[24px] leading-tight">{title}</div>
       {right}
     </div>
@@ -83,7 +83,7 @@ export function BackBar({ href, title, right }: { href: string; title?: ReactNod
 }
 
 export function SectionLabel({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <div className={`mb-2 text-[11.5px] font-bold tracking-[.06em] text-muted uppercase ${className}`}>{children}</div>;
+  return <div className={`mb-2 text-[13.8px] font-bold tracking-[.06em] text-muted uppercase ${className}`}>{children}</div>;
 }
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
@@ -103,7 +103,7 @@ export function PrimaryButton({ children, className = "", disabled, ...rest }: B
 }
 
 export function SecondaryButton({ children, className = "", disabled, ...rest }: BtnProps) {
-  const cls = `flex h-[46px] w-full items-center justify-center rounded-[13px] border-[1.5px] border-line bg-card text-[14px] font-semibold text-soft hover:border-[#5a534b] ${disabled ? "pointer-events-none opacity-45" : ""} ${className}`;
+  const cls = `flex h-[46px] w-full items-center justify-center rounded-[13px] border-[1.5px] border-line bg-card text-[16.8px] font-semibold text-soft hover:border-[#5a534b] ${disabled ? "pointer-events-none opacity-45" : ""} ${className}`;
   if ("href" in rest && rest.href) return <Link href={rest.href} className={cls}>{children}</Link>;
   return <button type={rest.type ?? "button"} onClick={rest.onClick} disabled={disabled} className={cls}>{children}</button>;
 }
@@ -112,7 +112,7 @@ export function SecondaryButton({ children, className = "", disabled, ...rest }:
 export function Pill({ on, children, onClick, className = "" }: { on?: boolean; children: ReactNode; onClick?: () => void; className?: string }) {
   return (
     <button type="button" onClick={onClick}
-      className={`rounded-full border-[1.5px] px-[13px] py-[7px] text-[12.5px] font-semibold whitespace-nowrap ${
+      className={`rounded-full border-[1.5px] px-[13px] py-[7px] text-[15px] font-semibold whitespace-nowrap ${
         on ? "border-pink bg-pink text-ink" : "border-line bg-card text-soft"} ${className}`}>
       {children}
     </button>
@@ -123,7 +123,7 @@ export function Tag({ tone = "plum", children, className = "" }: { tone?: "plum"
   const tones = {
     plum: "bg-plum text-pink", gold: "bg-gold-bg text-gold", leaf: "bg-leaf-bg text-leaf", grey: "bg-raised text-soft",
   };
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-[3px] text-[11px] font-bold ${tones[tone]} ${className}`}>{children}</span>;
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-[3px] text-[13.2px] font-bold ${tones[tone]} ${className}`}>{children}</span>;
 }
 
 export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
@@ -142,7 +142,7 @@ export function Segmented<T extends string>({ value, options, onChange }: {
     <div className="flex gap-0.5 rounded-xl bg-[#211e1b] p-[3px]">
       {options.map((o) => (
         <button key={o.value} type="button" onClick={() => onChange(o.value)}
-          className={`flex-1 rounded-[10px] py-2 text-[12px] font-bold ${value === o.value ? "bg-[#2e2a26] text-text shadow" : "text-muted"}`}>
+          className={`flex-1 rounded-[10px] py-2 text-[14.4px] font-bold ${value === o.value ? "bg-[#2e2a26] text-text shadow" : "text-muted"}`}>
           {o.label}
         </button>
       ))}
@@ -156,12 +156,12 @@ export function RowLink({ href, onClick, icon, title, note, tone = "plum" }: {
 }) {
   const inner = (
     <>
-      <span className={`flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] text-[16px] font-bold ${tone === "gold" ? "bg-gold-bg text-gold" : "bg-plum text-pink"}`}>{icon}</span>
+      <span className={`flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] text-[19.2px] font-bold ${tone === "gold" ? "bg-gold-bg text-gold" : "bg-plum text-pink"}`}>{icon}</span>
       <div className="min-w-0 flex-1 text-left">
-        <div className="text-[14.5px] font-semibold">{title}</div>
-        {note && <div className="text-[11.5px] text-muted">{note}</div>}
+        <div className="text-[17.4px] font-semibold">{title}</div>
+        {note && <div className="text-[13.8px] text-muted">{note}</div>}
       </div>
-      <span className="text-[17px] text-pink">›</span>
+      <span className="text-[20.4px] text-pink">›</span>
     </>
   );
   const cls = "flex w-full items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-[13px] hover:border-[#5a534b]";
@@ -170,18 +170,18 @@ export function RowLink({ href, onClick, icon, title, note, tone = "plum" }: {
 
 export function ErrorNote({ children }: { children: ReactNode }) {
   if (!children) return null;
-  return <div role="alert" className="rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2 text-[12.5px] text-plum-text">{children}</div>;
+  return <div role="alert" className="rounded-xl border-[1.5px] border-plum-line bg-plum px-3 py-2 text-[15px] text-plum-text">{children}</div>;
 }
 
 export function ComingSoon({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="rounded-[18px] border-[1.5px] border-gold-line bg-[#241d14] px-[15px] py-[14px]">
       <div className="flex items-center gap-2">
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e8b54b] text-[10px] text-ink">✦</span>
-        <span className="flex-1 text-[11px] font-bold tracking-[.05em] text-gold uppercase">{title}</span>
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#e8b54b] text-[12px] text-ink">✦</span>
+        <span className="flex-1 text-[13.2px] font-bold tracking-[.05em] text-gold uppercase">{title}</span>
         <Tag tone="gold">Coming soon</Tag>
       </div>
-      <div className="mt-2 text-[13.5px] leading-normal text-body">{children}</div>
+      <div className="mt-2 text-[16.2px] leading-normal text-body">{children}</div>
     </div>
   );
 }

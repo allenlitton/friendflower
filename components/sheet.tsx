@@ -23,7 +23,7 @@ export function Sheet({ open, onClose, title, children }: {
         <div className="flex items-center justify-between">
           <div className="font-display text-[26px]">{title}</div>
           <button type="button" onClick={onClose} aria-label="Close"
-            className="flex h-7 w-7 items-center justify-center rounded-full border-[1.5px] border-line bg-card text-[14px] text-soft">✕</button>
+            className="flex h-7 w-7 items-center justify-center rounded-full border-[1.5px] border-line bg-card text-[16.8px] text-soft">✕</button>
         </div>
         {children}
       </div>

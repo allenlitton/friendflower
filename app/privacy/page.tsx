@@ -10,14 +10,14 @@ export default function PrivacyPage() {
   return (
     <main className="flex flex-1 flex-col">
       <BackBar href="/you" title="Your data" />
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-[22px] pt-4 pb-8 text-[13.5px] leading-[1.55] text-body">
+      <div className="flex flex-1 flex-col gap-4 overflow-y-auto px-[22px] pt-4 pb-8 text-[16.2px] leading-[1.55] text-body">
         <div>
           <SectionLabel>Who sees what</SectionLabel>
           <Card className="px-[15px] py-1">
             {ROWS.map(([who, what]) => (
               <div key={who} className="border-b border-rule py-3 last:border-0">
-                <div className="text-[14px] font-semibold text-text">{who}</div>
-                <div className="mt-0.5 text-[12.5px] text-muted">{what}</div>
+                <div className="text-[16.8px] font-semibold text-text">{who}</div>
+                <div className="mt-0.5 text-[15px] text-muted">{what}</div>
               </div>
             ))}
           </Card>
