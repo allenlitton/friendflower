@@ -3,11 +3,15 @@ import { requireProfile } from "@/lib/session";
 import type { ChatSummary, Inbox } from "@/lib/types";
 import { timeAgo } from "@/lib/format";
 import { Avatar, ScreenTitle, SectionLabel } from "@/components/ui";
+import { FoFace } from "@/components/fo-face";
+import type { FoThread } from "@/components/fo-concierge";
 import { InboxActions } from "./inbox-actions";
 
 export default async function ChatsPage() {
   const { supabase } = await requireProfile();
-  const [{ data: chats }, { data: inbox }] = await Promise.all([supabase.rpc("my_chats"), supabase.rpc("inbox")]);
+  const [{ data: chats }, { data: inbox }, { data: foData }] = await Promise.all([supabase.rpc("my_chats"), supabase.rpc("inbox"), supabase.rpc("fo_thread", { p_chat: null })]);
+  const fo = foData as FoThread | null;
+  const foLast = fo?.messages.at(-1);
   const list = (chats ?? []) as ChatSummary[];
   const box = inbox as Inbox;
 
@@ -21,6 +25,19 @@ export default async function ChatsPage() {
             <InboxActions inbox={box} />
           </div>
         )}
+
+        <Link href="/fo" className="flex items-center gap-3 rounded-[15px] px-2.5 py-[11px] hover:bg-raised">
+          <FoFace size={48} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="truncate text-[15px] font-semibold">Fo</span>
+              {foLast && <span className="flex-none text-[11px] text-faint">{timeAgo(foLast.created_at)}</span>}
+            </div>
+            <div className="mt-0.5 truncate text-[13px] text-muted">
+              {fo?.status === "working" ? (fo.progress ?? "Fo is on it…") : foLast ? `${foLast.role === "me" ? "You: " : ""}${foLast.body}` : "Your concierge: tables, trips, deliveries"}
+            </div>
+          </div>
+        </Link>
 
         {list.length === 0 && (
           <div className="px-4 py-10 text-center text-[13px] leading-normal text-muted">
