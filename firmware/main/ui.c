@@ -15,6 +15,8 @@
 #define MAX_PETALS 12
 #define FLOWER_Y 158
 #define PETAL_SCALE 210  // 256 = full size
+#define LOGO_PETALS 5    // the five-heart logo
+#define SPIN_MS 12000    // one full turn
 
 LV_IMAGE_DECLARE(img_petal);
 LV_IMAGE_DECLARE(img_face);
@@ -25,6 +27,7 @@ static const char *TITLES[PAGES] = { "", "Nearby", "Chats", "Trips", "Places" };
 static lv_obj_t *s_tiles, *s_page[PAGES], *s_list[PAGES], *s_dots[PAGES];
 static lv_obj_t *s_petals[MAX_PETALS], *s_count, *s_overlay, *s_ov_title, *s_ov_code, *s_ov_body, *s_settings;
 static ui_action_cb_t s_action;
+static int s_shown;
 
 // ---- text ------------------------------------------------------------------
 
@@ -178,14 +181,31 @@ static void make_home(void) {
   lv_obj_add_event_cb(t, on_home_hold, LV_EVENT_LONG_PRESSED_REPEAT, NULL);
 }
 
+static void spin(void *var, int32_t angle) {
+  for (int i = 0; i < s_shown; i++) lv_image_set_rotation(s_petals[i], (i * 3600 / s_shown + angle) % 3600);
+}
+
 static void set_petals(int n) {
   if (n > MAX_PETALS) n = MAX_PETALS;
+  s_shown = n;
   for (int i = 0; i < MAX_PETALS; i++) {
-    if (i < n) {
-      lv_image_set_rotation(s_petals[i], i * 3600 / n);
-      lv_obj_remove_flag(s_petals[i], LV_OBJ_FLAG_HIDDEN);
-    } else lv_obj_add_flag(s_petals[i], LV_OBJ_FLAG_HIDDEN);
+    if (i < n) lv_obj_remove_flag(s_petals[i], LV_OBJ_FLAG_HIDDEN);
+    else lv_obj_add_flag(s_petals[i], LV_OBJ_FLAG_HIDDEN);
   }
+  spin(NULL, 0);
+}
+
+// For now Home shows the full logo flower turning slowly, not one petal per
+// nearby person.
+static void start_spin(void) {
+  lv_anim_t a;
+  lv_anim_init(&a);
+  lv_anim_set_var(&a, s_petals);
+  lv_anim_set_exec_cb(&a, spin);
+  lv_anim_set_values(&a, 0, 3600);
+  lv_anim_set_duration(&a, SPIN_MS);
+  lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
+  lv_anim_start(&a);
 }
 
 // ---- overlays ----------------------------------------------------------------
@@ -272,7 +292,8 @@ void ui_start(ui_action_cb_t on_action) {
     lv_obj_set_style_bg_opa(s_dots[i], LV_OPA_COVER, 0);
   }
   set_dots(HOME);
-  set_petals(5);
+  set_petals(LOGO_PETALS);
+  start_spin();
   for (int i = 1; i < PAGES; i++) empty(i, "Loading...");
   make_overlays();
   lvgl_port_unlock();
@@ -310,7 +331,6 @@ void ui_summary(const cJSON *s) {
   bool launched = cJSON_IsTrue(cJSON_GetObjectItem(s, "launched"));
 
   lvgl_port_lock(0);
-  set_petals(count);
   char c[64];
   ascii(city, c, sizeof c);
   if (!city) snprintf(a, sizeof a, "Add your city at friendflower.app");

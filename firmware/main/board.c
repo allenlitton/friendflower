@@ -30,7 +30,6 @@ static const char *TAG = "board";
 #define PIN_LCD_D3 7
 #define PIN_I2C_SDA 15
 #define PIN_I2C_SCL 14
-#define PIN_TOUCH_INT 11
 #define PIN_BOOT 0
 static const gpio_num_t LCD_RESETS[] = { 39, 1 };
 static const gpio_num_t TOUCH_RESETS[] = { 40, 2 };
@@ -141,8 +140,13 @@ esp_err_t board_init(void) {
   esp_lcd_panel_io_i2c_config_t tio_cfg = ESP_LCD_TOUCH_IO_I2C_CST816S_CONFIG();
   tio_cfg.scl_speed_hz = 400000;
   ESP_RETURN_ON_ERROR(esp_lcd_new_panel_io_i2c(i2c, &tio_cfg, &tio), TAG, "touch io");
+  // The chip only pulses its interrupt on touch down/up, and with an interrupt
+  // pin esp_lvgl_port reads only on those pulses, so LVGL never saw the finger
+  // move and swipes did nothing. Poll it instead, and keep it awake (0xFE
+  // DisAutoSleep) so it answers every read.
+  esp_lcd_panel_io_tx_param(tio, 0xFE, (uint8_t[]){ 0x01 }, 1);
   const esp_lcd_touch_config_t tcfg = {
-    .x_max = W, .y_max = W, .rst_gpio_num = -1, .int_gpio_num = PIN_TOUCH_INT,
+    .x_max = W, .y_max = W, .rst_gpio_num = -1, .int_gpio_num = GPIO_NUM_NC,
     .flags = { .swap_xy = 0, .mirror_x = 1, .mirror_y = 1 },  // as on Waveshare's 1.75
   };
   esp_lcd_touch_handle_t tp;
