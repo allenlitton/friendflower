@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ChatDetail, MeetOptions, MeetPart, MeetState, Message } from "@/lib/types";
-import { Avatar, ComingSoon, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/ui";
+import { Avatar, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
 import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
+import { FoConciergeSheet } from "./fo-concierge";
 
 const TRASH_W = 48;
 
@@ -281,14 +282,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           ))}
         </div>
       </Sheet>
-      <Sheet open={conciergeOpen} onClose={() => setConciergeOpen(false)} title="Fo Concierge">
-        <div className="mt-3">
-          <ComingSoon title="Fo Concierge is on the way">
-            Soon Fo Concierge will book the table and split the bill — right here in the chat.
-            For now, use <b>Find a time</b> to agree when, and <b>Share a place</b> to suggest where.
-          </ComingSoon>
-        </div>
-      </Sheet>
+      <FoConciergeSheet open={conciergeOpen} onClose={() => setConciergeOpen(false)} chatId={chat.id}
+        others={others.filter((m) => !m.left).map((m) => m.first_name)} />
     </div>
   );
 }

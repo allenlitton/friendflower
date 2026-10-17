@@ -136,7 +136,7 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
         })}
         <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5">
           <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Fo Concierge</div>
-          <div className="mt-1 text-[12.5px] leading-snug text-muted">Fo Concierge will book the table for you, and hospitality partner perks are coming soon.</div>
+          <div className="mt-1 text-[12.5px] leading-snug text-muted">Open a chat and tap <b className="text-soft">Ask Fo Concierge</b> to have Fo find a spot and book the table. Hospitality partner perks are coming soon.</div>
         </div>
       </div>
 

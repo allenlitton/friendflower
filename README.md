@@ -45,6 +45,15 @@ Open <http://localhost:3000> and sign in with your email.
 
 Every time new code is pushed to GitHub, Vercel updates the site automatically.
 
+### Connect Fo Concierge
+Fo Concierge runs from **one Wajo account** (yours): every member's requests go through it. With `.env.local` filled in and the database migrations run:
+```bash
+npm run fo:connect
+```
+Your browser opens the Wajo sign-in. Sign in with the account Fo should act from, and the script saves its login in the database. That covers the live site too, since it uses the same database. Run it again to switch accounts or if Fo Concierge says it isn't available.
+
+Each member can send Fo 20 requests a day, and every request tells Fo who it's from and asks Fo to check with them before spending money. Fo still acts from your account, so keep an eye on what it does at <https://wajo.ai>.
+
 ### Before real launch
 - **Email sending:** Supabase's built-in email is only for testing (it sends a handful per hour). Set up a free [Resend](https://resend.com) account and add it under **Authentication → Emails → SMTP Settings**.
 - **Review the venue list** in `supabase/migrations/…03_reference_data.sql` (check they're still open, and the notes sound like you).
@@ -58,6 +67,7 @@ Every time new code is pushed to GitHub, Vercel updates the site automatically.
 | Screens | `app/` — one folder per screen (`nearby`, `world`, `trips`, `places`, `chats`, `you`, `people/[id]`, `chat/[id]`) |
 | Shared look (buttons, avatars, flower logo) | `components/ui.tsx` |
 | Colours and fonts | `app/globals.css` (top of file) |
+| Fo Concierge (talking to Fo, its login) | `lib/fo.ts`, `app/api/fo/route.ts`, `scripts/fo-connect.mjs` |
 | Database tables | `supabase/migrations/…01_schema.sql` |
 | Who-can-see-what rules, friend graph, verification | `supabase/migrations/…02_functions.sql` |
 | Cities, neighbourhoods, venues | `supabase/migrations/…03_reference_data.sql` — see `docs/ADDING_A_CITY.md` |
@@ -93,5 +103,5 @@ npm run lint
 ```
 
 ## 4. Not in this version
-The AI Fo Concierge (shown as "coming soon"; the non-AI Fo Concierge watch on the World tab is live), payments / Bloom plan, Instagram / Facebook / LinkedIn login and matching,
+Payments / Bloom plan, Instagram / Facebook / LinkedIn login and matching,
 push notifications, reservations and partner venues, venue/business accounts, app languages, live location (never).
