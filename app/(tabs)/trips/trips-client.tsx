@@ -10,6 +10,7 @@ import { Avatar, ErrorNote, PrimaryButton, ScreenTitle, SectionLabel, Segmented 
 import { Sheet } from "@/components/sheet";
 import { useRpc } from "@/components/person-actions";
 import { CityPicker } from "@/components/city-picker";
+import { AskFoButton } from "@/components/fo-concierge";
 
 const VIS = [
   { value: "first" as const, label: "1st only" },
@@ -266,6 +267,10 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
           <div className="mt-2 text-[11px] leading-normal text-faint">
             We search {d.scope === "circle" ? "people in your circles" : "everyone on Friend Flower"} who&apos;ve said they&apos;re open to carrying a package, then open a chat with the best match. Only people who opted in on a trip can be found.
           </div>
+        </div>
+
+        <div className="mt-1">
+          <AskFoButton page="trips" />
         </div>
       </div>
 

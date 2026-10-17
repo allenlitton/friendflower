@@ -72,6 +72,22 @@ test("members can't call the server functions or read the token", async () => {
   await assert.rejects(as(db, U.arren, () => rpc(db, "srv_fo_save_auth", { p_client_id: "c", p_access: "a", p_refresh: "r", p_expires_at: "2030-01-01" })));
 });
 
+test("outside chats, each member has one more thread of their own", async () => {
+  assert.deepEqual(await thread("outsider", null), { status: "idle", progress: null, messages: [] });
+  const r = await begin("outsider", "Find me a courier to Paris", null);
+  assert.equal(r.status, "ok");
+  assert.deepEqual(r.others, []);
+  assert.equal((await begin("outsider", "Again", null)).status, "busy");
+  await update("outsider", "complete", "On it.", "conv-out", null);
+  assert.equal((await begin("outsider", "Thanks", null)).conversation_id, "conv-out");
+  await update("outsider", "complete", "Any time.", "", null);
+  assert.deepEqual((await thread("outsider", null)).messages.map((m) => m.role), ["me", "fo", "me", "fo"]);
+  assert.deepEqual((await thread("arren", null)).messages, []);
+  // It's separate from the member's chat threads.
+  assert.ok((await thread("arren")).messages.every((m) => !m.body.includes("Paris")));
+  assert.equal((await db.query(`select count(*)::int n from public.fo_threads where user_id = $1 and chat_id is null`, [U.outsider])).rows[0].n, 1);
+});
+
 test("the daily limit", async () => {
   await db.query(`delete from public.fo_messages`);
   for (let i = 0; i < 20; i++) {

@@ -10,9 +10,14 @@ type FoThread = { status: "idle" | "working"; progress: string | null; messages:
 
 const MAX_WAITS = 24; // ~10 minutes of waiting on one request while the sheet is open
 
-/** Your private thread with Fo Concierge for this chat. */
-export function FoConciergeSheet({ open, onClose, chatId, others }: {
-  open: boolean; onClose: () => void; chatId: string; others: string[];
+type FoPage = "chat" | "trips" | "places";
+
+/**
+ * Your private thread with Fo Concierge: one per chat, plus one shared by the
+ * Trips and Places pages (no chatId).
+ */
+export function FoConciergeSheet({ open, onClose, chatId = null, others = [], page = "chat" }: {
+  open: boolean; onClose: () => void; chatId?: string | null; others?: string[]; page?: FoPage;
 }) {
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [thread, setThread] = useState<FoThread>({ status: "idle", progress: null, messages: [] });
@@ -36,7 +41,7 @@ export function FoConciergeSheet({ open, onClose, chatId, others }: {
     following.current = true;
     try {
       for (let i = 0; i < MAX_WAITS && shown.current; i++) {
-        const res = await fetch("/api/fo", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat: chatId }) });
+        const res = await fetch("/api/fo", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat: chatId, page }) });
         const out = await res.json().catch(() => ({}));
         await load();
         if (!res.ok) { setError(out.error ?? "Something went wrong"); break; }
@@ -45,7 +50,7 @@ export function FoConciergeSheet({ open, onClose, chatId, others }: {
     } finally {
       following.current = false;
     }
-  }, [chatId, load]);
+  }, [chatId, page, load]);
 
   useEffect(() => {
     shown.current = open;
@@ -66,7 +71,7 @@ export function FoConciergeSheet({ open, onClose, chatId, others }: {
     setError("");
     setDraft("");
     setThread((t) => ({ status: "working", progress: null, messages: [...t.messages, { id: -Date.now(), role: "me", body: text, created_at: new Date().toISOString() }] }));
-    const res = await fetch("/api/fo", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat: chatId, text }) });
+    const res = await fetch("/api/fo", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat: chatId, page, text }) });
     const out = await res.json().catch(() => ({}));
     setSending(false);
     if (!res.ok) { setError(out.error ?? "Something went wrong"); setDraft(text); }
@@ -75,13 +80,20 @@ export function FoConciergeSheet({ open, onClose, chatId, others }: {
   }
 
   const working = thread.status === "working" || sending;
-  const who = others.length ? others.join(" and ") : "your friend";
-  const ideas = [`Book a table for me and ${who}`, "Find somewhere halfway between us", "What's good near me tonight?"];
+  const who = others.length ? others.join(" and ") : "a friend";
+  const ideas = page === "trips"
+    ? ["Find me a flight for my next trip", "Help me get a small package delivered", "Where should I stay on my trip?"]
+    : page === "places"
+      ? ["Book a table for two this Friday", "Find a quiet coffee spot near me", "What's good near me tonight?"]
+      : [`Book a table for me and ${who}`, "Find somewhere halfway between us", "What's good near me tonight?"];
+  const intro = page === "trips"
+    ? "Fo helps with trips, flights and deliveries. Only you see this thread."
+    : "Fo finds the place, books the table and sorts the details. Only you see this thread.";
 
   return (
     <Sheet open={open} onClose={onClose} title="Fo Concierge">
       <p className="mt-1.5 text-[13px] leading-normal text-muted">
-        Fo finds the place, books the table and sorts the details. Only you see this thread.
+        {intro}
       </p>
 
       <div className="mt-3.5 flex flex-col gap-[7px]">
@@ -120,5 +132,19 @@ export function FoConciergeSheet({ open, onClose, chatId, others }: {
           className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[17px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
       </form>
     </Sheet>
+  );
+}
+
+/** "Ask Fo Concierge" at the bottom of a page: an ecru button that opens your thread with Fo. */
+export function AskFoButton({ page }: { page: "trips" | "places" }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)}
+        className="flex h-[50px] w-full flex-none items-center justify-center gap-2 rounded-[14px] bg-ecru font-display text-[22px] text-ink transition-colors hover:bg-ecru-deep">
+        <span aria-hidden="true" className="text-[15px]">✦</span> Ask Fo Concierge
+      </button>
+      <FoConciergeSheet open={open} onClose={() => setOpen(false)} page={page} />
+    </>
   );
 }

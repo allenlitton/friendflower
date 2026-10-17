@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { askFo, foReply, FoNotConnected, withContext, type FoTurn } from "@/lib/fo";
+import { askFo, foReply, FoNotConnected, withContext, type FoPage, type FoTurn } from "@/lib/fo";
 
 // Fo can take a while; each wait for its reply is capped well under this.
 export const maxDuration = 60;
 const WAIT_SECONDS = 25;
 
-// Ask Fo Concierge for help from a chat ({ chat, text }), or, with no text,
-// wait for Fo's answer to the request already in flight. Fo's progress and
-// replies are saved to your private thread; the browser reads it with fo_thread.
+// Ask Fo Concierge for help ({ chat, text }), or, with no text, wait for Fo's
+// answer to the request already in flight. With no chat, it's your thread
+// from the Trips or Places page ({ page }). Fo's progress and replies are
+// saved to your private thread; the browser reads it with fo_thread.
 export async function POST(request: Request) {
   const supabase = await supabaseServer();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Please sign in" }, { status: 401 });
 
   const body = await request.json().catch(() => ({}));
-  const chat = typeof body?.chat === "string" ? body.chat : "";
+  const chat: string | null = typeof body?.chat === "string" && body.chat ? body.chat : null;
+  const page: FoPage = chat ? "chat" : body?.page === "trips" ? "trips" : "places";
   const text = typeof body?.text === "string" ? body.text.trim().slice(0, 2000) : "";
-  if (!chat) return NextResponse.json({ error: "Which chat?" }, { status: 400 });
 
   const admin = supabaseAdmin();
   const save = (turn: FoTurn) => admin.rpc("srv_fo_update", {
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
       if (start.status === "limit") return NextResponse.json({ error: "That's all the requests Fo can take from you today. Try again tomorrow." }, { status: 429 });
       if (start.status !== "ok") return NextResponse.json({ error: "You're not in this chat." }, { status: 403 });
       conversation = start.conversation_id;
-      turn = await askFo(withContext(text, start), conversation);
+      turn = await askFo(withContext(text, start, page), conversation);
     } else {
       const { data: state, error } = await admin.rpc("srv_fo_state", { p_user: user.id, p_chat: chat });
       if (error) return NextResponse.json({ error: error.message }, { status: 500 });
