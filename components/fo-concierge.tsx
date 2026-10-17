@@ -7,7 +7,8 @@ import Link from "next/link";
 import { FoFace } from "@/components/fo-face";
 
 export type FoMessage = { id: number; role: "me" | "fo"; body: string; created_at: string };
-export type FoThread = { status: "idle" | "working"; progress: string | null; messages: FoMessage[] };
+export type FoProposal = { id: number; body: string; people: { id: string; name: string; first_name: string; avatar_url: string | null }[] };
+export type FoThread = { status: "idle" | "working"; progress: string | null; messages: FoMessage[]; proposals?: FoProposal[] };
 
 const MAX_WAITS = 24; // ~10 minutes of waiting on one request while the sheet is open
 
@@ -19,6 +20,7 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
   const [thread, setThread] = useState<FoThread>(initial);
   const [draft, setDraft] = useState(initialDraft);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [sending, setSending] = useState(false);
   const following = useRef(false);
   const shown = useRef(true);
@@ -74,6 +76,7 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
     if (working) await stop();
     setSending(true);
     setError("");
+    setNotice("");
     setDraft("");
     setThread((t) => ({ status: "working", progress: null, messages: [...t.messages, { id: -Date.now(), role: "me", body: text, created_at: new Date().toISOString() }] }));
     const res = await fetch("/api/fo", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat: chatId, page, text }) });
@@ -82,6 +85,19 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
     if (!res.ok) { setError(out.error ?? "Something went wrong"); setDraft(text); }
     const t = await load();
     if (t?.status === "working") follow();
+  }
+
+  // A message Fo drafted for friends: nothing goes out until you tap Send.
+  async function decide(p: FoProposal, send: boolean) {
+    setError("");
+    setThread((t) => ({ ...t, proposals: (t.proposals ?? []).filter((x) => x.id !== p.id) }));
+    const { data, error } = send ? await supabase.rpc("fo_send_proposal", { p_id: p.id }) : await supabase.rpc("fo_dismiss_proposal", { p_id: p.id });
+    if (error) setError(error.message);
+    else if (send) {
+      const out = data as { sent: number; skipped: number };
+      setNotice(`Sent to ${out.sent} ${out.sent === 1 ? "friend" : "friends"}${out.skipped ? ` (${out.skipped} couldn't be reached)` : ""}.`);
+    }
+    await load();
   }
 
   const working = thread.status === "working" || sending;
@@ -116,6 +132,20 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
             <span className="animate-pulse">✦</span> {thread.progress ?? "Fo is on it…"}
           </div>
         )}
+        {!working && (thread.proposals ?? []).map((p) => (
+          <div key={p.id} className="self-stretch rounded-2xl border-[1.5px] border-gold-line bg-gold-bg px-3.5 py-3">
+            <div className="text-[13.2px] font-bold tracking-[.06em] text-gold uppercase">
+              Message to {p.people.length} {p.people.length === 1 ? "friend" : "friends"}
+            </div>
+            <div className="mt-1 text-[14.4px] leading-snug text-muted">{p.people.map((x) => x.first_name).join(", ")}</div>
+            <div className="mt-2 rounded-xl bg-card px-3 py-2 text-[16.8px] leading-[1.45] whitespace-pre-wrap">{p.body}</div>
+            <div className="mt-2.5 flex gap-2">
+              <button type="button" onClick={() => decide(p, true)} className="rounded-full bg-gold px-4 py-2 text-[15.6px] font-bold text-ink">Send to {p.people.length}</button>
+              <button type="button" onClick={() => decide(p, false)} className="rounded-full border-[1.5px] border-gold-line px-4 py-2 text-[15.6px] font-bold text-gold">Not now</button>
+            </div>
+          </div>
+        ))}
+        {notice && <p className="self-center text-[14.4px] text-leaf" role="status">{notice}</p>}
         <div ref={bottom} />
       </div>
 

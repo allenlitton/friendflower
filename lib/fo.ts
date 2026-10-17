@@ -112,9 +112,20 @@ const ABOUT: Record<FoPage, string> = {
   places: "help finding a place to meet or booking a table",
 };
 
+export type FoWorldCity = { city: string; people: { id: string; name: string; presence: "lives" | "visiting" | "upcoming"; from: string | null; until: string | null }[] };
+
+/** Marks a message Fo wants the member to approve; the app shows it as a draft with a Send button. */
+export const SEND_MARKER = "FF_SEND";
+
 type FoLocation = { lat: number; lng: number; neighbourhood: string | null; city: string | null };
 
-export function withContext(text: string, who: { me: string; home_city: string | null; others: string[]; location?: FoLocation | null }, page: FoPage) {
+function worldLines(world: FoWorldCity[]) {
+  const label = (p: FoWorldCity["people"][number]) =>
+    `${p.name} [${p.id}]${p.presence === "visiting" ? ` (visiting${p.until ? ` until ${p.until}` : ""})` : p.presence === "upcoming" ? ` (arrives ${p.from})` : ""}`;
+  return world.slice(0, 40).map((c) => `${c.city}: ${c.people.slice(0, 60).map(label).join(", ")}`);
+}
+
+export function withContext(text: string, who: { me: string; home_city: string | null; others: string[]; location?: FoLocation | null; world?: FoWorldCity[] }, page: FoPage) {
   const meeting = who.others.length ? ` They are planning to meet ${who.others.join(" and ")}.` : "";
   // Only there when they have Live distance on and the app sent a position in the last 30 minutes.
   const loc = who.location;
@@ -122,6 +133,11 @@ export function withContext(text: string, who: { me: string; home_city: string |
   return [
     `[Friend Flower · Fo Concierge] A request from ${who.me}${who.home_city ? `, who lives in ${who.home_city}` : ""}.${meeting}`,
     ...(loc ? [`Where they are right now (live from the app, to about 100 m): ${area ? `${area}, ` : ""}${loc.lat.toFixed(3)}, ${loc.lng.toFixed(3)}. Use this instead of asking where they are.`] : []),
+    ...(who.world?.length ? [
+      "Their saved friends on Friend Flower, by city (this is their World page; the id in [brackets] is for the app, never show it to them):",
+      ...worldLines(who.world),
+      `You can't message people on Friend Flower yourself. If they ask you to message friends there (for example everyone in a city), write a short, friendly draft in their voice and end your reply with a final line that is exactly ${SEND_MARKER} followed by JSON like ${SEND_MARKER} {"to":["<friend id>"],"text":"<the message>"}. Use only ids from the list above, and "lives" and "visiting" friends unless they say otherwise. The app shows them the draft and who it goes to, and sends only if they tap Send, so say what you drafted and don't claim it was sent.`,
+    ] : []),
     `They are a member of the Friend Flower app asking for ${ABOUT[page]}, not the owner of this Wajo account.`,
     "Check with them before spending money, and don't share the account owner's personal details.",
     "",

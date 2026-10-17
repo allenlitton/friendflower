@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { askFo, foReply, FoNotConnected, withContext, type FoPage, type FoTurn } from "@/lib/fo";
+import { askFo, foReply, FoNotConnected, withContext, SEND_MARKER, type FoPage, type FoTurn, type FoWorldCity } from "@/lib/fo";
 
 // Fo can take a while; each wait for its reply is capped well under this.
 export const maxDuration = 60;
@@ -49,6 +49,8 @@ export async function POST(request: Request) {
       if (start.status === "limit") return NextResponse.json({ error: "That's all the requests Fo can take from you today. Try again tomorrow." }, { status: 429 });
       if (start.status !== "ok") return NextResponse.json({ error: "You're not in this chat." }, { status: 403 });
       conversation = start.conversation_id;
+      const { data: world } = await admin.rpc("srv_fo_world", { p_user: user.id });
+      start.world = (world ?? []) as FoWorldCity[];
       const stopped = await wasStopped(admin, user.id, chat);
       turn = await askFo(withContext(stopped ? `I stopped my previous request to add more. Treat this as an update to it, not a new request, and carry on from where you were: ${text}` : text, start, page), conversation);
     } else {
@@ -74,6 +76,7 @@ export async function POST(request: Request) {
 
   if (!turn.conversationId) turn = { ...turn, conversationId: conversation ?? "" };
   if (turn.status === "failed" && !turn.response) turn = { ...turn, response: "Fo couldn't finish that one. Please try again." };
+  if (turn.status === "complete" && turn.response) turn = { ...turn, response: await takeDraft(admin, user.id, chat, turn.response) };
   await save(turn);
   return NextResponse.json({ status: turn.status });
 }
@@ -85,4 +88,25 @@ async function wasStopped(admin: ReturnType<typeof supabaseAdmin>, user: string,
   q = chat ? q.eq("chat_id", chat) : q.is("chat_id", null);
   const { data } = await q;
   return data?.[1]?.role === "fo" && data[1].body === STOPPED;
+}
+
+/**
+ * Fo can't message friends itself: it ends a reply with SEND_MARKER and some
+ * JSON. Pull that out, save it as a draft the member must approve, and return
+ * the reply without it.
+ */
+async function takeDraft(admin: ReturnType<typeof supabaseAdmin>, user: string, chat: string | null, reply: string) {
+  const at = reply.lastIndexOf(SEND_MARKER);
+  if (at < 0) return reply;
+  const shown = reply.slice(0, at).trim() || "Here's a draft message for your friends.";
+  try {
+    const draft = JSON.parse(reply.slice(at + SEND_MARKER.length).trim().replace(/^```(?:json)?|```$/g, "").trim()) as { to?: unknown; text?: unknown };
+    const to = Array.isArray(draft.to) ? draft.to.filter((x): x is string => typeof x === "string") : [];
+    const text = typeof draft.text === "string" ? draft.text : "";
+    const { data } = await admin.rpc("srv_fo_propose", { p_user: user, p_chat: chat, p_text: text, p_recipients: to });
+    if (data) return shown;
+  } catch (e) {
+    console.error("Fo sent a draft we couldn't read", e);
+  }
+  return `${shown}\n\n(I couldn't set up that message. Ask me to try again.)`;
 }
