@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { CONCIERGE_SEEN } from "@/components/tab-bar";
 
-/** Opening the World tab counts as having seen today's Concierge watch. */
+/** Opening the World tab counts as having seen today's Fo Concierge watch. */
 export function MarkWatchSeen({ hasNew }: { hasNew: boolean }) {
   const supabase = useMemo(() => supabaseBrowser(), []);
   useEffect(() => {

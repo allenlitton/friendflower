@@ -26,16 +26,16 @@ function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
   if (alerts.length === 0) {
     return (
       <div className="rounded-[18px] border-[1.5px] border-dashed border-[#3a352e] bg-[#141312] px-[15px] py-3.5">
-        <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Concierge watch</div>
+        <div className="text-[11px] font-bold tracking-[.06em] text-faint uppercase">Fo Concierge watch</div>
         <div className="mt-1 text-[12.5px] leading-snug text-muted">
-          Nothing to flag. We&apos;ll tell you the moment someone you&apos;ve saved lands in a city you&apos;re in — or one you&apos;re headed to.
+          Nothing to flag. Fo Concierge will tell you the moment someone you&apos;ve saved lands in a city you&apos;re in — or one you&apos;re headed to.
         </div>
       </div>
     );
   }
   return (
     <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum px-[15px] py-3.5">
-      <div className="text-[11px] font-bold tracking-[.06em] text-pink uppercase">Concierge watch</div>
+      <div className="text-[11px] font-bold tracking-[.06em] text-pink uppercase">Fo Concierge watch</div>
       <div className="mt-2.5 flex flex-col gap-3">
         {alerts.map((a) => (
           <div key={`${a.friend.id}${a.city_id}${a.from}`} className="flex items-center gap-3">

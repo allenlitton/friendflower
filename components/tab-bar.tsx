@@ -7,7 +7,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { Avatar, Flower } from "@/components/ui";
 import { LiveLocation } from "@/components/live-trip-prompt";
 
-/** Fired once the World tab has marked the Concierge watch as seen, so the dot can go. */
+/** Fired once the World tab has marked the Fo Concierge watch as seen, so the dot can go. */
 export const CONCIERGE_SEEN = "concierge-seen";
 
 /** Icons only: the label is kept for screen readers. */
