@@ -33,7 +33,7 @@
 
   --font-display: var(--font-vt323), "Noto Serif", serif;
   --font-logo: var(--font-doto), "Noto Serif", serif;
-  --font-sans: var(--font-roboto), system-ui, sans-serif;
+  --font-sans: var(--font-playfair), "Playfair Display", Georgia, serif;
 }
 
 html, body {
@@ -45,6 +45,8 @@ body {
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
 }
+
+input, textarea, select, button { font-family: inherit; }
 
 input::placeholder, textarea::placeholder { color: #a9a094; }
 ::-webkit-scrollbar { width: 0; height: 0; }
