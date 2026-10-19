@@ -6,10 +6,15 @@
 // friendflower.app/device. Linked, it fetches /api/device/summary every
 // minute with the secret as its key. If that says 401 (removed from the
 // site), it forgets it was linked and shows a new code.
+//
+// Everything else (photos, the map, chats, Fo) runs one job at a time on a
+// second task, so a slow Fo reply never holds up the summary.
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
 #include "cJSON.h"
 #include "esp_crt_bundle.h"
 #include "esp_http_client.h"
@@ -20,13 +25,16 @@
 #include "net.h"
 
 static const char *TAG = "api";
-#define BASE "https://friendflower.app"
+#ifndef FF_API_BASE
+#define FF_API_BASE "https://friendflower.app"  // idf.py build -DFF_API_BASE=http://<mac>:3000 to test locally
+#endif
 #define REFRESH_MS 60000
 #define POLL_MS 3000
 
 static api_cb_t s_cb;
 static char s_secret[65];
 static volatile bool s_refresh_now;
+static QueueHandle_t s_jobs;
 
 static void load_secret(void) {
   nvs_handle_t h;
@@ -60,11 +68,12 @@ void api_unlink(void) {
 
 void api_refresh(void) { s_refresh_now = true; }
 
-typedef struct { char *buf; int len, cap; } body_t;
-
-static esp_err_t on_data(esp_http_client_event_t *e) {
-  body_t *b = e->user_data;
-  if (e->event_id == HTTP_EVENT_ON_DATA && b) {
+static esp_err_t on_event(esp_http_client_event_t *e) {
+  api_body_t *b = e->user_data;
+  if (!b) return ESP_OK;
+  if (e->event_id == HTTP_EVENT_ON_HEADER && b->header && !strcasecmp(e->header_key, b->header)) {
+    snprintf(b->header_value, sizeof b->header_value, "%s", e->header_value);
+  } else if (e->event_id == HTTP_EVENT_ON_DATA) {
     if (b->len + e->data_len + 1 > b->cap) {
       int cap = (b->len + e->data_len + 1) * 2;
       char *nb = realloc(b->buf, cap);
@@ -78,29 +87,65 @@ static esp_err_t on_data(esp_http_client_event_t *e) {
   return ESP_OK;
 }
 
-// One request. Returns the HTTP status (or -1) and the parsed JSON body in *out.
-static int request(const char *path, const char *post_body, bool with_key, cJSON **out) {
-  char url[128];
-  snprintf(url, sizeof url, BASE "%s", path);
-  body_t b = { 0 };
+static int http(const char *method, const char *path, const char *type, const void *body, int body_len,
+                int timeout_ms, bool with_key, api_body_t *out) {
+  char url[256];
+  snprintf(url, sizeof url, FF_API_BASE "%s", path);
   esp_http_client_config_t cfg = {
-    .url = url, .method = post_body ? HTTP_METHOD_POST : HTTP_METHOD_GET, .timeout_ms = 15000,
-    .crt_bundle_attach = esp_crt_bundle_attach, .event_handler = on_data, .user_data = &b,
-    .buffer_size = 2048, .buffer_size_tx = 1024,
+    .url = url, .method = strcmp(method, "POST") ? HTTP_METHOD_GET : HTTP_METHOD_POST, .timeout_ms = timeout_ms,
+    .crt_bundle_attach = strncmp(url, "https:", 6) ? NULL : esp_crt_bundle_attach,
+    .event_handler = on_event, .user_data = out, .buffer_size = 4096, .buffer_size_tx = 1024,
   };
   esp_http_client_handle_t c = esp_http_client_init(&cfg);
   char auth[80];
   if (with_key) { snprintf(auth, sizeof auth, "Bearer %s", s_secret); esp_http_client_set_header(c, "Authorization", auth); }
-  if (post_body) {
-    esp_http_client_set_header(c, "Content-Type", "application/json");
-    esp_http_client_set_post_field(c, post_body, strlen(post_body));
+  if (body) {
+    esp_http_client_set_header(c, "Content-Type", type);
+    esp_http_client_set_post_field(c, body, body_len);
   }
   int status = esp_http_client_perform(c) == ESP_OK ? esp_http_client_get_status_code(c) : -1;
   esp_http_client_cleanup(c);
-  *out = b.buf ? cJSON_Parse(b.buf) : NULL;
-  free(b.buf);
   if (status < 0) ESP_LOGW(TAG, "%s failed", path);
   return status;
+}
+
+int api_http(const char *method, const char *path, const char *type, const void *body, int body_len,
+             int timeout_ms, api_body_t *out) {
+  return http(method, path, type, body, body_len, timeout_ms, true, out);
+}
+
+void api_body_free(api_body_t *b) { free(b->buf); b->buf = NULL; b->len = b->cap = 0; }
+
+static int json(const char *method, const char *path, const char *json_body, int timeout_ms, bool with_key, cJSON **out) {
+  api_body_t b = { 0 };
+  int status = http(method, path, "application/json", json_body, json_body ? strlen(json_body) : 0, timeout_ms, with_key, &b);
+  *out = b.buf ? cJSON_Parse(b.buf) : NULL;
+  api_body_free(&b);
+  return status;
+}
+
+int api_json(const char *method, const char *path, const char *json_body, int timeout_ms, cJSON **out) {
+  return json(method, path, json_body, timeout_ms, true, out);
+}
+
+// One request. Returns the HTTP status (or -1) and the parsed JSON body in *out.
+static int request(const char *path, const char *post_body, bool with_key, cJSON **out) {
+  return json(post_body ? "POST" : "GET", path, post_body, 15000, with_key, out);
+}
+
+typedef struct { void (*fn)(void *); void *arg; } job_t;
+
+static void job_task(void *arg) {
+  job_t j;
+  for (;;) if (xQueueReceive(s_jobs, &j, portMAX_DELAY)) {
+    while (!net_online()) vTaskDelay(pdMS_TO_TICKS(1000));
+    j.fn(j.arg);
+  }
+}
+
+bool api_job(void (*fn)(void *), void *arg) {
+  job_t j = { fn, arg };
+  return s_jobs && xQueueSend(s_jobs, &j, 0) == pdTRUE;
 }
 
 static void pair_until_linked(void) {
@@ -154,5 +199,7 @@ static void api_task(void *arg) {
 
 void api_start(api_cb_t cb) {
   s_cb = cb;
+  s_jobs = xQueueCreate(24, sizeof(job_t));
   xTaskCreatePinnedToCore(api_task, "api", 10240, NULL, 4, NULL, 0);
+  xTaskCreatePinnedToCore(job_task, "api_jobs", 10240, NULL, 4, NULL, 0);
 }
