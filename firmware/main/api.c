@@ -23,10 +23,12 @@ static const char *TAG = "api";
 #define BASE "https://friendflower.app"
 #define REFRESH_MS 60000
 #define POLL_MS 3000
+#define KICK_AFTER 3 // failed requests in a row before rejoining Wi-Fi
 
 static api_cb_t s_cb;
 static char s_secret[65];
 static volatile bool s_refresh_now;
+static int s_failures;
 
 static void load_secret(void) {
   nvs_handle_t h;
@@ -99,7 +101,10 @@ static int request(const char *path, const char *post_body, bool with_key, cJSON
   esp_http_client_cleanup(c);
   *out = b.buf ? cJSON_Parse(b.buf) : NULL;
   free(b.buf);
-  if (status < 0) ESP_LOGW(TAG, "%s failed", path);
+  if (status < 0) {
+    ESP_LOGW(TAG, "%s failed", path);
+    if (++s_failures >= KICK_AFTER) { s_failures = 0; net_kick(); }
+  } else s_failures = 0;
   return status;
 }
 
