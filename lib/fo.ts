@@ -114,7 +114,57 @@ const ABOUT: Record<FoPage, string> = {
 
 type FoLocation = { lat: number; lng: number; neighbourhood: string | null; city: string | null };
 
-export function withContext(text: string, who: { me: string; home_city: string | null; others: string[]; location?: FoLocation | null }, page: FoPage) {
+/** A friend as Fo sees them. Where they are and how to reach them only come for friends who opted in. */
+type FoFriend = {
+  ref: string; name: string; shares: boolean;
+  now?: { city: string; presence: "lives" | "visiting"; until: string | null; neighbourhood: string | null } | null;
+  upcoming?: { city: string; from: string; to: string }[];
+  email?: string | null; phone?: string | null;
+};
+
+function friendLine(f: FoFriend) {
+  const bits = [`- ${f.name} (ref ${f.ref})`];
+  if (!f.shares) return `${bits[0]}: hasn't shared where they are or contact details. Only a Friend Flower message is possible.`;
+  if (f.now) {
+    const at = `${f.now.neighbourhood ? `${f.now.neighbourhood}, ` : ""}${f.now.city}`;
+    bits.push(f.now.presence === "visiting" ? `visiting ${at}${f.now.until ? ` until ${f.now.until}` : ""}` : `lives in ${at}`);
+  }
+  if (f.upcoming?.length) bits.push(`upcoming: ${f.upcoming.map((u) => `${u.city} ${u.from} to ${u.to}`).join("; ")}`);
+  if (f.email) bits.push(`email ${f.email}`);
+  if (f.phone) bits.push(`phone ${f.phone}`);
+  return bits.join(" · ");
+}
+
+function friendsSection(friends: FoFriend[], me: string) {
+  if (!friends.length) return [];
+  return [
+    "",
+    `${me}'s friends on Friend Flower:`,
+    ...friends.map(friendLine),
+    "",
+    "To send one of these friends a Friend Flower message, don't send it yourself. Write the draft in your reply exactly like this, using their ref:",
+    "<<ff-message to=REF>>",
+    "the message, written as the member",
+    "<</ff-message>>",
+    "The app shows the member a button to send it as themselves. Never say it has been sent.",
+    "Only email or text friends listed with an email or phone (they chose to share them for this). Show the member the exact message and wait for their OK first, and say it's from them via Friend Flower.",
+  ];
+}
+
+/**
+ * Pulls the drafted Friend Flower messages out of Fo's reply. Returns the
+ * reply without them, and the drafts as { ref, body }.
+ */
+export function takeDrafts(reply: string) {
+  const drafts: { ref: string; body: string }[] = [];
+  const text = reply.replace(/<<ff-message to=\s*"?([0-9a-f]{8})"?\s*>>([\s\S]*?)<<\/ff-message>>/gi, (_, ref: string, body: string) => {
+    if (body.trim()) drafts.push({ ref: ref.toLowerCase(), body: body.trim().slice(0, 2000) });
+    return "";
+  }).replace(/\n{3,}/g, "\n\n").trim();
+  return { text: text || (drafts.length ? "Here's a message, ready to send." : ""), drafts };
+}
+
+export function withContext(text: string, who: { me: string; home_city: string | null; others: string[]; location?: FoLocation | null; friends?: FoFriend[] }, page: FoPage) {
   const meeting = who.others.length ? ` They are planning to meet ${who.others.join(" and ")}.` : "";
   // Only there when they have Live distance on and the app sent a position in the last 30 minutes.
   const loc = who.location;
@@ -124,6 +174,7 @@ export function withContext(text: string, who: { me: string; home_city: string |
     ...(loc ? [`Where they are right now (live from the app, to about 100 m): ${area ? `${area}, ` : ""}${loc.lat.toFixed(3)}, ${loc.lng.toFixed(3)}. Use this instead of asking where they are.`] : []),
     `They are a member of the Friend Flower app asking for ${ABOUT[page]}, not the owner of this Wajo account.`,
     "Check with them before spending money, and don't share the account owner's personal details.",
+    ...friendsSection(who.friends ?? [], who.me),
     "",
     text,
   ].join("\n");

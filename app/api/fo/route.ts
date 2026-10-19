@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { askFo, foReply, FoNotConnected, withContext, type FoPage, type FoTurn } from "@/lib/fo";
+import { askFo, foReply, FoNotConnected, takeDrafts, withContext, type FoPage, type FoTurn } from "@/lib/fo";
 
 // Fo can take a while; each wait for its reply is capped well under this.
 export const maxDuration = 60;
@@ -34,10 +34,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: "idle" });
   }
 
-  const save = (turn: FoTurn) => admin.rpc("srv_fo_update", {
-    p_user: user.id, p_chat: chat, p_conversation: turn.conversationId ?? "",
-    p_status: turn.status, p_text: (turn.status === "working" ? turn.progress : turn.response) ?? "",
-  });
+  const save = (turn: FoTurn) => {
+    // Messages Fo drafted for friends become Send cards; the database keeps only drafts to real friends.
+    const { text: reply, drafts } = turn.status === "complete" ? takeDrafts(turn.response ?? "") : { text: turn.response ?? "", drafts: [] };
+    return admin.rpc("srv_fo_update", {
+      p_user: user.id, p_chat: chat, p_conversation: turn.conversationId ?? "",
+      p_status: turn.status, p_text: (turn.status === "working" ? turn.progress : reply) ?? "", p_actions: drafts,
+    });
+  };
 
   let conversation: string | null;
   let turn: FoTurn;
