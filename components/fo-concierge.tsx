@@ -6,7 +6,11 @@ import { ErrorNote } from "@/components/ui";
 import Link from "next/link";
 import { FoFace } from "@/components/fo-face";
 
-export type FoMessage = { id: number; role: "me" | "fo"; body: string; created_at: string };
+export type FoAction = {
+  id: number; body: string; status: "pending" | "sent" | "dismissed"; chat_id: string | null;
+  friend: { id: string; first_name: string; name: string; avatar_url: string | null };
+};
+export type FoMessage = { id: number; role: "me" | "fo"; body: string; created_at: string; actions?: FoAction[] };
 export type FoThread = { status: "idle" | "working"; progress: string | null; messages: FoMessage[] };
 
 const MAX_WAITS = 24; // ~10 minutes of waiting on one request while the sheet is open
@@ -105,10 +109,13 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
           </p>
         )}
         {thread.messages.map((m) => (
-          <div key={m.id} className={`max-w-[85%] px-[13px] py-2.5 text-[16.8px] leading-[1.45] whitespace-pre-wrap ${m.role === "me"
-            ? "self-end rounded-[16px_16px_5px_16px] bg-pink text-white"
-            : "self-start rounded-[16px_16px_16px_5px] border-[1.5px] border-plum-line bg-plum text-[#f3d6df]"}`}>
-            {m.body}
+          <div key={m.id} className={`flex max-w-[85%] flex-col gap-1.5 ${m.role === "me" ? "self-end" : "self-start"}`}>
+            <div className={`px-[13px] py-2.5 text-[16.8px] leading-[1.45] whitespace-pre-wrap ${m.role === "me"
+              ? "rounded-[16px_16px_5px_16px] bg-pink text-white"
+              : "rounded-[16px_16px_16px_5px] border-[1.5px] border-plum-line bg-plum text-[#f3d6df]"}`}>
+              {m.body}
+            </div>
+            {m.actions?.map((a) => <DraftCard key={a.id} action={a} onDone={load} />)}
           </div>
         ))}
         {working && (
@@ -156,5 +163,41 @@ export function AskFoButton() {
       className="flex h-[50px] w-full flex-none items-center justify-center gap-2 rounded-[14px] bg-ecru font-display text-[22px] text-ink transition-colors hover:bg-ecru-deep">
       <FoFace size={28} /> Ask Fo Concierge
     </Link>
+  );
+}
+
+/** A Friend Flower message Fo drafted. Nothing goes out until you tap Send. */
+function DraftCard({ action, onDone }: { action: FoAction; onDone: () => Promise<unknown> }) {
+  const supabase = useMemo(() => supabaseBrowser(), []);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function run(fn: "fo_send_action" | "fo_dismiss_action") {
+    setBusy(true);
+    setError("");
+    const { error } = await supabase.rpc(fn, { p_action: action.id });
+    if (error) setError(error.message);
+    await onDone();
+    setBusy(false);
+  }
+  return (
+    <div className="rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-3">
+      <div className="text-[13.2px] font-bold tracking-[.05em] text-muted uppercase">Message to {action.friend.first_name}</div>
+      <div className="mt-1.5 text-[16.8px] leading-[1.45] whitespace-pre-wrap text-body">{action.body}</div>
+      <ErrorNote>{error}</ErrorNote>
+      {action.status === "pending" ? (
+        <div className="mt-2.5 flex gap-2">
+          <button type="button" disabled={busy} onClick={() => run("fo_send_action")}
+            className="rounded-full bg-pink px-3.5 py-2 text-[15px] font-bold text-ink hover:bg-pink-deep disabled:opacity-60">Send to {action.friend.first_name}</button>
+          <button type="button" disabled={busy} onClick={() => run("fo_dismiss_action")}
+            className="rounded-full px-3 py-2 text-[15px] font-semibold text-faint disabled:opacity-60">Don&apos;t send</button>
+        </div>
+      ) : action.status === "sent" ? (
+        <div className="mt-2 text-[15px] text-leaf">
+          Sent ✓ {action.chat_id && <Link href={`/chat/${action.chat_id}`} className="ml-1 font-semibold text-pink">Open chat</Link>}
+        </div>
+      ) : (
+        <div className="mt-2 text-[15px] text-faint">Not sent</div>
+      )}
+    </div>
   );
 }

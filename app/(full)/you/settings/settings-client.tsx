@@ -2,15 +2,29 @@
 
 import { useState } from "react";
 import type { Units } from "@/lib/types";
-import { SectionLabel, Segmented } from "@/components/ui";
+import { ErrorNote, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { useRpc } from "@/components/person-actions";
 
 // Only English for now; the rest are shown so people know they're coming.
 const LANGUAGES = ["English", "Español", "Français", "Deutsch", "Português", "Italiano", "日本語", "中文", "한국어"];
 
-export function SettingsClient({ profileId, units: initialUnits }: { profileId: string; units: Units }) {
-  const { supabase, router } = useRpc();
+export type FoSharing = { on: boolean; email: string | null; phone: string | null };
+
+export function SettingsClient({ profileId, units: initialUnits, foSharing, signInEmail }: {
+  profileId: string; units: Units; foSharing: FoSharing; signInEmail: string;
+}) {
+  const { supabase, router, call, busy, error } = useRpc();
   const [units, setUnits] = useState(initialUnits);
+  const [fo, setFo] = useState({ on: foSharing.on, email: foSharing.email ?? "", phone: foSharing.phone ?? "" });
+  const [foSaved, setFoSaved] = useState(foSharing);
+
+  async function saveFo(next: typeof fo) {
+    const ok = await call("set_fo_sharing", { p_on: next.on, p_email: next.email, p_phone: next.phone });
+    if (ok === undefined) return;
+    setFoSaved({ on: next.on, email: next.on ? next.email.trim().toLowerCase() || null : null, phone: next.on ? next.phone.trim() || null : null });
+    if (!next.on) setFo({ on: false, email: "", phone: "" });
+  }
+  const foDirty = fo.on && ((fo.email.trim().toLowerCase() || null) !== foSaved.email || (fo.phone.trim() || null) !== foSaved.phone);
 
   async function changeUnits(u: Units) {
     setUnits(u);
@@ -25,6 +39,39 @@ export function SettingsClient({ profileId, units: initialUnits }: { profileId: 
         <Segmented value={units} onChange={changeUnits}
           options={[{ value: "imperial", label: "Imperial (mi, ft)" }, { value: "metric", label: "Metric (km, m)" }]} />
         <div className="mt-2 text-[14.4px] leading-snug text-muted">Used for live distances on Nearby and profiles.</div>
+      </div>
+
+      <div>
+        <SectionLabel>Fo Concierge</SectionLabel>
+        <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5">
+          <div className="flex items-center gap-3">
+            <span className="flex-1 text-[16.8px] font-semibold">Share with my friends&apos; Fo Concierge</span>
+            <Toggle label="Share with my friends' Fo Concierge" on={fo.on} onChange={(on) => {
+              const next = { ...fo, on };
+              setFo(next);
+              saveFo(next);
+            }} />
+          </div>
+          <div className="mt-1.5 text-[14.4px] leading-snug text-muted">
+            When a friend asks Fo for help, Fo can see where you are (your city, your neighbourhood if you show distance, and
+            trips they can see) and reach you on the email or phone below. Never your live position. Off by default.
+          </div>
+          {fo.on && (
+            <div className="mt-3 flex flex-col gap-2.5">
+              <input className="field" type="email" inputMode="email" autoComplete="email" maxLength={200} value={fo.email}
+                placeholder={signInEmail ? `Email (optional), e.g. ${signInEmail}` : "Email (optional)"}
+                onChange={(e) => setFo({ ...fo, email: e.target.value })} />
+              <input className="field" type="tel" inputMode="tel" autoComplete="tel" maxLength={25} value={fo.phone}
+                placeholder="Phone for texts (optional), e.g. +1 415 555 0100"
+                onChange={(e) => setFo({ ...fo, phone: e.target.value })} />
+              <ErrorNote>{error}</ErrorNote>
+              {foDirty && (
+                <button type="button" disabled={busy} onClick={() => saveFo(fo)}
+                  className="self-start rounded-full bg-pink px-4 py-2 text-[15px] font-bold text-ink hover:bg-pink-deep disabled:opacity-60">Save</button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <div>

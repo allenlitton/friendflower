@@ -1,6 +1,6 @@
 import "server-only";
 import { supabaseAdmin } from "@/lib/supabase/admin";
-import { askFo, foReply, FoNotConnected, withContext, type FoPage, type FoTurn } from "@/lib/fo";
+import { askFo, foReply, FoNotConnected, takeDrafts, withContext, type FoPage, type FoTurn } from "@/lib/fo";
 
 /**
  * One request to Fo Concierge for a member, from the site or the round device:
@@ -32,10 +32,14 @@ export async function stopFoTurn(user: string, chat: string | null) {
 /** Starts a request with `text`, or with no text waits for the one already in flight. */
 export async function runFoTurn(user: string, chat: string | null, text: string, page: FoPage): Promise<FoTurnResult> {
   const admin = supabaseAdmin();
-  const save = (turn: FoTurn) => admin.rpc("srv_fo_update", {
-    p_user: user, p_chat: chat, p_conversation: turn.conversationId ?? "",
-    p_status: turn.status, p_text: (turn.status === "working" ? turn.progress : turn.response) ?? "",
-  });
+  const save = (turn: FoTurn) => {
+    // Messages Fo drafted for friends become Send cards; the database keeps only drafts to real friends.
+    const { text: reply, drafts } = turn.status === "complete" ? takeDrafts(turn.response ?? "") : { text: turn.response ?? "", drafts: [] };
+    return admin.rpc("srv_fo_update", {
+      p_user: user, p_chat: chat, p_conversation: turn.conversationId ?? "",
+      p_status: turn.status, p_text: (turn.status === "working" ? turn.progress : reply) ?? "", p_actions: drafts,
+    });
+  };
 
   let conversation: string | null;
   let turn: FoTurn;

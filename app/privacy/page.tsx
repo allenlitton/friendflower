@@ -49,6 +49,19 @@ export default function PrivacyPage() {
           </p>
         </div>
         <div>
+          <SectionLabel>Fo Concierge and your friends</SectionLabel>
+          <p>
+            When you ask Fo for something, it gets the names of your friends so it can draft a Friend Flower message for you. A drafted
+            message only goes out, as you, when you tap Send.
+          </p>
+          <p className="mt-2">
+            Fo only learns more about you if you turn on <b>Share with my friends&apos; Fo Concierge</b> in Settings (it&apos;s off by
+            default). Then, when one of your friends asks Fo for help, Fo can see where you are (your city, your neighbourhood if you show
+            distance, and trips that friend can already see) and the email or phone you chose, so it can contact you for them.
+            Never your live position. Turn it off any time and Fo stops getting any of it.
+          </p>
+        </div>
+        <div>
           <SectionLabel>Safety</SectionLabel>
           <p>
             You can report or block anyone from their profile or your chat. Blocking hides you from each other everywhere.
