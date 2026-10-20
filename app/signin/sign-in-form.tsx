@@ -80,6 +80,10 @@ export function SignInForm() {
         value={email} onChange={(e) => setEmail(e.target.value)} />
       <ErrorNote>{error}</ErrorNote>
       <PrimaryButton type="submit" disabled={busy || !email.includes("@")}>{busy ? "sending…" : "continue with email"}</PrimaryButton>
+      <p className="text-center text-[13.8px] leading-normal text-faint">
+        By continuing you agree to our <a href="/terms" className="text-pink underline">Terms</a> and
+        {" "}<a href="/privacy" className="text-pink underline">how we handle your data</a>.
+      </p>
     </form>
   );
 }
