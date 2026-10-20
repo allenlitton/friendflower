@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 // Pages anyone can open without signing in.
-const PUBLIC_PATHS = ["/signin", "/auth", "/invite", "/privacy", "/opengraph-image"];
+const PUBLIC_PATHS = ["/signin", "/auth", "/invite", "/privacy", "/terms", "/opengraph-image"];
 
 // Keeps the Supabase session fresh on every request and sends signed-out
 // visitors to the sign-in page.

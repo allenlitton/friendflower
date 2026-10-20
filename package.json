@@ -12,6 +12,9 @@
     "fo:connect": "node --env-file=.env.local scripts/fo-connect.mjs"
   },
   "dependencies": {
+    "@capacitor-community/contacts": "^8.0.0",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "libphonenumber-js": "^1.13.14",
@@ -21,6 +24,7 @@
     "server-only": "^0.0.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@electric-sql/pglite": "^0.5.8",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

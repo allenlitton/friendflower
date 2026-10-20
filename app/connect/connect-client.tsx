@@ -1,15 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { parseVCard } from "@/lib/vcard";
+import { hasNativeContacts, readNativeContacts } from "@/lib/native-contacts";
 import type { Mini } from "@/lib/types";
 import { Avatar, Card, ErrorNote, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
 import { InviteButton } from "@/components/invite-button";
 import { FindFriend } from "@/components/find-friend";
 
 type ContactsManager = { select: (props: string[], opts: { multiple: boolean }) => Promise<{ tel?: string[]; email?: string[] }[]> };
+
+const noSubscribe = () => () => {};
 
 export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions }: {
   welcome: boolean; inviteCode: string; myName: string;
@@ -23,7 +26,10 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
   const [error, setError] = useState("");
   const [typed, setTyped] = useState("");
   const [added, setAdded] = useState<Record<string, string>>({});
-  const canPick = typeof navigator !== "undefined" && "contacts" in navigator;
+  // Inside the iPhone app we read the address book directly; Android Chrome has a picker; everything else uploads a file.
+  const native = useSyncExternalStore(noSubscribe, hasNativeContacts, () => false);
+  const browserPicker = typeof navigator !== "undefined" && "contacts" in navigator;
+  const canPick = native || browserPicker;
 
   async function send(values: string[]) {
     if (!values.length) return setError("We didn't find any phone numbers or emails there.");
@@ -38,6 +44,16 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
   }
 
   async function pick() {
+    if (native) {
+      try {
+        const res = await readNativeContacts();
+        if (!res.ok) return setError("Friend Flower doesn't have access to your contacts. Turn it on in Settings → Friend Flower → Contacts, or upload a contacts file below.");
+        await send(res.values);
+      } catch {
+        setError("We couldn't read your contacts. Try again, or upload a contacts file below.");
+      }
+      return;
+    }
     try {
       const picked = await (navigator as unknown as { contacts: ContactsManager }).contacts.select(["tel", "email"], { multiple: true });
       await send(picked.flatMap((c) => [...(c.tel ?? []), ...(c.email ?? [])]));
@@ -81,7 +97,7 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
           can see your contact list, and it&apos;s never shown to other people.
         </p>
         <div className="mt-3 flex flex-col gap-2">
-          {canPick && <PrimaryButton onClick={pick} disabled={busy}>{busy ? "matching…" : "choose from contacts"}</PrimaryButton>}
+          {canPick && <PrimaryButton onClick={pick} disabled={busy}>{busy ? "matching…" : native ? "find friends in my contacts" : "choose from contacts"}</PrimaryButton>}
           <label className={`flex h-[46px] cursor-pointer items-center justify-center rounded-[13px] text-[14px] font-semibold ${canPick ? "border-[1.5px] border-line bg-card text-soft" : "bg-pink font-display !text-[21px] text-ink"}`}>
             {busy && !canPick ? "matching…" : "upload a contacts file (.vcf)"}
             <input type="file" accept=".vcf,text/vcard,text/x-vcard" className="hidden" onChange={upload} disabled={busy} />
