@@ -423,8 +423,8 @@ static void map_card(const char *key) {
   lv_obj_add_event_cb(s_map_scroll, on_map_double_tap, LV_EVENT_DOUBLE_CLICKED, NULL);
   lv_obj_add_event_cb(s_map_scroll, on_map_scrolled, LV_EVENT_SCROLL_END, NULL);
 
-  map_button("+", 1, -22);
-  map_button("-", -1, 22);
+  map_button("+", 1, -42);  // well apart, so a finger hits the one it means
+  map_button("-", -1, 42);
   lv_obj_t *credit = ui_label(s_map_box, &lv_font_montserrat_14, GREY, "(c) OpenStreetMap");
   lv_obj_set_style_text_opa(credit, LV_OPA_70, 0);
   lv_obj_align(credit, LV_ALIGN_BOTTOM_MID, 0, -4);
