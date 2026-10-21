@@ -4,7 +4,6 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ErrorNote, PrimaryButton } from "@/components/ui";
-import { SIGNED_IN_COOKIE, SIGNED_IN_MAX_AGE } from "@/lib/signed-in-cookie";
 import { readRememberedEmail, rememberEmail } from "@/lib/remembered-email";
 
 const noSubscribe = () => () => {};
@@ -51,7 +50,6 @@ export function SignInForm() {
     const { error } = await supabaseBrowser().auth.verifyOtp({ email: email.trim(), token: code.trim(), type: "email" });
     setBusy(false);
     if (error) return setError("That code didn't work. Check the latest email and try again.");
-    document.cookie = `${SIGNED_IN_COOKIE}=1; path=/; max-age=${SIGNED_IN_MAX_AGE}; samesite=lax`;
     router.replace(next.startsWith("/") ? next : "/");
     router.refresh();
   }

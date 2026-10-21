@@ -3,16 +3,43 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { Capacitor } from "@capacitor/core";
+import { Geolocation } from "@capacitor/geolocation";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 const EVERY_MS = 60_000;
 
-function currentPosition() {
-  return new Promise<GeolocationPosition>((resolve, reject) =>
-    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, maximumAge: 30_000, timeout: 20_000 }));
+const OPTIONS = { enableHighAccuracy: true, maximumAge: 30_000, timeout: 20_000 };
+
+/** In the iPhone app, location goes through iOS itself (one system prompt); older app builds and browsers use the web API. */
+function isNativeLocation() {
+  return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable("Geolocation");
 }
 
-function report(supabase: SupabaseClient, pos: GeolocationPosition) {
+function canLocate() {
+  return isNativeLocation() || "geolocation" in navigator;
+}
+
+type Fix = { coords: { latitude: number; longitude: number; accuracy: number } };
+
+class LocationDenied extends Error {}
+
+async function currentPosition(): Promise<Fix> {
+  if (isNativeLocation()) {
+    try {
+      let perm = await Geolocation.checkPermissions();
+      if (perm.location === "prompt" || perm.location === "prompt-with-rationale") perm = await Geolocation.requestPermissions();
+      if (perm.location !== "granted" && perm.coarseLocation !== "granted") throw new LocationDenied();
+      return await Geolocation.getCurrentPosition(OPTIONS);
+    } catch (e) {
+      if (e instanceof LocationDenied || /denied/i.test((e as Error).message ?? "")) throw new LocationDenied();
+      throw e;
+    }
+  }
+  return new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, OPTIONS));
+}
+
+function report(supabase: SupabaseClient, pos: Fix) {
   return supabase.rpc("update_location", {
     p_lat: pos.coords.latitude, p_lng: pos.coords.longitude, p_accuracy_m: pos.coords.accuracy,
   });
@@ -28,7 +55,7 @@ export function useLiveLocation(enabled: boolean, onSaved?: () => void) {
   const saved = useRef(onSaved);
   useEffect(() => { saved.current = onSaved; });
   useEffect(() => {
-    if (!enabled || !("geolocation" in navigator)) return;
+    if (!enabled || !canLocate()) return;
     let refreshed = false;
     const beat = () => {
       if (document.visibilityState !== "visible") return;
@@ -48,12 +75,12 @@ export function useLiveLocation(enabled: boolean, onSaved?: () => void) {
 
 /** Asks the browser for location, then turns live distance on. Returns an error message, or null. */
 export async function turnOnLiveDistance(supabase: SupabaseClient, userId: string): Promise<string | null> {
-  if (!("geolocation" in navigator)) return "This browser can't share your location.";
-  let pos: GeolocationPosition;
+  if (!canLocate()) return "This browser can't share your location.";
+  let pos: Fix;
   try {
     pos = await currentPosition();
   } catch (e) {
-    return (e as GeolocationPositionError).code === 1
+    return e instanceof LocationDenied || (e as GeolocationPositionError).code === 1
       ? "Location is blocked for Friend Flower. Allow it in your browser or phone settings, then try again."
       : "Couldn't find your location just now. Try again in a moment.";
   }

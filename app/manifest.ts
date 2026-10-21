@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-// Lets people "Add to Home Screen" so Friend Flower opens like an app.
+// Web app metadata (name, colours, icons). We no longer prompt people to install it.
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Friend Flower",

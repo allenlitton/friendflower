@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { supabaseServer } from "@/lib/supabase/server";
-import { SIGNED_IN_COOKIE, SIGNED_IN_MAX_AGE } from "@/lib/signed-in-cookie";
 
 // The sign-in email's link lands here. Handles both Supabase's default email
 // (which sends ?code=…) and our custom template (?token_hash=…).
@@ -22,9 +21,7 @@ export async function GET(request: NextRequest) {
       : { error: new Error("missing token") };
 
   if (!error) {
-    const response = NextResponse.redirect(new URL(safeNext, url.origin));
-    response.cookies.set(SIGNED_IN_COOKIE, "1", { path: "/", maxAge: SIGNED_IN_MAX_AGE, sameSite: "lax" });
-    return response;
+    return NextResponse.redirect(new URL(safeNext, url.origin));
   }
   return NextResponse.redirect(new URL("/signin?error=link", url.origin));
 }
