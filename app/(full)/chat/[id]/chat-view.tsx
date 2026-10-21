@@ -125,7 +125,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   const myVenues = venues.filter((x) => x.city_id === homeCity).length ? venues.filter((x) => x.city_id === homeCity) : venues;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col" style={{ height: "100dvh" }}>
+    // Exactly one screen tall (below the status bar), so only the messages scroll and the header stays put.
+    <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] min-h-0 flex-col">
       <div className="flex flex-none items-center gap-[11px] border-b border-line-soft bg-well px-3.5 py-[9px]">
         <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
         <Link href={chat.kind === "direct" && other ? `/people/${other.id}` : "#"} className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -245,7 +246,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
       </div>
 
       {chat.can_post ? (
-        <div className="flex flex-none flex-col gap-2 border-t border-line-soft bg-well px-[13px] pt-2 pb-[calc(13px+env(safe-area-inset-bottom))]">
+        <div className="flex flex-none flex-col gap-2 border-t border-line-soft bg-well px-[13px] pt-2 pb-[calc(16px+env(safe-area-inset-bottom))]">
           <div className="flex gap-[7px] overflow-x-auto">
             <button type="button" onClick={() => send("Let's meet — I'm free most evenings this week.")}
               className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-[7px] text-[15px] font-bold whitespace-nowrap text-gold">Let&apos;s meet…</button>

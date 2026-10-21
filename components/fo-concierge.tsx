@@ -93,7 +93,8 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
   const ideas = ["Book a table for two this Friday", "Find me a flight for my next trip", "What's good near me tonight?"];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    // Exactly one screen tall (below the status bar), so only the messages scroll and the header stays put.
+    <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] min-h-0 flex-col">
       <div className="flex flex-none items-center gap-[11px] border-b border-line-soft bg-well px-3.5 py-[9px]">
         <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
         <FoFace size={36} />
@@ -127,7 +128,7 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
         <div ref={bottom} />
       </div>
 
-      <div className="flex-none border-t border-line-soft bg-well px-3.5 pt-2.5 pb-3">
+      <div className="flex-none border-t border-line-soft bg-well px-3.5 pt-2.5 pb-[calc(16px+env(safe-area-inset-bottom))]">
         {thread.messages.length === 0 && !working && (
           <div className="mb-2.5 flex flex-wrap gap-[7px]">
             {ideas.map((idea) => (
