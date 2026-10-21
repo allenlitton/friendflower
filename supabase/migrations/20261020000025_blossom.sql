@@ -1,17 +1,18 @@
 -- ============================================================================
 -- Blossom, the paid plan (2026-10-20)
 --   Blossom is $8/month. A code (FRIEND33) gives a year of it free.
---   Free plan:  World shows up to 5 saved friends, Nearby up to 10 people,
+--   Free plan:  World shows up to 10 saved friends, Nearby up to 10 people,
 --               no Fo Concierge, no delivery requests (offering to carry stays
 --               free), and Nearby only for where you are now, not future trips.
 --   Blossom:    all of it, unlimited.
+--   Everyone who signed up before this ran gets a year of Blossom as a thank-you.
 --   Memberships live in the private schema so nobody can grant themselves one.
 -- (Kept to plain ASCII on purpose so copy/paste can't garble it.)
 -- ============================================================================
 
 create table private.memberships (
   user_id    uuid primary key references public.profiles(id) on delete cascade,
-  source     text not null check (source in ('code', 'paid')),
+  source     text not null check (source in ('code', 'paid', 'gift')),
   code       text,
   until      timestamptz not null,
   created_at timestamptz not null default now(),
@@ -45,6 +46,11 @@ alter table private.code_redemptions enable row level security;
 alter table private.code_attempts enable row level security;
 
 insert into private.promo_codes (code, months) values ('FRIEND33', 12);
+
+-- A year of Blossom for everyone already here (runs once, with this migration).
+insert into private.memberships (user_id, source, until)
+select pr.id, 'gift', now() + interval '1 year' from public.profiles pr
+on conflict (user_id) do nothing;
 
 create or replace function private.is_blossom(p_user uuid)
 returns boolean language sql stable security definer set search_path = '' as $$
@@ -99,7 +105,7 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
--- World: free plan shows your first 5 saved friends.
+-- World: free plan shows your first 10 saved friends.
 --   Same as world() in 20260925000002_functions.sql, apart from the limit.
 -- ---------------------------------------------------------------------------
 create or replace function public.world()
@@ -111,7 +117,7 @@ begin
     from public.friend_requests r
     where r.status = 'accepted' and (r.from_id = v_me or r.to_id = v_me)
     order by coalesce(r.responded_at, r.created_at), r.id
-    limit case when private.is_blossom(v_me) then null else 5 end
+    limit case when private.is_blossom(v_me) then null else 10 end
   ),
   visible as (
     select f.uid, c.degree from friends f

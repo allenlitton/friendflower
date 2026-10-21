@@ -3,8 +3,8 @@
 
 export const BLOSSOM = {
   price: "$8",
-  freeFriends: 5, // saved friends on World
+  freeFriends: 10, // saved friends on World
   freeNearby: 10, // people on Nearby
 } as const;
 
-export type Plan = { plan: "free" | "blossom"; until: string | null; source: "code" | "paid" | null; friends: number };
+export type Plan = { plan: "free" | "blossom"; until: string | null; source: "code" | "paid" | "gift" | null; friends: number };

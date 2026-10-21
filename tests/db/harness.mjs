@@ -33,17 +33,23 @@ const SUPABASE_STUBS = `
   alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 `;
 
-export async function freshDb() {
+/** A database with every migration run, or with `{ before }` only those whose file name sorts before it. */
+export async function freshDb({ before } = {}) {
   const db = new PGlite();
   await db.exec(SUPABASE_STUBS);
-  for (const f of readdirSync(MIGRATIONS).filter((f) => f.endsWith(".sql")).sort()) {
+  await migrate(db, { before });
+  return db;
+}
+
+/** Run the migrations from `from` (inclusive) up to `before` (exclusive). */
+export async function migrate(db, { from = "", before } = {}) {
+  for (const f of readdirSync(MIGRATIONS).filter((f) => f.endsWith(".sql") && f >= from && (!before || f < before)).sort()) {
     try {
       await db.exec(readFileSync(join(MIGRATIONS, f), "utf8"));
     } catch (e) {
       throw new Error(`Migration ${f} failed: ${e.message}`);
     }
   }
-  return db;
 }
 
 /** Run `fn` as a signed-in user, the way PostgREST would. */

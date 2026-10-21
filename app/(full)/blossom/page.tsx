@@ -34,7 +34,7 @@ export default async function BlossomPage() {
             <div className="text-[17.4px] font-semibold text-leaf">You&apos;re on Blossom</div>
             {plan.until && (
               <div className="mt-0.5 text-[15px] text-body">
-                {plan.source === "code" ? "Free with your code until" : "Renews"} {shortDate(plan.until.slice(0, 10))}
+                {plan.source === "code" ? "Free with your code until" : plan.source === "gift" ? "Free for early members until" : "Renews"} {shortDate(plan.until.slice(0, 10))}
               </div>
             )}
           </div>

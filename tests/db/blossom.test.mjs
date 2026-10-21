@@ -2,7 +2,7 @@
 // Run with: npm run test:db
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
-import { freshDb, as, asServer, rpc, makeUser } from "./harness.mjs";
+import { freshDb, migrate, as, asServer, rpc, makeUser } from "./harness.mjs";
 
 let db;
 const U = {};
@@ -32,8 +32,8 @@ test("a new member is on the free plan", async () => {
   assert.equal((await call("paid", "my_plan")).plan, "blossom");
 });
 
-test("World shows 5 saved friends on the free plan, everyone on Blossom", async () => {
-  assert.equal(await worldCount("free"), 5);
+test("World shows 10 saved friends on the free plan, everyone on Blossom", async () => {
+  assert.equal(await worldCount("free"), 10);
   assert.equal(await worldCount("paid"), 12);
 });
 
@@ -79,4 +79,19 @@ test("FRIEND33 gives a year of Blossom, once", async () => {
 test("wrong guesses are limited", async () => {
   for (let i = 0; i < 9; i++) assert.match((await call("free", "redeem_code", { p_code: `GUESS${i}` })).error, /isn't valid/);
   assert.match((await call("free", "redeem_code", { p_code: "GUESS" })).error, /Too many tries/);
+});
+
+test("everyone already here when Blossom launches gets a year of it", async () => {
+  const BLOSSOM_MIGRATION = "20261020000025_blossom.sql";
+  const old = await freshDb({ before: BLOSSOM_MIGRATION });
+  const early = await makeUser(old, { first: "Early", free: true });
+  await migrate(old, { from: BLOSSOM_MIGRATION });
+  const plan = await as(old, early, () => rpc(old, "my_plan"));
+  assert.equal(plan.plan, "blossom");
+  assert.equal(plan.source, "gift");
+  const days = (new Date(plan.until) - Date.now()) / 86_400_000;
+  assert.ok(days > 360 && days < 370, `about a year, got ${days} days`);
+  // People who join afterwards start on the free plan.
+  const late = await makeUser(old, { first: "Late", free: true });
+  assert.equal((await as(old, late, () => rpc(old, "my_plan"))).plan, "free");
 });
