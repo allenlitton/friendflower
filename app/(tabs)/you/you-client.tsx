@@ -106,7 +106,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
           <RowLink href="/you/settings" icon="🔔" title="Push notifications" note="New messages and friend requests on this phone" />
         ) : (
           <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3 text-[15px] leading-snug text-muted">
-            Push notifications come with the Friend Flower iPhone app. Here, new messages, friend requests and verification requests show as a pink dot on Chats.
+            Push notifications come with the Friend Flower iPhone app. Here, new messages, friend requests and verification requests show as a pink flower on Chats.
           </div>
         )}
       </div>
