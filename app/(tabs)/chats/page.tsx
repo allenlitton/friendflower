@@ -6,6 +6,7 @@ import { Avatar, ScreenTitle, SectionLabel } from "@/components/ui";
 import { FoFace } from "@/components/fo-face";
 import type { FoThread } from "@/components/fo-concierge";
 import { InboxActions } from "./inbox-actions";
+import { SwipeToDelete } from "./swipe-to-delete";
 
 export default async function ChatsPage() {
   const { supabase } = await requireProfile();
@@ -51,22 +52,24 @@ export default async function ChatsPage() {
             const title = c.kind === "pod" ? others.map((m) => m.first_name).join(" · ") : first?.name;
             const last = c.last ? (c.last.sender === "me" ? "You: " : c.last.sender && c.kind === "pod" ? `${c.last.sender.split(" ")[0]}: ` : "") + (c.last.kind === "venue" ? `📍 ${c.last.body}` : c.last.kind === "times" ? `🗓 ${c.last.body}` : c.last.body) : "";
             return (
-              <Link key={c.id} href={`/chat/${c.id}`} className="flex items-center gap-3 rounded-[15px] px-2.5 py-[11px] hover:bg-raised">
-                <div className="relative">
-                  {first && <Avatar id={first.id} name={first.name} src={c.kind === "pod" ? null : first.avatar_url} size={48} />}
-                  {c.kind === "pod" && (
-                    <span className="absolute -right-0.5 -bottom-0.5 rounded-full border-[1.5px] border-[#f4e9f2] bg-white px-[5px] py-px text-[10.8px] font-bold text-pink">pod</span>
-                  )}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="truncate text-[18px] font-semibold">{title}</span>
-                    <span className="flex-none text-[13.2px] text-faint">{timeAgo(c.last_message_at)}</span>
+              <SwipeToDelete key={c.id} chatId={c.id} pod={c.kind === "pod"} name={title ?? "this chat"}>
+                <Link href={`/chat/${c.id}`} className="flex items-center gap-3 rounded-[15px] px-2.5 py-[11px] hover:bg-raised">
+                  <div className="relative">
+                    {first && <Avatar id={first.id} name={first.name} src={c.kind === "pod" ? null : first.avatar_url} size={48} />}
+                    {c.kind === "pod" && (
+                      <span className="absolute -right-0.5 -bottom-0.5 rounded-full border-[1.5px] border-[#f4e9f2] bg-white px-[5px] py-px text-[10.8px] font-bold text-pink">pod</span>
+                    )}
                   </div>
-                  <div className="mt-0.5 truncate text-[15.6px] text-muted">{last}</div>
-                </div>
-                {c.unread && <span className="h-[9px] w-[9px] flex-none rounded-full bg-pink" />}
-              </Link>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="truncate text-[18px] font-semibold">{title}</span>
+                      <span className="flex-none text-[13.2px] text-faint">{timeAgo(c.last_message_at)}</span>
+                    </div>
+                    <div className="mt-0.5 truncate text-[15.6px] text-muted">{last}</div>
+                  </div>
+                  {c.unread && <span className="h-[9px] w-[9px] flex-none rounded-full bg-pink" />}
+                </Link>
+              </SwipeToDelete>
             );
           })}
         </div>
