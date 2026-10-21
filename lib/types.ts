@@ -134,7 +134,7 @@ export type Inbox = {
 };
 
 export type Venue = {
-  id: string; name: string; kind: "coffee" | "restaurant" | "bar" | "outdoors" | "movement";
+  id: string; name: string; kind: "coffee" | "restaurant" | "bar" | "outdoors" | "movement" | "museum";
   note: string; neighbourhood: string | null; walk_min: number | null; i_go: boolean; regulars: Mini[];
   added_by: Mini | null; mine: boolean;
 };
