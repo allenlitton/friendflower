@@ -7,7 +7,8 @@ import { createPrivateKey, sign } from "node:crypto";
 // APNS_TOPIC defaults to the app's bundle id.
 
 export type PushToken = { token: string; env: "production" | "sandbox" | null };
-export type PushMessage = { title: string; body: string; url: string };
+/** `badge` is the number for the app icon; null leaves the icon as it is. */
+export type PushMessage = { title: string; body: string; url: string; badge?: number | null };
 export type PushOutcome = { token: string; env: "production" | "sandbox" | null; dead: boolean };
 
 const HOSTS = { production: "https://api.push.apple.com", sandbox: "https://api.sandbox.push.apple.com" } as const;
@@ -68,7 +69,8 @@ function post(host: string, token: string, payload: string): Promise<Reply> {
  * production one. Only a token Apple says is invalid on both is reported dead.
  */
 export async function sendPush(t: PushToken, m: PushMessage): Promise<PushOutcome> {
-  const payload = JSON.stringify({ aps: { alert: { title: m.title, body: m.body }, sound: "default" }, url: m.url });
+  const aps = { alert: { title: m.title, body: m.body }, sound: "default", ...(m.badge != null && { badge: m.badge }) };
+  const payload = JSON.stringify({ aps, url: m.url });
   const order = t.env === "sandbox" ? (["sandbox", "production"] as const) : (["production", "sandbox"] as const);
   let wrongToken = 0;
   for (const env of order) {

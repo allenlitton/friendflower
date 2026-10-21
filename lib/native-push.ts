@@ -59,6 +59,20 @@ export async function enablePush(onOpen: (url: string) => void): Promise<boolean
   return true;
 }
 
+/**
+ * Clears the number on the app icon and the notifications waiting in Notification Center.
+ * Called whenever the app comes to the front; the next notification brings back an up-to-date count.
+ */
+export async function clearBadge() {
+  if (!hasNativePush()) return;
+  await PushNotifications.removeAllDeliveredNotifications().catch(() => {});
+}
+
+/** Opens Friend Flower's page in the iPhone Settings app, where banners, sounds and lock-screen display are chosen. */
+export function openIosSettings() {
+  window.location.href = "app-settings:";
+}
+
 /** Stops notifications for this phone, e.g. on sign-out or when switched off in Settings. */
 export async function disablePush(remember = false) {
   if (!hasNativePush()) return;
