@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/session";
 import { TabBar } from "@/components/tab-bar";
 import { RememberEmail } from "@/components/remember-email";
+import { PushSetup } from "@/components/push-setup";
 
 export default async function TabsLayout({ children }: LayoutProps<"/">) {
   const { user, profile } = await requireProfile();
@@ -8,6 +9,7 @@ export default async function TabsLayout({ children }: LayoutProps<"/">) {
     <>
       <main className="flex min-h-0 flex-1 flex-col">{children}</main>
       <TabBar myName={profile.first_name} myId={profile.id} avatarUrl={profile.avatar_url} liveLocation={profile.share_live_location && profile.show_distance} />
+      <PushSetup />
       {user.email && <RememberEmail email={user.email} />}
     </>
   );
