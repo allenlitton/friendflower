@@ -24,6 +24,12 @@ const KIND_GRAD: Record<Venue["kind"], string> = {
   movement: "linear-gradient(135deg,#a8bcc0,#75919a)",
 };
 
+// Searched by name rather than lat/lng: places people add only carry their neighbourhood's centre point.
+function mapsUrl(v: Venue, cityName: string) {
+  const query = [v.name, v.neighbourhood?.replace(/^the /i, ""), cityName].filter(Boolean).join(", ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
 const KINDS: { value: Venue["kind"]; label: string }[] = [
   { value: "coffee", label: "Coffee" }, { value: "restaurant", label: "Restaurant" }, { value: "bar", label: "Bar" },
   { value: "outdoors", label: "Outdoors" }, { value: "movement", label: "Movement" },
@@ -96,8 +102,10 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
             : `${names.slice(0, -1).join(", ")} and ${names.at(-1)} go here`;
           return (
             <div key={v.id} className="flex flex-col rounded-[18px] border-[1.5px] border-line bg-card">
-              <div className="flex h-[88px] flex-none items-end rounded-t-2xl px-[13px] py-2.5" style={{ background: KIND_GRAD[v.kind] }}>
+              <div className="flex h-[88px] flex-none items-end justify-between gap-2 rounded-t-2xl px-[13px] py-2.5" style={{ background: KIND_GRAD[v.kind] }}>
                 <span className="rounded-full bg-white/95 px-2.5 py-1 text-[13.2px] font-bold text-[#6b645b]">{KIND_LABEL[v.kind]}</span>
+                <a href={mapsUrl(v, city.name)} target="_blank" rel="noopener noreferrer"
+                  className="rounded-full bg-white/95 px-2.5 py-1 text-[13.2px] font-bold whitespace-nowrap text-[#6b645b]">Open in Google Maps ↗</a>
               </div>
               <div className="px-[15px] pt-[13px] pb-3.5">
                 <div className="flex items-baseline gap-2">
