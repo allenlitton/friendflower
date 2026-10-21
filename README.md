@@ -70,6 +70,7 @@ Each member can send Fo Concierge 20 requests a day, and every request tells Fo 
 | Fo Concierge (talking to Fo, its login) | `lib/fo.ts`, `app/api/fo/route.ts`, `scripts/fo-connect.mjs` |
 | Database tables | `supabase/migrations/…01_schema.sql` |
 | Who-can-see-what rules, friend graph, verification | `supabase/migrations/…02_functions.sql` |
+| Blossom (paid plan): free-plan limits, codes like FRIEND33 | `supabase/migrations/…25_blossom.sql`, `lib/blossom.ts`, `app/(full)/blossom` |
 | Cities, neighbourhoods, venues | `supabase/migrations/…03_reference_data.sql` — see `docs/ADDING_A_CITY.md` |
 
 ### The friend graph

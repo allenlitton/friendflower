@@ -11,6 +11,7 @@ import { Sheet } from "@/components/sheet";
 import { useRpc } from "@/components/person-actions";
 import { CityPicker } from "@/components/city-picker";
 import { AskFoButton } from "@/components/fo-concierge";
+import { BlossomNote } from "@/components/blossom";
 
 const VIS = [
   { value: "first" as const, label: "1st only" },
@@ -32,9 +33,9 @@ const NO_DELIVERY = { dOpen: false, dLegs: "both" as "in" | "out" | "both", dLug
 const normFlight = (s: string) => s.toUpperCase().replace(/\s+/g, "");
 const validFlight = (s: string) => /^[A-Z0-9]{2,3}[0-9]{1,4}[A-Z]?$/.test(s);
 
-export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, openAdd, presetCity, userId }: {
+export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, openAdd, presetCity, userId, blossom }: {
   trips: Trip[]; matches: FlightMatch[]; cities: City[]; neighbourhoods: Neighbourhood[];
-  homeCity: string | null; openAdd: boolean; presetCity?: string; userId: string;
+  homeCity: string | null; openAdd: boolean; presetCity?: string; userId: string; blossom: boolean;
 }) {
   const router = useRouter();
   const supabase = useMemo(() => supabaseBrowser(), []);
@@ -228,6 +229,11 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
           <div className="mt-2 text-[15px] leading-normal text-muted">
             Need a small package that might fit in someone&apos;s luggage? Connect to someone on the Friend Flower network who might have space in their luggage to bring you their package on their next trip to your city
           </div>
+          {!blossom ? (
+            <BlossomNote className="mt-3.5" title="Finding a carrier is part of Blossom">
+              Anyone can offer to carry a package on their trip. Blossom lets you find someone to carry one for you.
+            </BlossomNote>
+          ) : (<>
           <SectionLabel className="mt-3.5">Coming from</SectionLabel>
           <CityPicker value={d.from} cities={cities} placeholder="Which city is the package in?"
             onChange={(c) => { setD({ ...d, from: c.id }); setNoMatch(false); }} />
@@ -267,6 +273,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
           <div className="mt-2 text-[13.2px] leading-normal text-faint">
             We search {d.scope === "circle" ? "people in your circles" : "everyone on Friend Flower"} who&apos;ve said they&apos;re open to carrying a package, then open a chat with the best match. Only people who opted in on a trip can be found.
           </div>
+          </>)}
         </div>
 
         <div className="mt-1">
