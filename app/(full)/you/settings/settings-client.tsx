@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Units } from "@/lib/types";
 import { ErrorNote, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { useRpc } from "@/components/person-actions";
+import { disablePush, enablePush, hasNativePush, pushState, type PushState } from "@/lib/native-push";
 
 // Only English for now; the rest are shown so people know they're coming.
 const LANGUAGES = ["English", "Español", "Français", "Deutsch", "Português", "Italiano", "日本語", "中文", "한국어"];
@@ -25,6 +26,20 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
     if (!next.on) setFo({ on: false, email: "", phone: "" });
   }
   const foDirty = fo.on && ((fo.email.trim().toLowerCase() || null) !== foSaved.email || (fo.phone.trim() || null) !== foSaved.phone);
+
+  // Notifications only exist in the iPhone app; null until we've asked iOS (and always on the website).
+  const [push, setPush] = useState<PushState | null>(null);
+  useEffect(() => {
+    if (hasNativePush()) pushState().then(setPush).catch(() => {});
+  }, []);
+
+  async function changePush(on: boolean) {
+    if (on) setPush((await enablePush((url) => router.push(url))) ? "on" : await pushState());
+    else {
+      setPush("off");
+      await disablePush(true);
+    }
+  }
 
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteWord, setDeleteWord] = useState("");
@@ -59,6 +74,23 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
           options={[{ value: "imperial", label: "Imperial (mi, ft)" }, { value: "metric", label: "Metric (km, m)" }]} />
         <div className="mt-2 text-[14.4px] leading-snug text-muted">Used for live distances on Nearby and profiles.</div>
       </div>
+
+      {push && (
+        <div>
+          <SectionLabel>Notifications</SectionLabel>
+          <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5">
+            <div className="flex items-center gap-3">
+              <span className="flex-1 text-[16.8px] font-semibold">Push notifications</span>
+              <Toggle label="Push notifications" on={push === "on"} onChange={changePush} />
+            </div>
+            <div className="mt-1.5 text-[14.4px] leading-snug text-muted">
+              {push === "blocked"
+                ? "Notifications are turned off for Friend Flower in your iPhone's Settings app. Turn them on there, then come back."
+                : "Get a ping on this phone for new messages and friend requests."}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div>
         <SectionLabel>Fo Concierge</SectionLabel>

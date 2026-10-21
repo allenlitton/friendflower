@@ -7,6 +7,7 @@ import { Avatar, Flower, PetalHalo, RowLink, SectionLabel, Segmented, Toggle } f
 import { InviteButton } from "@/components/invite-button";
 import { useRpc } from "@/components/person-actions";
 import { turnOnLiveDistance } from "@/components/live-location";
+import { disablePush } from "@/lib/native-push";
 
 export function YouClient({ profile, sub, blocks, contactMatches }: { profile: Profile; sub: string; blocks: Mini[]; contactMatches: number }) {
   const { supabase, router } = useRpc();
@@ -129,7 +130,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         <span className="text-[20.4px] text-pink">›</span>
       </a>
       <button type="button" className="rounded-[14px] border-[1.5px] border-line bg-card p-[13px] text-[16.8px] font-semibold text-pink hover:bg-[#241a22]"
-        onClick={async () => { await supabase.auth.signOut(); router.replace("/signin"); router.refresh(); }}>
+        onClick={async () => { await disablePush(); await supabase.auth.signOut(); router.replace("/signin"); router.refresh(); }}>
         Sign out
       </button>
     </div>
