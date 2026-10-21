@@ -78,10 +78,10 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
           <button type="button" onClick={() => setAdding(true)} className="rounded-full bg-pink px-[13px] py-2 text-[15px] font-bold whitespace-nowrap text-ink">+ Add a place</button>
         )}>Places to meet</ScreenTitle>
       {cities.length > 1 && (
-        <div className="flex flex-none gap-2 px-5 pt-1.5">
+        <div className="flex flex-none gap-3 overflow-x-auto px-5 pt-1.5">
           {cities.map((c) => (
             <Link key={c.id} href={`/places?city=${c.id}`}
-              className={`text-[14.4px] font-bold ${c.id === city.id ? "text-pink" : "text-faint"}`}>{c.name}</Link>
+              className={`text-[14.4px] font-bold whitespace-nowrap ${c.id === city.id ? "text-pink" : "text-faint"}`}>{c.name}</Link>
           ))}
         </div>
       )}
