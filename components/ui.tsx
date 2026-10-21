@@ -22,6 +22,22 @@ export function Flower({
   );
 }
 
+/** A small pink outline flower with an exclamation mark, marking something unread; `ring` sets a backing behind it so it reads over an icon. */
+export function UnreadFlower({ size = 12, ring, className }: { size?: number; ring?: string; className?: string }) {
+  return (
+    <svg width={(size * 90) / 64} height={size} viewBox="0 0 90 64" className={className} style={{ flex: "none", overflow: "visible" }} aria-hidden>
+      {ring && <circle cx="32" cy="32" r="34" fill={ring} />}
+      {ring && <rect x="68" y="0" width="22" height="64" rx="11" fill={ring} />}
+      <rect x="75" y="8" width="8" height="34" rx="4" fill="var(--color-pink)" />
+      <circle cx="79" cy="53" r="5" fill="var(--color-pink)" />
+      <g stroke="var(--color-pink)" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" fill="none">
+        {ANGLES.map((a) => <path key={a} transform={`rotate(${a} 32 32)`} d={HEART_PETAL} />)}
+      </g>
+      <circle cx="32" cy="32" r="6" fill="var(--color-pink)" />
+    </svg>
+  );
+}
+
 /** Soft pink petals behind an avatar (profile, "how you know each other"). */
 export function PetalHalo({ size, children }: { size: number; children: ReactNode }) {
   return (

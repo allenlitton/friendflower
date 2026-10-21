@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireProfile } from "@/lib/session";
 import type { ChatSummary, Inbox } from "@/lib/types";
 import { timeAgo } from "@/lib/format";
-import { Avatar, ScreenTitle, SectionLabel } from "@/components/ui";
+import { Avatar, ScreenTitle, SectionLabel, UnreadFlower } from "@/components/ui";
 import { FoFace } from "@/components/fo-face";
 import type { FoThread } from "@/components/fo-concierge";
 import { InboxActions } from "./inbox-actions";
@@ -67,7 +67,7 @@ export default async function ChatsPage() {
                     </div>
                     <div className="mt-0.5 truncate text-[15.6px] text-muted">{last}</div>
                   </div>
-                  {c.unread && <span className="h-[9px] w-[9px] flex-none rounded-full bg-pink" />}
+                  {c.unread && <UnreadFlower size={16} />}
                 </Link>
               </SwipeToDelete>
             );
