@@ -19,6 +19,8 @@ export const viewport: Viewport = {
   themeColor: "#0d0c0b",
   width: "device-width",
   initialScale: 1,
+  // Stops iOS zooming in when a text box under 16px is focused; the app's web view never zooms back out.
+  maximumScale: 1,
   viewportFit: "cover",
 };
 
