@@ -5,6 +5,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { ErrorNote } from "@/components/ui";
 import Link from "next/link";
 import { FoFace } from "@/components/fo-face";
+import { MessageBox } from "@/components/message-box";
 
 export type FoAction = {
   id: number; body: string; status: "pending" | "sent" | "dismissed"; chat_id: string | null;
@@ -137,10 +138,8 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
         )}
         <ErrorNote>{error}</ErrorNote>
         <form className="flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
-          <textarea value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={2000} rows={1}
-            placeholder={working ? "Add more, or stop Fo Concierge…" : "Ask Fo Concierge…"}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
-            className="min-h-11 min-w-0 flex-1 resize-none rounded-[18px] border-[1.5px] border-line bg-card px-4 py-2.5 text-[19.2px] outline-none" />
+          <MessageBox value={draft} onChange={setDraft} onSend={() => send(draft)}
+            placeholder={working ? "Add more, or stop Fo Concierge…" : "Ask Fo Concierge…"} />
           {working && !draft.trim() ? (
             <button type="button" onClick={stop} aria-label="Stop Fo Concierge"
               className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-ink hover:bg-pink-deep">

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ChatDetail, MeetOptions, MeetPart, MeetState, Message } from "@/lib/types";
 import { Avatar, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
+import { MessageBox } from "@/components/message-box";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
 import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
 
@@ -257,9 +258,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
             <Link href={`/fo?draft=${encodeURIComponent(`Book a table for me and ${others.filter((m) => !m.left).map((m) => m.first_name).join(" and ") || "a friend"}`)}`}
               className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[15px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</Link>
           </div>
-          <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
-            <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Say hello…" maxLength={2000}
-              className="h-11 min-w-0 flex-1 rounded-full border-[1.5px] border-line bg-card px-4 text-[19.2px] outline-none" />
+          <form className="flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
+            <MessageBox value={draft} onChange={setDraft} onSend={() => { if (!busy && draft.trim()) send(draft); }} placeholder="Say hello…" />
             <button type="submit" aria-label="Send" disabled={busy || !draft.trim()}
               className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[20.4px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
           </form>
