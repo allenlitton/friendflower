@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { requireProfile } from "@/lib/session";
+import { getPlan } from "@/lib/plan";
+import { BLOSSOM } from "@/lib/blossom";
 import { currentLens, myLenses } from "@/lib/whereabouts";
 import type { CirclePerson } from "@/lib/types";
 import { dateRange, todayISO } from "@/lib/format";
 import { NearbyGrid } from "./nearby-grid";
 import { PrimaryButton } from "@/components/ui";
+import { BlossomNote } from "@/components/blossom";
 
 export default async function NearbyPage({ searchParams }: PageProps<"/nearby">) {
   const { supabase, profile } = await requireProfile();
   const sp = await searchParams;
-  const lenses = await myLenses(supabase, profile);
+  const [lenses, plan] = await Promise.all([myLenses(supabase, profile), getPlan()]);
   const lens = (sp.trip && lenses.find((l) => l.tripId === sp.trip)) || currentLens(lenses);
 
   if (!lens) {
@@ -53,9 +56,29 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
     );
   }
 
+  // Seeing a city before you get there is part of Blossom.
+  if (!plan.isBlossom && lens.from > todayISO()) {
+    const here = currentLens(lenses.filter((l) => l.from <= todayISO()));
+    return (
+      <div className="flex flex-1 flex-col px-5 pt-2">
+        <h1 className="font-display text-[30px] leading-[1.1]">{lens.cityName}</h1>
+        <div className="mt-1 text-[15px] text-muted">Your trip · {dateRange(lens.from, lens.to)}</div>
+        <BlossomNote className="mt-4" title={`See who's in ${lens.short} before you land`}>
+          With Blossom you can see which mutuals are in {lens.cityName} ahead of your trip. On the free plan, it opens when your trip starts.
+        </BlossomNote>
+        {here && <PrimaryButton className="mt-3" href={here.tripId ? `/nearby?trip=${here.tripId}` : "/nearby"}>back to {here.short}</PrimaryButton>}
+      </div>
+    );
+  }
+
   const { data, error } = await supabase.rpc("circle_in_city", { p_city: lens.cityId, p_from: lens.from, p_to: lens.to });
   const people = (data ?? []) as CirclePerson[];
   const isNow = lens.from <= todayISO() && lens.to >= todayISO();
+  // The free plan shows the closest few; say how many more there are.
+  const total = !plan.isBlossom && people.length >= BLOSSOM.freeNearby
+    ? ((await supabase.rpc("circle_in_city_count", { p_city: lens.cityId, p_from: lens.from, p_to: lens.to })).data as number | null) ?? 0
+    : 0;
+  const hidden = Math.max(0, total - people.length);
 
   return (
     <NearbyGrid
@@ -66,7 +89,12 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
       lens={lens}
       lenses={lenses}
       offerLive={isNow && profile.show_distance && !profile.share_live_location}
-      footer={
+      footer={<>
+        {hidden > 0 && (
+          <BlossomNote className="mt-2.5" title={`${hidden} more ${hidden === 1 ? "person" : "people"} nearby`}>
+            The free plan shows the {BLOSSOM.freeNearby} closest people you have mutuals with. Blossom shows everyone.
+          </BlossomNote>
+        )}
         <Link href={`/places?city=${lens.cityId}`}
           className="mt-2.5 flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-[13px] hover:border-[#5a534b]">
           <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#2b2118] text-[18px]">☕</span>
@@ -76,7 +104,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
           </div>
           <span className="text-[20.4px] text-pink">›</span>
         </Link>
-      }
+      </>}
     />
   );
 }

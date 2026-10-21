@@ -7,8 +7,9 @@ import { Avatar, Flower, PetalHalo, RowLink, SectionLabel, Segmented, Toggle } f
 import { InviteButton } from "@/components/invite-button";
 import { useRpc } from "@/components/person-actions";
 import { turnOnLiveDistance } from "@/components/live-location";
+import { BLOSSOM } from "@/lib/blossom";
 
-export function YouClient({ profile, sub, blocks, contactMatches }: { profile: Profile; sub: string; blocks: Mini[]; contactMatches: number }) {
+export function YouClient({ profile, sub, blocks, contactMatches, blossom }: { profile: Profile; sub: string; blocks: Mini[]; contactMatches: number; blossom: boolean }) {
   const { supabase, router } = useRpc();
   const [p, setP] = useState(profile);
   const [liveError, setLiveError] = useState<string | null>(null);
@@ -120,6 +121,8 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         </div>
       )}
 
+      <RowLink href="/blossom" icon={<Flower size={20} strokeWidth={4.4} />} title="Blossom"
+        note={blossom ? "You're on Blossom" : `Unlock Fo Concierge, Deliveries and more · ${BLOSSOM.price}/month`} />
       <RowLink href="/you/settings" icon="⚙" title="Settings" note="Language and units" />
       <RowLink href="/privacy" icon="🔒" title="How we handle your data" note="What's shared, with whom, and what's never stored" />
       <RowLink href="/terms" icon="📄" title="Terms of use" note="The rules for being here" />

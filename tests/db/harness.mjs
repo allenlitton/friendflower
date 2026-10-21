@@ -77,8 +77,8 @@ export async function rpc(db, fnName, args = {}) {
 }
 
 let n = 0;
-/** Create an onboarded user. */
-export async function makeUser(db, { first, city = "san-francisco", nb = null, visibility = "fof", ...rest }) {
+/** Create an onboarded user, on Blossom unless `free` (so plan limits don't get in the way of other tests). */
+export async function makeUser(db, { first, city = "san-francisco", nb = null, visibility = "fof", free = false, ...rest }) {
   n += 1;
   const id = `00000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
   await db.query(`insert into auth.users (id, email) values ($1, $2)`, [id, `${first.toLowerCase()}${n}@test.dev`]);
@@ -88,6 +88,9 @@ export async function makeUser(db, { first, city = "san-francisco", nb = null, v
      where id = $1`,
     [id, first, first[0], city, nb, visibility, rest.bio ?? ""],
   );
+  if (!free) {
+    await db.query(`insert into private.memberships (user_id, source, until) values ($1, 'paid', now() + interval '1 month')`, [id]);
+  }
   return id;
 }
 

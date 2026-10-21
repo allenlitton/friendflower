@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { requireProfile } from "@/lib/session";
+import { getPlan } from "@/lib/plan";
+import { BLOSSOM } from "@/lib/blossom";
 import type { ConciergeAlert, WorldCity } from "@/lib/types";
 import { dateRange, shortDate, todayISO } from "@/lib/format";
 import { Avatar, PrimaryButton, ScreenTitle, Tag } from "@/components/ui";
+import { BlossomNote } from "@/components/blossom";
 import { MarkWatchSeen } from "./concierge-watch";
 
 const CHALK = ["#e9a3d2", "#9fd6c0", "#e6a8bd", "#a9c2ef", "#efa88c"];
@@ -55,7 +58,7 @@ function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
 
 export default async function WorldPage() {
   const { supabase } = await requireProfile();
-  const [{ data }, { data: watch }] = await Promise.all([supabase.rpc("world"), supabase.rpc("concierge_watch")]);
+  const [{ data }, { data: watch }, plan] = await Promise.all([supabase.rpc("world"), supabase.rpc("concierge_watch"), getPlan()]);
   const cities = (data ?? []) as WorldCity[];
   const alerts = (watch ?? []) as ConciergeAlert[];
 
@@ -69,6 +72,11 @@ export default async function WorldPage() {
       <div className="flex flex-1 flex-col gap-2.5 overflow-y-auto px-5 pt-2.5 pb-3.5">
         {alerts.length > 0 && <ConciergeWatch alerts={alerts} />}
         <MarkWatchSeen hasNew={alerts.some((a) => a.is_new)} />
+        {!plan.isBlossom && plan.friends > BLOSSOM.freeFriends && (
+          <BlossomNote title={`Showing ${BLOSSOM.freeFriends} of your ${plan.friends} saved friends`}>
+            The free plan keeps track of {BLOSSOM.freeFriends} friends on World. Blossom shows every friend, wherever they are.
+          </BlossomNote>
+        )}
         {cities.length === 0 && (
           <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum p-[15px]">
             <div className="text-[17.4px] font-semibold">No saved friends yet</div>

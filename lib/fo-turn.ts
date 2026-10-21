@@ -47,6 +47,7 @@ export async function runFoTurn(user: string, chat: string | null, text: string,
     if (text) {
       const { data: start, error } = await admin.rpc("srv_fo_begin", { p_user: user, p_chat: chat, p_text: text });
       if (error) return { ok: false, httpStatus: 500, error: error.message };
+      if (start.status === "blossom") return { ok: false, httpStatus: 402, error: "Fo Concierge is part of Blossom. Turn it on from You → Blossom." };
       if (start.status === "busy") return { ok: false, httpStatus: 409, error: "Fo Concierge is still working on your last request." };
       if (start.status === "limit") return { ok: false, httpStatus: 429, error: "That's all the requests Fo Concierge can take from you today. Try again tomorrow." };
       if (start.status !== "ok") return { ok: false, httpStatus: 403, error: "You're not in this chat." };
