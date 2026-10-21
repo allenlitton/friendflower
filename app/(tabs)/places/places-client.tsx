@@ -13,20 +13,23 @@ const FILTERS = [
   { label: "Coffee", kinds: ["coffee"] },
   { label: "Dinner", kinds: ["restaurant"] },
   { label: "Drinks", kinds: ["bar"] },
+  { label: "Museums", kinds: ["museum"] },
   { label: "Free", kinds: ["outdoors", "movement"] },
 ];
 const KIND_LABEL: Record<Venue["kind"], string> = {
-  coffee: "Coffee", restaurant: "Restaurant", bar: "Wine bar", outdoors: "Free · outdoors", movement: "Movement",
+  coffee: "Coffee", restaurant: "Restaurant", bar: "Wine bar", outdoors: "Free · outdoors", movement: "Movement", museum: "Museum · exhibit",
 };
 const KIND_GRAD: Record<Venue["kind"], string> = {
   coffee: "linear-gradient(135deg,#cbb79a,#9d8460)", restaurant: "linear-gradient(135deg,#e0c8a8,#bb9a72)",
   bar: "linear-gradient(135deg,#c99aa6,#95677a)", outdoors: "linear-gradient(135deg,#a9c093,#77955f)",
   movement: "linear-gradient(135deg,#a8bcc0,#75919a)",
+  museum: "linear-gradient(135deg,#bcb0cc,#8a7ba3)",
 };
 
 const KINDS: { value: Venue["kind"]; label: string }[] = [
   { value: "coffee", label: "Coffee" }, { value: "restaurant", label: "Restaurant" }, { value: "bar", label: "Bar" },
   { value: "outdoors", label: "Outdoors" }, { value: "movement", label: "Movement" },
+  { value: "museum", label: "Museum / exhibit" },
 ];
 
 export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
