@@ -4,15 +4,22 @@ import { useEffect, useState } from "react";
 import type { Units } from "@/lib/types";
 import { ErrorNote, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { useRpc } from "@/components/person-actions";
-import { disablePush, enablePush, hasNativePush, pushState, type PushState } from "@/lib/native-push";
+import { disablePush, enablePush, hasNativePush, openIosSettings, pushState, type PushState } from "@/lib/native-push";
 
 // Only English for now; the rest are shown so people know they're coming.
 const LANGUAGES = ["English", "Español", "Français", "Deutsch", "Português", "Italiano", "日本語", "中文", "한국어"];
 
 export type FoSharing = { on: boolean; email: string | null; phone: string | null };
+export type PushPrefs = { messages: boolean; friend_requests: boolean; badge: boolean };
 
-export function SettingsClient({ profileId, units: initialUnits, foSharing, signInEmail }: {
-  profileId: string; units: Units; foSharing: FoSharing; signInEmail: string;
+const PUSH_CHOICES: { key: keyof PushPrefs; label: string }[] = [
+  { key: "messages", label: "New messages" },
+  { key: "friend_requests", label: "Friend requests" },
+  { key: "badge", label: "Unread count on app icon" },
+];
+
+export function SettingsClient({ profileId, units: initialUnits, foSharing, signInEmail, pushPrefs }: {
+  profileId: string; units: Units; foSharing: FoSharing; signInEmail: string; pushPrefs: PushPrefs;
 }) {
   const { supabase, router, call, busy, error } = useRpc();
   const [units, setUnits] = useState(initialUnits);
@@ -32,6 +39,14 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
   useEffect(() => {
     if (hasNativePush()) pushState().then(setPush).catch(() => {});
   }, []);
+
+  const [prefs, setPrefs] = useState(pushPrefs);
+  async function changePref(key: keyof PushPrefs, on: boolean) {
+    const next = { ...prefs, [key]: on };
+    setPrefs(next);
+    const ok = await call("set_push_prefs", { p_messages: next.messages, p_friend_requests: next.friend_requests, p_badge: next.badge });
+    if (ok === undefined) setPrefs(prefs);
+  }
 
   async function changePush(on: boolean) {
     if (on) setPush((await enablePush((url) => router.push(url))) ? "on" : await pushState());
@@ -88,7 +103,28 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
                 ? "Notifications are turned off for Friend Flower in your iPhone's Settings app. Turn them on there, then come back."
                 : "Get a ping on this phone for new messages and friend requests."}
             </div>
+            {push === "on" && (
+              <div className="mt-3 border-t border-rule">
+                {PUSH_CHOICES.map(({ key, label }) => (
+                  <div key={key} className="flex items-center gap-3 border-b border-rule py-2.5 last:border-0">
+                    <span className="flex-1 text-[15.6px]">{label}</span>
+                    <Toggle label={label} on={prefs[key]} onChange={(on) => changePref(key, on)} />
+                  </div>
+                ))}
+                {!fo.on && <ErrorNote>{error}</ErrorNote>}
+              </div>
+            )}
+            {push !== "off" && (
+              <button type="button" onClick={openIosSettings} className="mt-3 text-[15px] font-bold text-pink underline">
+                {push === "blocked" ? "Open iPhone Settings" : "Banners, sounds and lock screen"}
+              </button>
+            )}
           </div>
+          {push === "on" && (
+            <div className="mt-2 text-[14.4px] leading-snug text-muted">
+              How notifications look (banners, sounds, showing on the lock screen) is set in your iPhone&apos;s Settings app.
+            </div>
+          )}
         </div>
       )}
 

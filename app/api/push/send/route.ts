@@ -3,7 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { apnsConfigured, sendPush, type PushToken } from "@/lib/apns";
 
-type Waiting = { title: string; body: string; url: string; tokens: PushToken[] };
+type Waiting = { title: string; body: string; url: string; badge: number | null; tokens: PushToken[] };
 
 // Called by the database (see private.push_kick) whenever notifications are queued. Takes
 // everything waiting and hands it to Apple. Protected by a shared secret, not a member login.
