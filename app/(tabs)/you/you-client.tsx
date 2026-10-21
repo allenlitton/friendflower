@@ -1,18 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import type { Mini, Profile } from "@/lib/types";
 import { Avatar, Flower, PetalHalo, RowLink, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { InviteButton } from "@/components/invite-button";
 import { useRpc } from "@/components/person-actions";
 import { turnOnLiveDistance } from "@/components/live-location";
-import { disablePush } from "@/lib/native-push";
+import { disablePush, hasNativePush } from "@/lib/native-push";
+
+const noSubscribe = () => () => {};
 
 export function YouClient({ profile, sub, blocks, contactMatches }: { profile: Profile; sub: string; blocks: Mini[]; contactMatches: number }) {
   const { supabase, router } = useRpc();
   const [p, setP] = useState(profile);
   const [liveError, setLiveError] = useState<string | null>(null);
+  // Push only works in the iPhone app. False on the server, so the first render matches.
+  const inApp = useSyncExternalStore(noSubscribe, hasNativePush, () => false);
 
   async function update(patch: Partial<Profile>) {
     setP({ ...p, ...patch });
@@ -98,9 +102,13 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
 
       <div>
         <SectionLabel>Notifications</SectionLabel>
-        <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3 text-[15px] leading-snug text-muted">
-          Push notifications are coming soon. For now, new messages, friend requests and verification requests show as a pink dot on Chats.
-        </div>
+        {inApp ? (
+          <RowLink href="/you/settings" icon="🔔" title="Push notifications" note="New messages and friend requests on this phone" />
+        ) : (
+          <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3 text-[15px] leading-snug text-muted">
+            Push notifications come with the Friend Flower iPhone app. Here, new messages, friend requests and verification requests show as a pink dot on Chats.
+          </div>
+        )}
       </div>
 
       {blocks.length > 0 && (
