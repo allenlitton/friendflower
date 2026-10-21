@@ -52,7 +52,7 @@ npm run fo:connect
 ```
 Your browser opens the Wajo sign-in. Sign in with the account Fo should act from, and the script saves its login in the database. That covers the live site too, since it uses the same database. Run it again to switch accounts or if Fo Concierge says it isn't available.
 
-Each member can send Fo 20 requests a day, and every request tells Fo who it's from and asks Fo to check with them before spending money. Fo still acts from your account, so keep an eye on what it does at <https://wajo.ai>.
+Each member can send Fo Concierge 20 requests a day, and every request tells Fo Concierge who it's from and asks Fo Concierge to check with them before spending money. Fo Concierge still acts from your account, so keep an eye on what it does at <https://wajo.ai>.
 
 ### Before real launch
 - **Email sending:** Supabase's built-in email is only for testing (it sends a handful per hour). Set up a free [Resend](https://resend.com) account and add it under **Authentication → Emails → SMTP Settings**.

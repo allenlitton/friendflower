@@ -47,8 +47,8 @@ export async function runFoTurn(user: string, chat: string | null, text: string,
     if (text) {
       const { data: start, error } = await admin.rpc("srv_fo_begin", { p_user: user, p_chat: chat, p_text: text });
       if (error) return { ok: false, httpStatus: 500, error: error.message };
-      if (start.status === "busy") return { ok: false, httpStatus: 409, error: "Fo is still working on your last request." };
-      if (start.status === "limit") return { ok: false, httpStatus: 429, error: "That's all the requests Fo can take from you today. Try again tomorrow." };
+      if (start.status === "busy") return { ok: false, httpStatus: 409, error: "Fo Concierge is still working on your last request." };
+      if (start.status === "limit") return { ok: false, httpStatus: 429, error: "That's all the requests Fo Concierge can take from you today. Try again tomorrow." };
       if (start.status !== "ok") return { ok: false, httpStatus: 403, error: "You're not in this chat." };
       conversation = start.conversation_id;
       const stopped = await wasStopped(admin, user, chat);
@@ -63,7 +63,7 @@ export async function runFoTurn(user: string, chat: string | null, text: string,
   } catch (e) {
     const message = e instanceof FoNotConnected
       ? "Fo Concierge isn't available right now."
-      : "Fo couldn't be reached. Please try again.";
+      : "Fo Concierge couldn't be reached. Please try again.";
     if (!(e instanceof FoNotConnected)) console.error("Fo request failed", e);
     else console.error("Fo is not connected: run npm run fo:connect");
     await save({ status: "failed", conversationId: "", response: message });
@@ -75,7 +75,7 @@ export async function runFoTurn(user: string, chat: string | null, text: string,
   if (after?.status !== "working") return { ok: true, status: "idle" };
 
   if (!turn.conversationId) turn = { ...turn, conversationId: conversation ?? "" };
-  if (turn.status === "failed" && !turn.response) turn = { ...turn, response: "Fo couldn't finish that one. Please try again." };
+  if (turn.status === "failed" && !turn.response) turn = { ...turn, response: "Fo Concierge couldn't finish that one. Please try again." };
   await save(turn);
   return { ok: true, status: turn.status };
 }

@@ -86,7 +86,7 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<Fo
     if (msg.error) throw new Error(msg.error.message ?? "Fo failed");
     const result = msg.result as { structuredContent?: FoTurn; content?: { type: string; text?: string }[]; isError?: boolean };
     const words = result.content?.find((c) => c.type === "text")?.text;
-    if (result.isError) return { status: "failed", conversationId: "", response: words ?? "Fo couldn't do that." };
+    if (result.isError) return { status: "failed", conversationId: "", response: words ?? "Fo Concierge couldn't do that." };
     if (result.structuredContent) return result.structuredContent;
     try { return JSON.parse(words ?? "") as FoTurn; } catch { return { status: "complete", conversationId: "", response: words }; }
   }

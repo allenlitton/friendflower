@@ -54,7 +54,7 @@ static const char *str(const cJSON *j, const char *key) {
 // Returns true when Fo is still working.
 static bool report(const ask_t *a, int st, const cJSON *j) {
   const char *status = str(j, "status"), *text = str(j, "text");
-  if (st != 200 || !status) { tell(a, FO_FAILED, "Couldn't reach Fo. Please try again."); return false; }
+  if (st != 200 || !status) { tell(a, FO_FAILED, "Couldn't reach Fo Concierge. Please try again."); return false; }
   if (!strcmp(status, "working")) { tell(a, FO_WORKING, text); return true; }
   tell(a, strcmp(status, "failed") ? FO_DONE : FO_FAILED, text);
   return false;
@@ -75,7 +75,7 @@ static void ask_job(void *arg) {
   TickType_t start = xTaskGetTickCount();
   while (working && a->gen == s_gen) {
     if (pdTICKS_TO_MS(xTaskGetTickCount() - start) > WAIT_MS) {
-      tell(a, FO_FAILED, "Fo is still working on it. You'll see the answer at friendflower.app.");
+      tell(a, FO_FAILED, "Fo Concierge is still working on it. You'll see the answer at friendflower.app.");
       break;
     }
     st = api_json("GET", path, NULL, 40000, &j);  // the server waits up to 25 s for news

@@ -72,7 +72,7 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
             }} />
           </div>
           <div className="mt-1.5 text-[14.4px] leading-snug text-muted">
-            When a friend asks Fo for help, Fo can see where you are (your city, your neighbourhood if you show distance, and
+            When a friend asks Fo Concierge for help, Fo Concierge can see where you are (your city, your neighbourhood if you show distance, and
             trips they can see) and reach you on the email or phone below. Never your live position. Off by default.
           </div>
           {fo.on && (

@@ -51,7 +51,7 @@ async function latest(user: string, chat: string | null, result: FoTurnResult) {
     let q = admin.from("fo_threads").select("progress").eq("user_id", user);
     q = chat ? q.eq("chat_id", chat) : q.is("chat_id", null);
     const { data } = await q.maybeSingle();
-    return { status: "working", text: data?.progress ?? "Fo is on it..." };
+    return { status: "working", text: data?.progress ?? "Fo Concierge is on it..." };
   }
   let q = admin.from("fo_messages").select("body").eq("user_id", user).eq("role", "fo").order("id", { ascending: false }).limit(1);
   q = chat ? q.eq("chat_id", chat) : q.is("chat_id", null);
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
   if (audio.byteLength > MAX_AUDIO) return NextResponse.json({ status: "failed", text: "That was too long. Try a shorter request." });
 
   if (!process.env.OPENAI_API_KEY) {
-    return NextResponse.json({ status: "failed", text: "Voice isn't set up yet. Ask Fo at friendflower.app for now." });
+    return NextResponse.json({ status: "failed", text: "Voice isn't set up yet. Ask Fo Concierge at friendflower.app for now." });
   }
   let heard: string;
   try {

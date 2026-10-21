@@ -53,13 +53,13 @@ static void on_fo(fo_event_t ev, const char *text, void *ctx) {
       break;
     }
     case FO_WORKING:
-      set_text(s_status, text[0] ? text : "Fo is on it...");
+      set_text(s_status, text[0] ? text : "Fo Concierge is on it...");
       break;
     case FO_DONE:
     case FO_FAILED:
       s_state = ANSWERED;
       ring_on(false);
-      lv_label_set_text(s_status, ev == FO_DONE ? "Fo" : "Hmm");
+      lv_label_set_text(s_status, ev == FO_DONE ? "Fo Concierge" : "Hmm");
       set_text(s_reply, text[0] ? text : "Done.");
       lv_obj_set_style_text_color(s_reply, ev == FO_DONE ? lv_color_white() : GREY, 0);
       break;
@@ -68,7 +68,7 @@ static void on_fo(fo_event_t ev, const char *text, void *ctx) {
 
 static void send_now(void) {
   s_state = WAITING;
-  lv_label_set_text(s_status, "Sending to Fo...");
+  lv_label_set_text(s_status, "Sending to Fo Concierge...");
   fo_send(s_page_query ? s_page_query() : "page=general", on_fo, NULL);
 }
 
@@ -98,13 +98,13 @@ static void on_button(lv_event_t *e) {
   if (fo_listen()) {
     s_state = LISTENING;
     lv_label_set_text(s_status, "Listening...");
-    lv_label_set_text(s_reply, "Ask Fo to book a table, find a place or message a friend. Tap when you're done.");
+    lv_label_set_text(s_reply, "Ask Fo Concierge to book a table, find a place or message a friend. Tap when you're done.");
     lv_obj_set_style_text_color(s_reply, GREY, 0);
     ring_on(true);
   } else {
     s_state = ANSWERED;
     lv_label_set_text(s_status, "Hmm");
-    lv_label_set_text(s_reply, "Fo is still busy with your last request, or the mic isn't ready. Try again in a moment.");
+    lv_label_set_text(s_reply, "Fo Concierge is still busy with your last request, or the mic isn't ready. Try again in a moment.");
     lv_obj_set_style_text_color(s_reply, GREY, 0);
   }
 }

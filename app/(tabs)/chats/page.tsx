@@ -30,11 +30,11 @@ export default async function ChatsPage() {
           <FoFace size={48} />
           <div className="min-w-0 flex-1">
             <div className="flex items-baseline justify-between gap-2">
-              <span className="truncate text-[18px] font-semibold">Fo</span>
+              <span className="truncate text-[18px] font-semibold">Fo Concierge</span>
               {foLast && <span className="flex-none text-[13.2px] text-faint">{timeAgo(foLast.created_at)}</span>}
             </div>
             <div className="mt-0.5 truncate text-[15.6px] text-muted">
-              {fo?.status === "working" ? (fo.progress ?? "Fo is on it…") : foLast ? `${foLast.role === "me" ? "You: " : ""}${foLast.body}` : "Your concierge: tables, trips, deliveries"}
+              {fo?.status === "working" ? (fo.progress ?? "Fo Concierge is on it…") : foLast ? `${foLast.role === "me" ? "You: " : ""}${foLast.body}` : "Your concierge: tables, trips, deliveries"}
             </div>
           </div>
         </Link>

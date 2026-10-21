@@ -44,8 +44,8 @@ export default function PrivacyPage() {
           </p>
           <p className="mt-2">
             When you ask <b>Fo Concierge</b> for something while live distance is on, your latest position (rounded to about 100 m)
-            and the nearest neighbourhood go with your request, so Fo can find places near you. Fo runs on Friend Flower&apos;s own
-            Fo account. Nothing about your location is sent when live distance is off.
+            and the nearest neighbourhood go with your request, so Fo Concierge can find places near you. Fo Concierge runs on Friend Flower&apos;s own
+            Fo Concierge account. Nothing about your location is sent when live distance is off.
           </p>
         </div>
         <div>
@@ -56,9 +56,9 @@ export default function PrivacyPage() {
           </p>
           <p className="mt-2">
             Fo only learns more about you if you turn on <b>Share with my friends&apos; Fo Concierge</b> in Settings (it&apos;s off by
-            default). Then, when one of your friends asks Fo for help, Fo can see where you are (your city, your neighbourhood if you show
+            default). Then, when one of your friends asks Fo Concierge for help, Fo Concierge can see where you are (your city, your neighbourhood if you show
             distance, and trips that friend can already see) and the email or phone you chose, so it can contact you for them.
-            Never your live position. Turn it off any time and Fo stops getting any of it.
+            Never your live position. Turn it off any time and Fo Concierge stops getting any of it.
           </p>
         </div>
         <div>

@@ -26,7 +26,7 @@ static void set_hint(const char *text, lv_color_t color) {
   lv_obj_set_style_text_color(s_hint, color, 0);
 }
 
-static void idle_hint(void) { set_hint("Hold 3 s to have Fo message them", GREY); }
+static void idle_hint(void) { set_hint("Hold 3 s: Fo Concierge messages them", GREY); }
 
 static void bubble(bool mine, const char *sender, const char *body) {
   char b[420];
@@ -140,7 +140,7 @@ static void on_fo(fo_event_t ev, const char *text, void *ctx) {
     }
     case FO_FAILED:
       s_state = IDLE;
-      set_hint(text[0] ? text : "Fo couldn't write that. Try again.", GREY);
+      set_hint(text[0] ? text : "Fo Concierge couldn't write that. Try again.", GREY);
       break;
   }
 }
@@ -150,12 +150,12 @@ static void on_hold(lv_event_t *e) {
   if (code == LV_EVENT_PRESSED) { s_pressed_at = lv_tick_get(); return; }
   if (code == LV_EVENT_LONG_PRESSED_REPEAT && s_state == IDLE && lv_tick_elaps(s_pressed_at) >= 3000) {
     if (fo_listen()) { s_state = LISTENING; set_hint("Listening... let go when you're done", PINK); }
-    else set_hint("Fo is busy. Try again in a moment.", GREY);
+    else set_hint("Fo Concierge is busy. Try again in a moment.", GREY);
     return;
   }
   if ((code == LV_EVENT_RELEASED || code == LV_EVENT_PRESS_LOST) && s_state == LISTENING) {
     s_state = WRITING;
-    set_hint("Fo is writing...", PINK);
+    set_hint("Fo Concierge is writing...", PINK);
     char q[96];
     snprintf(q, sizeof q, "chat=%s&mode=message", s_chat);
     fo_send(q, on_fo, (void *)(intptr_t)s_gen);
@@ -248,7 +248,7 @@ static void build(void) {
   lv_obj_set_style_border_color(s_draft, PINK, 0);
   lv_obj_set_style_border_width(s_draft, 2, 0);
   lv_obj_remove_flag(s_draft, LV_OBJ_FLAG_SCROLLABLE);
-  lv_obj_t *who = ui_label(s_draft, &lv_font_montserrat_14, PINK, "Fo wrote:");
+  lv_obj_t *who = ui_label(s_draft, &lv_font_montserrat_14, PINK, "Fo Concierge wrote:");
   lv_obj_align(who, LV_ALIGN_TOP_MID, 0, 14);
   lv_obj_t *box = lv_obj_create(s_draft);
   lv_obj_remove_style_all(box);
