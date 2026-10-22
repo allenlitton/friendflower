@@ -16,6 +16,9 @@ export default function SignInPage() {
       <p className="mx-auto mt-4 max-w-[268px] text-center font-logo text-[14.5px] leading-relaxed text-[#b9b2a7]">
         Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
+      <p className="mt-3 text-center text-[13.8px] leading-normal text-faint">
+        Questions or need help? <a href="mailto:hello@friendflower.app" className="text-pink underline">hello@friendflower.app</a>
+      </p>
     </main>
   );
 }
