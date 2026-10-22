@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSContactsUsageDescription</key>
 	<string>Friend Flower checks the phone numbers and emails in your contacts to find friends who are already here. Only scrambled codes are kept, and your contact list is never shown to anyone.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Friend Flower uses your camera only when you choose to take a new profile photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Friend Flower uses your location while the app is open to show how far away your friends are, only if you turn on live distance.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
