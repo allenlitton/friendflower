@@ -307,7 +307,7 @@ export function ProfileEditor({
         <input className="field" placeholder="Instagram @handle" value={instagram} maxLength={60} onChange={(e) => setInstagram(e.target.value)} />
         <input className="field" placeholder="Facebook name" value={facebook} maxLength={80} onChange={(e) => setFacebook(e.target.value)} />
       </div>
-      <div className="mt-1.5 text-[13.8px] text-faint">Shown on your profile. Instagram &amp; Facebook linking is coming soon.</div>
+      <div className="mt-1.5 text-[13.8px] text-faint">Shown on your profile.</div>
 
       <SectionLabel className="mt-[18px]">Bio</SectionLabel>
       <textarea className="field" maxLength={500} value={bio} onChange={(e) => setBio(e.target.value)}
