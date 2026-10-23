@@ -66,6 +66,8 @@ input::placeholder, textarea::placeholder { color: #a9a094; }
   color: var(--color-text);
   outline: none;
 }
+/* Required to create the account (onboarding): light pink tint. */
+.req { background: color-mix(in srgb, var(--color-pink) 20%, var(--color-card)); border-color: var(--color-pink); }
 .field:focus { border-color: #5a534b; }
 textarea.field { height: auto; min-height: 88px; padding: 13px 14px; line-height: 1.5; resize: none; }
 select.field { appearance: none; }
