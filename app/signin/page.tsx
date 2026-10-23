@@ -15,10 +15,14 @@ export default function SignInPage() {
       <p className="mx-auto mt-4 max-w-[268px] text-center font-logo text-[14.5px] leading-relaxed text-[#b9b2a7]">
         Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
-      <p className="mx-auto mt-3 max-w-[268px] text-center text-[14.5px] leading-relaxed text-[#b9b2a7]">
-        Questions? Comments? Concerns? Contact us{" "}
-        <a className="text-pink" href="mailto:hello@friendflower.app">hello@friendflower.app</a>
-      </p>
+      <div className="mt-3 flex flex-col items-center gap-2 text-center text-[14.5px] leading-relaxed text-[#b9b2a7]">
+        <p>
+          Contact Us
+          <br />
+          <a className="text-pink" href="mailto:hello@friendflower.app">hello@friendflower.app</a>
+        </p>
+        <Flower size={18} />
+      </div>
     </main>
   );
 }
