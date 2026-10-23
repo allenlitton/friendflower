@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import type { Mini, Profile } from "@/lib/types";
-import { Avatar, Flower, PetalHalo, RowLink, SectionLabel, Segmented, Toggle } from "@/components/ui";
+import { Avatar, ErrorNote, Flower, PetalHalo, RowLink, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { InviteButton } from "@/components/invite-button";
 import { useRpc } from "@/components/person-actions";
 import { turnOnLiveDistance } from "@/components/live-location";
@@ -17,6 +17,25 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
   const [liveError, setLiveError] = useState<string | null>(null);
   // Push only works in the iPhone app. False on the server, so the first render matches.
   const inApp = useSyncExternalStore(noSubscribe, hasNativePush, () => false);
+
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteWord, setDeleteWord] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+
+  async function deleteAccount() {
+    setDeleting(true);
+    setDeleteError("");
+    const res = await fetch("/api/account/delete", { method: "POST" }).catch(() => null);
+    if (!res?.ok) {
+      setDeleting(false);
+      setDeleteError((await res?.json().catch(() => null))?.error ?? "Couldn't reach the server. Try again.");
+      return;
+    }
+    await supabase.auth.signOut();
+    router.replace("/signin");
+    router.refresh();
+  }
 
   async function update(patch: Partial<Profile>) {
     setP({ ...p, ...patch });
@@ -141,6 +160,31 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         onClick={async () => { await disablePush(); await supabase.auth.signOut(); router.replace("/signin"); router.refresh(); }}>
         Sign out
       </button>
+      <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5">
+        <div className="text-[14.4px] leading-snug text-muted">
+          Deleting your account permanently removes your profile, photos, messages, friends, trips, contact codes and location.
+          This can&apos;t be undone.
+        </div>
+        {!confirmDelete ? (
+          <button type="button" onClick={() => setConfirmDelete(true)} className="mt-3 text-[15px] font-bold text-pink underline">
+            Delete my account
+          </button>
+        ) : (
+          <div className="mt-3 flex flex-col gap-2.5">
+            <input className="field" value={deleteWord} onChange={(e) => setDeleteWord(e.target.value)} autoCapitalize="characters"
+              placeholder="Type DELETE to confirm" />
+            <ErrorNote>{deleteError}</ErrorNote>
+            <div className="flex gap-2">
+              <button type="button" disabled={deleting || deleteWord.trim().toUpperCase() !== "DELETE"} onClick={deleteAccount}
+                className="rounded-full bg-pink px-4 py-2 text-[15px] font-bold text-ink hover:bg-pink-deep disabled:opacity-60">
+                {deleting ? "deleting…" : "Delete forever"}
+              </button>
+              <button type="button" disabled={deleting} onClick={() => { setConfirmDelete(false); setDeleteWord(""); setDeleteError(""); }}
+                className="rounded-full border-[1.5px] border-line px-4 py-2 text-[15px] font-semibold text-soft">Cancel</button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
