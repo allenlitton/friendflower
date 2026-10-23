@@ -91,6 +91,9 @@ export type ChatSummary = {
   verification: { id: string; status: VerificationStatus } | null;
 };
 
+/** The newest message another member has read (only when you both have read receipts on). */
+export type ChatRead = { user_id: string; last_read_id: number };
+
 export type ChatDetail = {
   id: string; kind: "direct" | "pod"; can_post: boolean;
   members: (Mini & { left: boolean; is_me: boolean })[];
@@ -157,6 +160,7 @@ export type Profile = {
   home_neighbourhood_id: string | null; languages: string[]; spots: string[];
   instagram: string | null; facebook: string | null; visibility: "first" | "fof";
   show_online: boolean; show_distance: boolean; show_trips: boolean; share_live_location: boolean;
+  show_read_receipts: boolean;
   units: Units;
   invite_code: string; onboarded_at: string | null;
 };
