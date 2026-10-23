@@ -12,4 +12,5 @@ typedef void (*net_state_cb_t)(net_state_t state, const char *detail);
 
 void net_start(net_state_cb_t cb);
 bool net_online(void);
+void net_kick(void);    // online but nothing gets through: rejoin the network
 void net_forget(void);  // erase the saved network (takes effect on restart)
