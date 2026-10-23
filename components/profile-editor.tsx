@@ -64,6 +64,7 @@ export function ProfileEditor({
 
   const cityNbs = neighbourhoods.filter((n) => n.city_id === homeCity);
   // A neighbourhood is optional.
+  const req = mode === "onboarding" ? "req" : "";
   const canSave = firstName.trim() && homeCity && (avatarUrl || photo);
 
   async function uploadAvatar(file: File, as: "photo" | "doodle") {
@@ -189,7 +190,7 @@ export function ProfileEditor({
   return (
     <div className="flex flex-col">
       <SectionLabel>Profile picture</SectionLabel>
-      <Card className="p-[15px]">
+      <Card className={`p-[15px] ${req}`}>
         <div className="flex items-center gap-3.5">
           <div className="relative flex h-[76px] w-[76px] flex-none items-center justify-center overflow-hidden rounded-full border-[1.5px] border-dashed border-[#4d4740] bg-well">
             {avatarUrl
@@ -227,7 +228,7 @@ export function ProfileEditor({
 
       <SectionLabel className="mt-[18px]">Your name</SectionLabel>
       <div className="grid grid-cols-[1fr_88px] gap-2">
-        <input className="field" placeholder="First name" autoComplete="given-name" value={firstName} maxLength={40}
+        <input className={`field ${req}`} placeholder="First name" autoComplete="given-name" value={firstName} maxLength={40}
           onChange={(e) => setFirstName(e.target.value)} />
         <input className="field text-center" placeholder="Last initial" value={lastInitial} maxLength={1}
           onChange={(e) => setLastInitial(e.target.value)} />
@@ -235,8 +236,10 @@ export function ProfileEditor({
 
       <SectionLabel className="mt-[18px]">Currently living in</SectionLabel>
       <div className="flex flex-col gap-2">
-        <CityPicker value={homeCity} cities={cities}
-          onChange={(c) => { setHomeCity(c.id); setHomeLaunched(c.launched); setHomeNb(""); }} />
+        <div className={`rounded-[18px] border-[1.5px] border-transparent ${req ? "p-2.5 req" : ""}`}>
+          <CityPicker value={homeCity} cities={cities}
+            onChange={(c) => { setHomeCity(c.id); setHomeLaunched(c.launched); setHomeNb(""); }} />
+        </div>
         {cityNbs.length > 0 && (
           <select className="field" value={homeNb} onChange={(e) => setHomeNb(e.target.value)}>
             <option value="">Choose your neighbourhood (optional)</option>
