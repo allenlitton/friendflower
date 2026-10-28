@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { ChatDetail, MeetOptions, MeetPart, MeetState, Message } from "@/lib/types";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ChatDetail, ChatRead, MeetOptions, MeetPart, MeetState, Message } from "@/lib/types";
 import { Avatar, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { MessageBox } from "@/components/message-box";
@@ -13,9 +13,9 @@ const TRASH_W = 48;
 
 type VenueRow = { id: string; name: string; kind: string; city_id: string; cities: { short_name: string } };
 
-export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialTimes, initialDraft = "" }: {
+export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialTimes, initialDraft = "", initialReads, receipts }: {
   chat: ChatDetail; meId: string; homeCity: string | null; initial: Message[]; venues: VenueRow[];
-  meet: MeetOptions | null; initialTimes: MeetState[]; initialDraft?: string;
+  meet: MeetOptions | null; initialTimes: MeetState[]; initialDraft?: string; initialReads: ChatRead[]; receipts: boolean;
 }) {
   const { call, busy, error, supabase, router } = useRpc();
   const [messages, setMessages] = useState(initial);
@@ -24,6 +24,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   const [placeOpen, setPlaceOpen] = useState(false);
   const [timeOpen, setTimeOpen] = useState(false);
   const [times, setTimes] = useState(initialTimes);
+  const [reads, setReads] = useState(initialReads);
   // Swipe-left on your own message reveals a trash can: `open` is the revealed row, `drag` the live offset.
   const [open, setOpen] = useState<number | null>(null);
   const [drag, setDrag] = useState<{ id: number; dx: number } | null>(null);
@@ -43,16 +44,37 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
     const { data } = await supabase.rpc("meet_state", { p_chat: chat.id });
     if (data) setTimes(data as MeetState[]);
   }, [supabase, chat.id]);
+  const loadReads = useCallback(async () => {
+    if (!receipts) return;
+    const { data } = await supabase.rpc("chat_reads", { p_chat: chat.id });
+    if (data) setReads(data as ChatRead[]);
+  }, [supabase, chat.id, receipts]);
+
+  // "Seen" goes under the newest message of yours each member has read.
+  const seenBy = useMemo(() => {
+    const byMessage = new Map<number, string[]>();
+    for (const r of receipts ? reads : []) {
+      const last = messages.findLast((m) => m.sender_id === meId && m.kind !== "system" && m.id <= r.last_read_id);
+      const name = members[r.user_id]?.first_name;
+      if (last && name) byMessage.set(last.id, [...(byMessage.get(last.id) ?? []), name]);
+    }
+    return byMessage;
+  }, [reads, messages, meId, members, receipts]);
 
   // Live updates: new messages arrive over Supabase Realtime (same privacy rules apply).
   useEffect(() => {
+    // A bare "read" ping tells the others to re-ask chat_reads(), which checks everyone's setting.
+    // With read receipts off we never send it, so nobody learns when you're reading.
+    const pingRead = () => { if (receipts) channel.send({ type: "broadcast", event: "read", payload: {} }); };
     const channel = supabase
       .channel(`chat:${chat.id}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chat.id}` },
         (payload) => {
           const m = payload.new as Message;
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
-          supabase.rpc("mark_read", { p_chat: chat.id });
+          supabase.rpc("mark_read", { p_chat: chat.id }).then(() => { if (m.sender_id !== meId) pingRead(); });
+          // Sending a message marks the sender as having read the chat.
+          if (m.sender_id !== meId) loadReads();
           if (m.kind === "system") router.refresh();
           if (m.kind === "times") loadTimes();
         })
@@ -65,9 +87,10 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           const id = (payload.old as { id?: number }).id;
           if (id) setMessages((prev) => prev.filter((x) => x.id !== id));
         })
-      .subscribe();
+      .on("broadcast", { event: "read" }, () => { loadReads(); })
+      .subscribe((status) => { if (status === "SUBSCRIBED") pingRead(); });
     return () => { supabase.removeChannel(channel); };
-  }, [supabase, chat.id, router, loadTimes]);
+  }, [supabase, chat.id, meId, router, loadTimes, loadReads, receipts]);
 
   useEffect(() => { bottom.current?.scrollIntoView({ block: "end" }); }, [messages.length]);
 
@@ -162,8 +185,10 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
           const mine = m.sender_id === meId;
           const sender = m.sender_id ? members[m.sender_id] : null;
           const venue = m.venue_id ? venueById[m.venue_id] : null;
+          const seen = seenBy.get(m.id);
           return (
-            <div key={m.id} className={`flex max-w-[78%] items-center gap-1.5 ${mine ? "self-end" : "self-start"}`}>
+            <Fragment key={m.id}>
+            <div className={`flex max-w-[78%] items-center gap-1.5 ${mine ? "self-end" : "self-start"}`}>
               <div
                 {...(mine ? {
                   onPointerDown: (e: React.PointerEvent) => {
@@ -220,6 +245,12 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
                 </button>
               )}
             </div>
+            {seen && (
+              <div className="-mt-[3px] self-end pr-1 text-[12.6px] text-muted">
+                {chat.kind === "pod" ? `Seen by ${seen.join(" and ")}` : "Seen"}
+              </div>
+            )}
+            </Fragment>
           );
         })}
 

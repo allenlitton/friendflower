@@ -114,6 +114,19 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         </div>
       </div>
 
+      <div>
+        <SectionLabel>Chats</SectionLabel>
+        <div className="flex items-center gap-[11px] rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3">
+          <div className="min-w-0 flex-1">
+            <div className="text-[16.8px] font-semibold">Read receipts</div>
+            <div className="text-[13.8px] leading-snug text-muted">
+              Shows &ldquo;Seen&rdquo; under your messages once they&apos;re read. Turn it off and nobody sees when you&apos;ve read theirs, and you won&apos;t see when they&apos;ve read yours
+            </div>
+          </div>
+          <Toggle label="Read receipts" on={p.show_read_receipts} onChange={(v) => update({ show_read_receipts: v })} />
+        </div>
+      </div>
+
       <div className="flex flex-col gap-2">
         <RowLink href="/connect" icon="☎" title="Find your friends" note={`Search by email or phone, sync contacts · ${contactMatches} contact match${contactMatches === 1 ? "" : "es"}`} />
         <InviteButton code={p.invite_code} />
