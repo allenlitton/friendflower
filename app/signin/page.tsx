@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { SignInForm } from "./sign-in-form";
+import { NewsletterForm } from "./newsletter-form";
+import { WebOnly } from "./web-only";
 import { Flower } from "@/components/ui";
 
 export default function SignInPage() {
@@ -15,6 +17,9 @@ export default function SignInPage() {
       <p className="mx-auto mt-4 max-w-[268px] text-center font-logo text-[14.5px] leading-relaxed text-[#b9b2a7]">
         Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
+      <WebOnly>
+        <p className="mt-2 text-center font-logo text-[14.5px] font-bold text-pink">Coming soon to the iOS App Store</p>
+      </WebOnly>
       <div className="mt-3 flex flex-col items-center gap-2 text-center text-[14.5px] leading-relaxed text-[#b9b2a7]">
         <p>
           Contact Us
@@ -22,6 +27,9 @@ export default function SignInPage() {
           <a className="text-pink" href="mailto:hello@friendflower.app">hello@friendflower.app</a>
         </p>
         <Flower size={18} />
+      </div>
+      <div className="mt-6 flex justify-center">
+        <NewsletterForm />
       </div>
     </main>
   );
