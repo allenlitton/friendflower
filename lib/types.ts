@@ -171,5 +171,5 @@ export type Trip = {
   deliver_legs: "in" | "out" | "both" | null;
   deliver_luggage: boolean | null;
   deliver_space: "little" | "some" | "lot" | null;
-  trip_flights: { id: string; direction: "in" | "out"; flight_no: string; flight_date: string }[];
+  trip_flights: { id: string; direction: "in" | "out"; leg: number; flight_no: string; flight_date: string }[];
 };
