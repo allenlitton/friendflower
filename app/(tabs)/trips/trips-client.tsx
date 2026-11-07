@@ -29,6 +29,38 @@ const SPACE = [
 ];
 const SPACE_SHORT = { little: "a little space", some: "some space", lot: "a lot of space" };
 const NO_DELIVERY = { dOpen: false, dLegs: "both" as "in" | "out" | "both", dLuggage: "" as "" | "yes" | "no", dSpace: "" as "" | "little" | "some" | "lot" };
+type FlightInput = { no: string; date: string };
+const BLANK_LEG: FlightInput = { no: "", date: "" };
+const MAX_LEGS = 4;
+
+// One column of flight inputs; a second+ flight is a connection on the same journey.
+function FlightLegs({ label, placeholder, legs, fallback, onChange }: {
+  label: string; placeholder: string; legs: FlightInput[]; fallback: string; onChange: (l: FlightInput[]) => void;
+}) {
+  const set = (i: number, patch: Partial<FlightInput>) => onChange(legs.map((l, k) => (k === i ? { ...l, ...patch } : l)));
+  return (
+    <div>
+      {legs.map((l, i) => (
+        <div key={i} className={i ? "mt-2.5" : ""}>
+          <div className="flex items-center justify-between">
+            <SectionLabel>{i === 0 ? label : `Connecting flight ${i + 1}`}</SectionLabel>
+            {i > 0 && (
+              <button type="button" aria-label={`Remove connecting flight ${i + 1}`} onClick={() => onChange(legs.filter((_, k) => k !== i))}
+                className="mb-1.5 text-[13.2px] text-faint">✕</button>
+            )}
+          </div>
+          <input className="field" placeholder={placeholder} value={l.no} onChange={(e) => set(i, { no: e.target.value })} />
+          {l.no && <input className="field mt-1.5 !h-10 !text-[14px]" type="date" aria-label={`${label} ${i + 1} date`} value={l.date || fallback} onChange={(e) => set(i, { date: e.target.value })} />}
+        </div>
+      ))}
+      {legs.length < MAX_LEGS && legs[legs.length - 1].no && (
+        <button type="button" onClick={() => onChange([...legs, { ...BLANK_LEG }])}
+          className="mt-2 text-[13.8px] font-bold text-pink">+ Add connecting flight</button>
+      )}
+    </div>
+  );
+}
+
 const normFlight = (s: string) => s.toUpperCase().replace(/\s+/g, "");
 const validFlight = (s: string) => /^[A-Z0-9]{2,3}[0-9]{1,4}[A-Z]?$/.test(s);
 
@@ -44,7 +76,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
   const [saving, setSaving] = useState(false);
   const [cityLaunched, setCityLaunched] = useState(!!cities.find((c) => c.id === presetCity)?.is_launched);
   const [f, setF] = useState({
-    city: presetCity ?? "", nb: "", from: "", to: "", vis: "fof" as Trip["visibility"], inNo: "", outNo: "", inDate: "", outDate: "", ...NO_DELIVERY,
+    city: presetCity ?? "", nb: "", from: "", to: "", vis: "fof" as Trip["visibility"], inLegs: [{ ...BLANK_LEG }] as FlightInput[], outLegs: [{ ...BLANK_LEG }] as FlightInput[], ...NO_DELIVERY,
   });
   const [edit, setEdit] = useState<{ id: string; city: string; from: string; to: string; started: boolean } | null>(null);
   const cityName = (id: string) => cities.find((c) => c.id === id)?.name ?? id;
@@ -53,7 +85,7 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
   const legCount = trips.reduce((n, t) => n + t.trip_flights.length, 0);
   const deliveryOk = !f.dOpen || (f.dLuggage === "no" || (f.dLuggage === "yes" && !!f.dSpace));
   const canSave = f.city && f.from && f.to && f.to >= f.from && deliveryOk
-    && (!f.inNo || validFlight(normFlight(f.inNo))) && (!f.outNo || validFlight(normFlight(f.outNo)));
+    && [...f.inLegs, ...f.outLegs].every((l) => !l.no || validFlight(normFlight(l.no)));
 
   async function save() {
     if (!canSave) return;
@@ -65,17 +97,18 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
         deliver_luggage: f.dOpen ? f.dLuggage === "yes" : null, deliver_space: f.dOpen && f.dLuggage === "yes" ? f.dSpace : null })
       .select("id").single();
     if (error) { setSaving(false); return setError(error.message); }
-    const legs = [
-      f.inNo && { trip_id: trip.id, user_id: userId, direction: "in", flight_no: normFlight(f.inNo), flight_date: f.inDate || f.from },
-      f.outNo && { trip_id: trip.id, user_id: userId, direction: "out", flight_no: normFlight(f.outNo), flight_date: f.outDate || f.to },
-    ].filter(Boolean);
+    const toRows = (direction: "in" | "out", list: FlightInput[], fallback: string) =>
+      list.filter((l) => l.no).map((l, i) => ({
+        trip_id: trip.id, user_id: userId, direction, leg: i + 1, flight_no: normFlight(l.no), flight_date: l.date || fallback,
+      }));
+    const legs = [...toRows("in", f.inLegs, f.from), ...toRows("out", f.outLegs, f.to)];
     if (legs.length) {
       const { error } = await supabase.from("trip_flights").insert(legs);
       if (error) { setSaving(false); return setError(error.message); }
     }
     setSaving(false);
     setOpen(false);
-    setF({ city: "", nb: "", from: "", to: "", vis: "fof", inNo: "", outNo: "", inDate: "", outDate: "", ...NO_DELIVERY });
+    setF({ city: "", nb: "", from: "", to: "", vis: "fof", inLegs: [{ ...BLANK_LEG }], outLegs: [{ ...BLANK_LEG }], ...NO_DELIVERY });
     router.replace("/trips");
     router.refresh();
   }
@@ -155,17 +188,22 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
                 <button type="button" onClick={() => { setError(""); setEdit({ id: t.id, city: cityName(t.city_id), from: t.starts_on, to: t.ends_on, started: now }); }}
                   className="ml-auto rounded-full border-[1.5px] border-line bg-well px-2.5 py-1 text-[13.8px] font-bold text-soft">Edit dates</button>
               </div>
-              {t.trip_flights.sort((a, b) => a.direction.localeCompare(b.direction)).map((leg) => {
+              {[...t.trip_flights].sort((a, b) => a.direction.localeCompare(b.direction) || a.leg - b.leg).map((leg) => {
                 const pax = matches.filter((m) => m.flight_id === leg.id);
-                const from = leg.direction === "in" ? homeShort : cityShort(t.city_id);
-                const to = leg.direction === "in" ? cityShort(t.city_id) : homeShort;
+                const same = t.trip_flights.filter((x) => x.direction === leg.direction);
+                const multi = same.length > 1;
+                const from = multi ? "" : leg.direction === "in" ? homeShort : cityShort(t.city_id);
+                const to = multi ? "" : leg.direction === "in" ? cityShort(t.city_id) : homeShort;
                 return (
                   <div key={leg.id}>
-                    <div className="mt-[11px] text-[13.2px] font-bold tracking-[.05em] text-pink uppercase">
-                      {leg.direction === "in" ? `Inbound · to ${cityName(t.city_id)}` : `Outbound · from ${cityName(t.city_id)}`}
-                    </div>
+                    {leg.leg === 1 && (
+                      <div className="mt-[11px] text-[13.2px] font-bold tracking-[.05em] text-pink uppercase">
+                        {leg.direction === "in" ? `Inbound · to ${cityName(t.city_id)}` : `Outbound · from ${cityName(t.city_id)}`}
+                        {multi && ` · ${same.length} flights`}
+                      </div>
+                    )}
                     <div className="mt-1.5 rounded-[14px] border-[1.5px] border-dashed border-[#3a352e] bg-well px-[13px] py-3">
-                      <div className="text-[13.2px] font-bold tracking-[.05em] text-muted uppercase">Flight {leg.flight_no} · {shortDate(leg.flight_date)}</div>
+                      <div className="text-[13.2px] font-bold tracking-[.05em] text-muted uppercase">{multi && `${leg.leg}. `}Flight {leg.flight_no} · {shortDate(leg.flight_date)}</div>
                       <div className="mt-2 flex items-center gap-2.5">
                         <div className="font-display text-[30px] leading-none tracking-[1px]">{from}</div>
                         <div className="flex flex-1 items-center gap-1.5">
@@ -295,18 +333,12 @@ export function TripsClient({ trips, matches, cities, neighbourhoods, homeCity, 
           <input className="field" type="date" aria-label="Leaving" value={f.to} min={f.from || todayISO()} onChange={(e) => setF({ ...f, to: e.target.value })} />
         </div>
         <div className="mt-3.5 grid grid-cols-2 gap-2.5">
-          <div>
-            <SectionLabel>Inbound flight</SectionLabel>
-            <input className="field" placeholder="e.g. UA 837" value={f.inNo} onChange={(e) => setF({ ...f, inNo: e.target.value })} />
-            {f.inNo && <input className="field mt-1.5 !h-10 !text-[14px]" type="date" aria-label="Inbound flight date" value={f.inDate || f.from} onChange={(e) => setF({ ...f, inDate: e.target.value })} />}
-          </div>
-          <div>
-            <SectionLabel>Outbound flight</SectionLabel>
-            <input className="field" placeholder="e.g. UA 838" value={f.outNo} onChange={(e) => setF({ ...f, outNo: e.target.value })} />
-            {f.outNo && <input className="field mt-1.5 !h-10 !text-[14px]" type="date" aria-label="Outbound flight date" value={f.outDate || f.to} onChange={(e) => setF({ ...f, outDate: e.target.value })} />}
-          </div>
+          <FlightLegs label="Inbound flight" placeholder="e.g. UA 837" legs={f.inLegs} fallback={f.from}
+            onChange={(inLegs) => setF({ ...f, inLegs })} />
+          <FlightLegs label="Outbound flight" placeholder="e.g. UA 838" legs={f.outLegs} fallback={f.to}
+            onChange={(outLegs) => setF({ ...f, outLegs })} />
         </div>
-        <div className="mt-1.5 text-[13.2px] text-faint">Flights are optional. We&apos;ll check whether anyone in your circles is on the same one.</div>
+        <div className="mt-1.5 text-[13.2px] text-faint">Flights are optional. Got a connection? Tap + Add connecting flight. We&apos;ll check whether anyone in your circles is on the same one.</div>
         <SectionLabel className="mt-3.5">Help with a delivery? (optional)</SectionLabel>
         <label className="flex items-start gap-2.5 text-[15.6px] leading-snug text-soft">
           <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--color-pink)]" checked={f.dOpen}
