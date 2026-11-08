@@ -148,7 +148,7 @@ export function YouClient({ profile, sub, blocks, contactMatches }: { profile: P
         </div>
       )}
 
-      <RowLink href="/you/settings" icon="⚙" title="Settings" note="Language and units" />
+      <RowLink href="/you/settings" icon="⚙" title="Settings" note="Language, units and deleting your account" />
       <RowLink href="/privacy" icon="🔒" title="How we handle your data" note="What's shared, with whom, and what's never stored" />
       <RowLink href="/terms" icon="📄" title="Terms of use" note="The rules for being here" />
       <a href="mailto:hello@friendflower.app" className="flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5 hover:border-[#5a534b]">
