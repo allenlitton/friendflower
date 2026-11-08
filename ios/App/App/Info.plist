@@ -24,6 +24,10 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Friend Flower uses your camera only when you choose to take a profile photo, so friends can recognise you.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Friend Flower lets you pick a photo from your library to use as your profile picture. Only the photo you choose is used.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Friend Flower checks the phone numbers and emails in your contacts to find friends who are already here. Only scrambled codes are kept, and your contact list is never shown to anyone.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
