@@ -24,7 +24,7 @@ const TABS = [
 const ICON = 30;
 
 /** White line icons on a 24-unit grid; the open tab turns pink. */
-const PATHS: Record<string, React.ReactNode> = {
+export const TAB_PATHS: Record<string, React.ReactNode> = {
   "/world": (<><circle cx="12" cy="12" r="9.5" /><ellipse cx="12" cy="12" rx="4" ry="9.5" /><path d="M2.5 12h19M4 7.2h16M4 16.8h16" /></>),
   "/trips": <path d="M10.2 13.8 3 11.5l1.4-1.4 8.1.8 4.3-4.3c.8-.8 2.2-.9 2.9-.2.7.7.6 2.1-.2 2.9l-4.3 4.3.8 8.1-1.4 1.4-2.3-7.2-3.4 3.4.3 2.6-1.1 1.1-1.6-3.2-3.2-1.6 1.1-1.1 2.6.3z" />,
   "/places": (<><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z" /><path d="M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17" /><path d="M8 3.5v2.5M11 3.5v2.5M14 3.5v2.5" /></>),
@@ -37,7 +37,7 @@ function TabIcon({ href, on, myName, myId, avatarUrl }: { href: string; on: bool
   if (href === "/you") return <Avatar id={myId} name={myName} src={avatarUrl} size={ICON} ring={on ? "2px solid var(--color-pink)" : "2px solid transparent"} />;
   return (
     <svg width={ICON} height={ICON} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      {PATHS[href]}
+      {TAB_PATHS[href]}
     </svg>
   );
 }

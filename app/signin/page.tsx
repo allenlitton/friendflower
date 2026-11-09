@@ -3,6 +3,7 @@ import { SignInForm } from "./sign-in-form";
 import { NewsletterForm } from "./newsletter-form";
 import { WebOnly } from "./web-only";
 import { Flower } from "@/components/ui";
+import { IntroSlides } from "@/components/intro-slides";
 
 export default function SignInPage() {
   return (
@@ -31,6 +32,7 @@ export default function SignInPage() {
       <div className="mt-6 flex justify-center">
         <NewsletterForm />
       </div>
+      <IntroSlides />
     </main>
   );
 }
