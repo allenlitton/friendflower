@@ -66,7 +66,7 @@ test("friend requests and acceptances notify the right person", async () => {
 
 test("claiming drains the outbox with tokens; dead tokens are dropped", async () => {
   await clear();
-  await db.query(`select private.push_enqueue($1, 'T', 'B', '/chats')`, [U.priya]);
+  await db.query(`select private.push_enqueue($1, 'other', 'T', 'B', '/chats')`, [U.priya]);
   await register(U.priya, "tok-priya-2");
   const claimed = (await db.query(`select public.srv_push_claim() as c`)).rows[0].c;
   assert.equal(claimed.length, 1);
@@ -88,4 +88,44 @@ test("a token moves to whoever signs in on the device", async () => {
   await register(U.arren, "tok-shared");
   const owner = (await db.query(`select user_id from private.push_tokens where token = 'tok-shared'`)).rows[0].user_id;
   assert.equal(owner, U.arren);
+});
+
+test("the app icon count is the number of unread messages from others", async () => {
+  await clear();
+  const chat = await as(db, U.arren, () => rpc(db, "open_direct_chat", { p_other: U.priya }));
+  // Read up to a minute ago (PGlite's clock is too coarse to rely on mark_read then send).
+  await db.query(`update public.chat_members set last_read_at = now() - interval '1 minute' where user_id = $1`, [U.priya]);
+  await db.query(`delete from public.messages where chat_id = $1`, [chat]);
+  await as(db, U.arren, () => rpc(db, "send_message", { p_chat: chat, p_body: "one" }));
+  await as(db, U.arren, () => rpc(db, "send_message", { p_chat: chat, p_body: "two" }));
+  const rows = (await outbox()).filter((r) => r.user_id === U.priya);
+  assert.deepEqual(rows.map((r) => r.badge), [1, 2]);
+  const claimed = (await db.query(`select public.srv_push_claim() as c`)).rows[0].c;
+  assert.equal(claimed.at(-1).badge, 2);
+});
+
+test("members choose which notifications they get, and whether the icon shows a count", async () => {
+  await clear();
+  assert.deepEqual(await as(db, U.priya, () => rpc(db, "my_push_prefs")), { messages: true, friend_requests: true, badge: true });
+  await as(db, U.priya, () => rpc(db, "set_push_prefs", { p_messages: true, p_friend_requests: true, p_badge: false }));
+  const chat = await as(db, U.arren, () => rpc(db, "open_direct_chat", { p_other: U.priya }));
+  await as(db, U.arren, () => rpc(db, "send_message", { p_chat: chat, p_body: "no count" }));
+  let rows = await outbox();
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].badge, null);
+
+  await clear();
+  await as(db, U.priya, () => rpc(db, "set_push_prefs", { p_messages: false, p_friend_requests: false, p_badge: true }));
+  await as(db, U.arren, () => rpc(db, "send_message", { p_chat: chat, p_body: "muted" }));
+  await db.query(`delete from public.friend_requests where from_id = $1 and to_id = $2`, [U.sam, U.priya]);
+  await db.query(`insert into public.friend_requests (from_id, to_id) values ($1, $2)`, [U.sam, U.priya]);
+  rows = await outbox();
+  assert.equal(rows.length, 0);
+  assert.deepEqual(await as(db, U.priya, () => rpc(db, "my_push_prefs")), { messages: false, friend_requests: false, badge: true });
+});
+
+test("members cannot change someone else's choices or call the internals", async () => {
+  await assert.rejects(as(db, U.arren, () => db.query(`select * from private.push_prefs`)));
+  await assert.rejects(as(db, U.arren, () => db.query(`select private.unread_count($1)`, [U.priya])));
+  await assert.rejects(db.query(`set role anon`).then(() => db.query(`select public.set_push_prefs(true, true, true)`)).finally(() => db.exec(`reset role`)));
 });

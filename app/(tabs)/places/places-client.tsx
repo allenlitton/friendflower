@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Capacitor } from "@capacitor/core";
 import { useState } from "react";
 import type { ChatSummary, Neighbourhood, Venue } from "@/lib/types";
 import { Avatar, ErrorNote, Pill, PrimaryButton, ScreenTitle, SectionLabel } from "@/components/ui";
@@ -13,20 +14,36 @@ const FILTERS = [
   { label: "Coffee", kinds: ["coffee"] },
   { label: "Dinner", kinds: ["restaurant"] },
   { label: "Drinks", kinds: ["bar"] },
+  { label: "Museums", kinds: ["museum"] },
   { label: "Free", kinds: ["outdoors", "movement"] },
 ];
 const KIND_LABEL: Record<Venue["kind"], string> = {
-  coffee: "Coffee", restaurant: "Restaurant", bar: "Wine bar", outdoors: "Free · outdoors", movement: "Movement",
+  coffee: "Coffee", restaurant: "Restaurant", bar: "Wine bar", outdoors: "Free · outdoors", movement: "Movement", museum: "Museum · exhibit",
 };
 const KIND_GRAD: Record<Venue["kind"], string> = {
   coffee: "linear-gradient(135deg,#cbb79a,#9d8460)", restaurant: "linear-gradient(135deg,#e0c8a8,#bb9a72)",
   bar: "linear-gradient(135deg,#c99aa6,#95677a)", outdoors: "linear-gradient(135deg,#a9c093,#77955f)",
   movement: "linear-gradient(135deg,#a8bcc0,#75919a)",
+  museum: "linear-gradient(135deg,#bcb0cc,#8a7ba3)",
 };
+
+// Searched by name rather than lat/lng: places people add only carry their neighbourhood's centre point.
+function mapsQuery(v: Venue, cityName: string) {
+  return encodeURIComponent([v.name, v.neighbourhood?.replace(/^the /i, ""), cityName].filter(Boolean).join(", "));
+}
+const googleMapsUrl = (v: Venue, cityName: string) => `https://www.google.com/maps/search/?api=1&query=${mapsQuery(v, cityName)}`;
+const appleMapsUrl = (v: Venue, cityName: string) => `https://maps.apple.com/?q=${mapsQuery(v, cityName)}`;
+
+/** The iPhone app, or Safari on an iPhone/iPad (iPadOS reports itself as a Mac with touch). */
+function isIOS() {
+  if (Capacitor.getPlatform() === "ios") return true;
+  return /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+}
 
 const KINDS: { value: Venue["kind"]; label: string }[] = [
   { value: "coffee", label: "Coffee" }, { value: "restaurant", label: "Restaurant" }, { value: "bar", label: "Bar" },
   { value: "outdoors", label: "Outdoors" }, { value: "movement", label: "Movement" },
+  { value: "museum", label: "Museum / exhibit" },
 ];
 
 export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
@@ -36,6 +53,7 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
   const { supabase, router, call, busy, error } = useRpc();
   const [filter, setFilter] = useState("All");
   const [suggest, setSuggest] = useState<Venue | null>(null);
+  const [mapsFor, setMapsFor] = useState<Venue | null>(null);
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState({ name: "", kind: "coffee" as Venue["kind"], nb: "", note: "" });
 
@@ -96,8 +114,11 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
             : `${names.slice(0, -1).join(", ")} and ${names.at(-1)} go here`;
           return (
             <div key={v.id} className="flex flex-col rounded-[18px] border-[1.5px] border-line bg-card">
-              <div className="flex h-[88px] flex-none items-end rounded-t-2xl px-[13px] py-2.5" style={{ background: KIND_GRAD[v.kind] }}>
+              <div className="flex h-[88px] flex-none items-end justify-between gap-2 rounded-t-2xl px-[13px] py-2.5" style={{ background: KIND_GRAD[v.kind] }}>
                 <span className="rounded-full bg-white/95 px-2.5 py-1 text-[13.2px] font-bold text-[#6b645b]">{KIND_LABEL[v.kind]}</span>
+                <a href={googleMapsUrl(v, city.name)} target="_blank" rel="noopener noreferrer"
+                  onClick={(e) => { if (isIOS()) { e.preventDefault(); setMapsFor(v); } }}
+                  className="rounded-full bg-white/95 px-2.5 py-1 text-[13.2px] font-bold whitespace-nowrap text-[#6b645b]">Open in Maps ↗</a>
               </div>
               <div className="px-[15px] pt-[13px] pb-3.5">
                 <div className="flex items-baseline gap-2">
@@ -137,7 +158,7 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
         })}
         <div className="mt-1">
           <AskFoButton />
-          <div className="mt-2 text-center text-[13.8px] leading-snug text-faint">Fo Concierge finds a spot and books the table. Hospitality partner perks are coming soon.</div>
+          <div className="mt-2 text-center text-[13.8px] leading-snug text-faint">Fo Concierge finds a spot and books the table.</div>
         </div>
       </div>
 
@@ -175,6 +196,17 @@ export function PlacesClient({ city, cities, venues, neighbourhoods, chats }: {
             </button>
           ))}
         </div>
+      </Sheet>
+
+      <Sheet open={!!mapsFor} onClose={() => setMapsFor(null)} title="Open in">
+        {mapsFor && (
+          <div className="mt-3 flex flex-col gap-1.5">
+            {[{ label: "Apple Maps", href: appleMapsUrl(mapsFor, city.name) }, { label: "Google Maps", href: googleMapsUrl(mapsFor, city.name) }].map((o) => (
+              <a key={o.label} href={o.href} target="_blank" rel="noopener noreferrer" onClick={() => setMapsFor(null)}
+                className="flex h-[46px] items-center justify-center rounded-[13px] border-[1.5px] border-line bg-card text-[16.8px] font-semibold text-soft">{o.label}</a>
+            ))}
+          </div>
+        )}
       </Sheet>
     </>
   );

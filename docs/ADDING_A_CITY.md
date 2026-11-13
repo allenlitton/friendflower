@@ -21,7 +21,7 @@ insert into public.neighbourhoods (id, city_id, name, lat, lng) values
   ('ldn-peckham',   'london', 'Peckham',   51.4740, -0.0691),
   ('ldn-islington', 'london', 'Islington', 51.5362, -0.1033);
 
--- 3. Places to meet. kind is one of: coffee, restaurant, bar, outdoors, movement
+-- 3. Places to meet. kind is one of: coffee, restaurant, bar, outdoors, movement, museum
 insert into public.venues (city_id, neighbourhood_id, name, kind, note, lat, lng, sort) values
   ('london', 'ldn-hackney', 'Example Coffee', 'coffee', 'Short note in your voice.', 51.5450, -0.0553, 10);
 ```

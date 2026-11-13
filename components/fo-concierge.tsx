@@ -5,6 +5,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { ErrorNote } from "@/components/ui";
 import Link from "next/link";
 import { FoFace } from "@/components/fo-face";
+import { MessageBox } from "@/components/message-box";
 
 export type FoAction = {
   id: number; body: string; status: "pending" | "sent" | "dismissed"; chat_id: string | null;
@@ -92,7 +93,8 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
   const ideas = ["Book a table for two this Friday", "Find me a flight for my next trip", "What's good near me tonight?"];
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    // Exactly one screen tall (below the status bar), so only the messages scroll and the header stays put.
+    <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] min-h-0 flex-col">
       <div className="flex flex-none items-center gap-[11px] border-b border-line-soft bg-well px-3.5 py-[9px]">
         <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
         <FoFace size={36} />
@@ -126,7 +128,7 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
         <div ref={bottom} />
       </div>
 
-      <div className="flex-none border-t border-line-soft bg-well px-3.5 pt-2.5 pb-3">
+      <div className="flex-none border-t border-line-soft bg-well px-3.5 pt-2.5 pb-[calc(16px+env(safe-area-inset-bottom))]">
         {thread.messages.length === 0 && !working && (
           <div className="mb-2.5 flex flex-wrap gap-[7px]">
             {ideas.map((idea) => (
@@ -137,10 +139,8 @@ export function FoChat({ initial, initialDraft = "" }: { initial: FoThread; init
         )}
         <ErrorNote>{error}</ErrorNote>
         <form className="flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
-          <textarea value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={2000} rows={1}
-            placeholder={working ? "Add more, or stop Fo Concierge…" : "Ask Fo Concierge…"}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(draft); } }}
-            className="min-h-11 min-w-0 flex-1 resize-none rounded-[18px] border-[1.5px] border-line bg-card px-4 py-2.5 text-[19.2px] outline-none" />
+          <MessageBox value={draft} onChange={setDraft} onSend={() => send(draft)}
+            placeholder={working ? "Add more, or stop Fo Concierge…" : "Ask Fo Concierge…"} />
           {working && !draft.trim() ? (
             <button type="button" onClick={stop} aria-label="Stop Fo Concierge"
               className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-ink hover:bg-pink-deep">

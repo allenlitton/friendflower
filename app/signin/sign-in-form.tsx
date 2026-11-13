@@ -37,8 +37,12 @@ export function SignInForm() {
       email: email.trim(),
       options: { emailRedirectTo: `${location.origin}/auth/confirm?next=${encodeURIComponent(next)}` },
     });
+    // The review account can always go on to the code step, even if Supabase won't send another email yet.
+    const isReview = error
+      ? await fetch("/auth/review", { method: "POST", body: JSON.stringify({ email }) }).then((r) => r.json(), () => ({})).then((d) => !!d.review, () => false)
+      : false;
     setBusy(false);
-    if (error) return setError(error.message);
+    if (error && !isReview) return setError(error.message);
     rememberEmail(email);
     setStep("code");
   }
@@ -48,8 +52,12 @@ export function SignInForm() {
     setBusy(true);
     setError("");
     const { error } = await supabaseBrowser().auth.verifyOtp({ email: email.trim(), token: code.trim(), type: "email" });
+    // The App Store review account signs in with a fixed code instead (see app/auth/review).
+    const reviewOk = error
+      ? await fetch("/auth/review", { method: "POST", body: JSON.stringify({ email, code }) }).then((r) => r.ok, () => false)
+      : false;
     setBusy(false);
-    if (error) return setError("That code didn't work. Check the latest email and try again.");
+    if (error && !reviewOk) return setError("That code didn't work. Check the latest email and try again.");
     router.replace(next.startsWith("/") ? next : "/");
     router.refresh();
   }

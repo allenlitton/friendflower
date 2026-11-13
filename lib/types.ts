@@ -137,7 +137,7 @@ export type Inbox = {
 };
 
 export type Venue = {
-  id: string; name: string; kind: "coffee" | "restaurant" | "bar" | "outdoors" | "movement";
+  id: string; name: string; kind: "coffee" | "restaurant" | "bar" | "outdoors" | "movement" | "museum";
   note: string; neighbourhood: string | null; walk_min: number | null; i_go: boolean; regulars: Mini[];
   added_by: Mini | null; mine: boolean;
 };
@@ -175,5 +175,5 @@ export type Trip = {
   deliver_legs: "in" | "out" | "both" | null;
   deliver_luggage: boolean | null;
   deliver_space: "little" | "some" | "lot" | null;
-  trip_flights: { id: string; direction: "in" | "out"; flight_no: string; flight_date: string }[];
+  trip_flights: { id: string; direction: "in" | "out"; leg: number; flight_no: string; flight_date: string }[];
 };

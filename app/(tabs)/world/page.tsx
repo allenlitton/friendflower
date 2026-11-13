@@ -3,6 +3,7 @@ import { requireProfile } from "@/lib/session";
 import type { ConciergeAlert, WorldCity } from "@/lib/types";
 import { dateRange, shortDate, todayISO } from "@/lib/format";
 import { Avatar, PrimaryButton, ScreenTitle, Tag } from "@/components/ui";
+import { FoFace } from "@/components/fo-face";
 import { MarkWatchSeen } from "./concierge-watch";
 
 const CHALK = ["#e9a3d2", "#9fd6c0", "#e6a8bd", "#a9c2ef", "#efa88c"];
@@ -13,13 +14,44 @@ const PETALS = [
   [263, "M32.2 17 C25.6 15.2 21.4 7.2 26.8 3.8 C30 1.9 32.1 4.4 32.5 6.6 C34.2 3.6 38.8 3.6 40 7 C41.6 11.4 36.8 15.6 31.6 17.2 Z"],
 ] as const;
 
-function watchLine(a: ConciergeAlert) {
-  const today = todayISO();
-  const when = a.from <= today ? `until ${shortDate(a.to)}` : a.from === a.to ? `on ${shortDate(a.from)}` : dateRange(a.from, a.to);
-  const first = a.friend.first_name;
-  if (a.kind === "visiting_you") return `${first} ${a.from <= today ? "is" : "will be"} in ${a.city} ${when}.`;
-  if (a.kind === "you_visiting") return `${first} lives in ${a.city}, where you ${a.from <= today ? "are" : "will be"} ${when}.`;
-  return `You and ${first} ${a.from <= today ? "are both" : "will both be"} in ${a.city} ${when}.`;
+/** A friend's avatar inside a chalk-drawn flower, with their first name below. */
+function FlowerAvatar({ person, col, turn, sub }: {
+  person: { id: string; name: string; first_name: string; avatar_url: string | null; online?: boolean };
+  col: string; turn: number; sub?: string;
+}) {
+  return (
+    <Link href={`/people/${person.id}`} className="mx-auto flex w-full flex-col items-center">
+      <div className="relative flex h-[68px] w-[68px] items-center justify-center">
+        <svg width="68" height="68" viewBox="0 0 64 64" fill="none" className="pointer-events-none absolute inset-0 opacity-85 mix-blend-screen" aria-hidden>
+          <g stroke={col} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" transform={`rotate(${turn % 72} 32 32)`}>
+            {PETALS.map(([a, d]) => <path key={a} transform={`rotate(${a} 32 32)`} d={d} />)}
+          </g>
+        </svg>
+        <Avatar id={person.id} name={person.name} src={person.avatar_url} size={42} online={person.online} ring="2.5px solid var(--color-well)" />
+      </div>
+      <div className="-mt-0.5 w-full truncate text-center font-display text-[17px] leading-none">{person.first_name}</div>
+      {sub && <div className="mt-0.5 w-full truncate text-center text-[12px] text-muted">{sub}</div>}
+    </Link>
+  );
+}
+
+function whenText(from: string, to: string) {
+  if (from <= todayISO()) return `until ${shortDate(to)}`;
+  return from === to ? `on ${shortDate(from)}` : dateRange(from, to);
+}
+
+/** One heading per city and kind of overlap, e.g. "These friends will be in New York during your trip". */
+function watchHeading(kind: ConciergeAlert["kind"], city: string, group: ConciergeAlert[]) {
+  const now = group.every((a) => a.from <= todayISO());
+  const who = group.length === 1 ? group[0].friend.first_name : "These friends";
+  const be = group.length === 1 ? (now ? "is" : "will be") : (now ? "are" : "will be");
+  if (kind === "visiting_you") return `${who} ${be} visiting ${city}`;
+  if (kind === "both_away") return `${who} ${be} in ${city} too, during your trip`;
+  return `${who} ${be} in ${city} during your trip`;
+}
+
+function names(list: string[]) {
+  return list.length > 1 ? `${list.slice(0, -1).join(", ")} and ${list.at(-1)}` : list[0];
 }
 
 function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
@@ -33,21 +65,43 @@ function ConciergeWatch({ alerts }: { alerts: ConciergeAlert[] }) {
       </div>
     );
   }
+  const groups = new Map<string, ConciergeAlert[]>();
+  for (const a of alerts) {
+    const key = `${a.kind}|${a.city_id}`;
+    groups.set(key, [...(groups.get(key) ?? []), a]);
+  }
   return (
     <div className="rounded-[18px] border-[1.5px] border-plum-line bg-plum px-[15px] py-3.5">
       <div className="text-[13.2px] font-bold tracking-[.06em] text-pink uppercase">Fo Concierge watch</div>
-      <div className="mt-2.5 flex flex-col gap-3">
-        {alerts.map((a) => (
-          <div key={`${a.friend.id}${a.city_id}${a.from}`} className="flex items-center gap-3">
-            <Avatar id={a.friend.id} name={a.friend.name} src={a.friend.avatar_url} size={40} />
-            <div className="min-w-0 flex-1 text-[16.2px] leading-snug">
-              {watchLine(a)} {a.is_new && <Tag tone="gold">New</Tag>}
+      <div className="mt-2.5 flex flex-col gap-4">
+        {[...groups.values()].map((group, gi) => {
+          const { kind, city, city_id } = group[0];
+          // Friends seen once each, in case one shows up twice for the same city.
+          const friends = group.filter((a, i) => group.findIndex((b) => b.friend.id === a.friend.id) === i);
+          const sameDates = friends.every((a) => a.from === friends[0].from && a.to === friends[0].to);
+          const when = sameDates ? whenText(friends[0].from, friends[0].to) : null;
+          const draft = `Please organise catch-ups in ${city} with ${names(friends.map((a) => a.friend.first_name))}`
+            + (kind === "visiting_you" ? " while they're visiting" : " during my trip")
+            + (when ? ` (${when})` : "") + ".";
+          return (
+            <div key={`${kind}${city_id}`}>
+              <div className="text-[17.4px] leading-snug">
+                {watchHeading(kind, city, friends)}{when && <span className="text-muted"> · {when}</span>}
+                {friends.some((a) => a.is_new) && <> <Tag tone="gold">New</Tag></>}
+              </div>
+              <div className="mt-[11px] grid grid-cols-4 gap-y-2.5">
+                {friends.map((a, fi) => (
+                  <FlowerAvatar key={a.friend.id} person={a.friend} col={CHALK[(gi * 2 + fi) % CHALK.length]} turn={fi * 17 + gi * 11}
+                    sub={sameDates ? undefined : whenText(a.from, a.to)} />
+                ))}
+              </div>
+              <Link href={`/fo?draft=${encodeURIComponent(draft)}`}
+                className="mt-3 flex min-h-[46px] w-full items-center justify-center gap-2 rounded-[14px] bg-ecru px-3 py-1.5 text-center font-display text-[18px] leading-tight text-ink transition-colors hover:bg-ecru-deep">
+                <FoFace size={26} className="flex-none" /> Ask Fo to organise catch-ups with {friends.length === 1 ? friends[0].friend.first_name : "them"}?
+              </Link>
             </div>
-            <Link href={`/people/${a.friend.id}`} className="rounded-full border-[1.5px] border-plum-line bg-card px-[13px] py-2 text-[14.4px] font-bold whitespace-nowrap text-pink">
-              Say hi
-            </Link>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
@@ -96,22 +150,9 @@ export default async function WorldPage() {
                 <div className="text-[13.8px] whitespace-nowrap text-muted">{meta}</div>
               </div>
               <div className="mt-[11px] grid grid-cols-4 gap-y-2.5">
-                {c.people.map((p, fi) => {
-                  const col = CHALK[(ci * 2 + fi) % CHALK.length];
-                  return (
-                    <Link key={p.id + p.presence} href={`/people/${p.id}`} className="mx-auto flex w-full flex-col items-center">
-                      <div className="relative flex h-[68px] w-[68px] items-center justify-center">
-                        <svg width="68" height="68" viewBox="0 0 64 64" fill="none" className="pointer-events-none absolute inset-0 opacity-85 mix-blend-screen" aria-hidden>
-                          <g stroke={col} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" transform={`rotate(${(fi * 17 + ci * 11) % 72} 32 32)`}>
-                            {PETALS.map(([a, d]) => <path key={a} transform={`rotate(${a} 32 32)`} d={d} />)}
-                          </g>
-                        </svg>
-                        <Avatar id={p.id} name={p.name} src={p.avatar_url} size={42} online={p.online} ring="2.5px solid var(--color-well)" />
-                      </div>
-                      <div className="-mt-0.5 w-full truncate text-center font-display text-[17px] leading-none">{p.first_name}</div>
-                    </Link>
-                  );
-                })}
+                {c.people.map((p, fi) => (
+                  <FlowerAvatar key={p.id + p.presence} person={p} col={CHALK[(ci * 2 + fi) % CHALK.length]} turn={fi * 17 + ci * 11} />
+                ))}
               </div>
               <div className="mt-[11px] flex items-center gap-3">
                 <div className="min-w-0 flex-1 text-[15px] leading-snug text-muted">{note}</div>

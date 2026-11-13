@@ -4,15 +4,22 @@ import { useEffect, useState } from "react";
 import type { Units } from "@/lib/types";
 import { ErrorNote, SectionLabel, Segmented, Toggle } from "@/components/ui";
 import { useRpc } from "@/components/person-actions";
-import { disablePush, enablePush, hasNativePush, pushState, type PushState } from "@/lib/native-push";
+import { disablePush, enablePush, hasNativePush, openIosSettings, pushState, type PushState } from "@/lib/native-push";
 
 // Only English for now; the rest are shown so people know they're coming.
 const LANGUAGES = ["English", "Español", "Français", "Deutsch", "Português", "Italiano", "日本語", "中文", "한국어"];
 
 export type FoSharing = { on: boolean; email: string | null; phone: string | null };
+export type PushPrefs = { messages: boolean; friend_requests: boolean; badge: boolean };
 
-export function SettingsClient({ profileId, units: initialUnits, foSharing, signInEmail }: {
-  profileId: string; units: Units; foSharing: FoSharing; signInEmail: string;
+const PUSH_CHOICES: { key: keyof PushPrefs; label: string }[] = [
+  { key: "messages", label: "New messages" },
+  { key: "friend_requests", label: "Friend requests" },
+  { key: "badge", label: "Unread count on app icon" },
+];
+
+export function SettingsClient({ profileId, units: initialUnits, foSharing, signInEmail, pushPrefs }: {
+  profileId: string; units: Units; foSharing: FoSharing; signInEmail: string; pushPrefs: PushPrefs;
 }) {
   const { supabase, router, call, busy, error } = useRpc();
   const [units, setUnits] = useState(initialUnits);
@@ -33,31 +40,20 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
     if (hasNativePush()) pushState().then(setPush).catch(() => {});
   }, []);
 
+  const [prefs, setPrefs] = useState(pushPrefs);
+  async function changePref(key: keyof PushPrefs, on: boolean) {
+    const next = { ...prefs, [key]: on };
+    setPrefs(next);
+    const ok = await call("set_push_prefs", { p_messages: next.messages, p_friend_requests: next.friend_requests, p_badge: next.badge });
+    if (ok === undefined) setPrefs(prefs);
+  }
+
   async function changePush(on: boolean) {
     if (on) setPush((await enablePush((url) => router.push(url))) ? "on" : await pushState());
     else {
       setPush("off");
       await disablePush(true);
     }
-  }
-
-  const [confirmDelete, setConfirmDelete] = useState(false);
-  const [deleteWord, setDeleteWord] = useState("");
-  const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
-
-  async function deleteAccount() {
-    setDeleting(true);
-    setDeleteError("");
-    const res = await fetch("/api/account/delete", { method: "POST" }).catch(() => null);
-    if (!res?.ok) {
-      setDeleting(false);
-      setDeleteError((await res?.json().catch(() => null))?.error ?? "Couldn't reach the server. Try again.");
-      return;
-    }
-    await supabase.auth.signOut();
-    router.replace("/signin");
-    router.refresh();
   }
 
   async function changeUnits(u: Units) {
@@ -88,7 +84,28 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
                 ? "Notifications are turned off for Friend Flower in your iPhone's Settings app. Turn them on there, then come back."
                 : "Get a ping on this phone for new messages and friend requests."}
             </div>
+            {push === "on" && (
+              <div className="mt-3 border-t border-rule">
+                {PUSH_CHOICES.map(({ key, label }) => (
+                  <div key={key} className="flex items-center gap-3 border-b border-rule py-2.5 last:border-0">
+                    <span className="flex-1 text-[15.6px]">{label}</span>
+                    <Toggle label={label} on={prefs[key]} onChange={(on) => changePref(key, on)} />
+                  </div>
+                ))}
+                {!fo.on && <ErrorNote>{error}</ErrorNote>}
+              </div>
+            )}
+            {push !== "off" && (
+              <button type="button" onClick={openIosSettings} className="mt-3 text-[15px] font-bold text-pink underline">
+                {push === "blocked" ? "Open iPhone Settings" : "Banners, sounds and lock screen"}
+              </button>
+            )}
           </div>
+          {push === "on" && (
+            <div className="mt-2 text-[14.4px] leading-snug text-muted">
+              How notifications look (banners, sounds, showing on the lock screen) is set in your iPhone&apos;s Settings app.
+            </div>
+          )}
         </div>
       )}
 
@@ -120,35 +137,6 @@ export function SettingsClient({ profileId, units: initialUnits, foSharing, sign
                 <button type="button" disabled={busy} onClick={() => saveFo(fo)}
                   className="self-start rounded-full bg-pink px-4 py-2 text-[15px] font-bold text-ink hover:bg-pink-deep disabled:opacity-60">Save</button>
               )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <SectionLabel>Account</SectionLabel>
-        <div className="rounded-2xl border-[1.5px] border-line bg-card px-[15px] py-3.5">
-          <div className="text-[14.4px] leading-snug text-muted">
-            Deleting your account permanently removes your profile, photos, messages, friends, trips, contact codes and location.
-            This can&apos;t be undone.
-          </div>
-          {!confirmDelete ? (
-            <button type="button" onClick={() => setConfirmDelete(true)} className="mt-3 text-[15px] font-bold text-pink underline">
-              Delete my account
-            </button>
-          ) : (
-            <div className="mt-3 flex flex-col gap-2.5">
-              <input className="field" value={deleteWord} onChange={(e) => setDeleteWord(e.target.value)} autoCapitalize="characters"
-                placeholder="Type DELETE to confirm" />
-              <ErrorNote>{deleteError}</ErrorNote>
-              <div className="flex gap-2">
-                <button type="button" disabled={deleting || deleteWord.trim().toUpperCase() !== "DELETE"} onClick={deleteAccount}
-                  className="rounded-full bg-pink px-4 py-2 text-[15px] font-bold text-ink hover:bg-pink-deep disabled:opacity-60">
-                  {deleting ? "deleting…" : "Delete forever"}
-                </button>
-                <button type="button" disabled={deleting} onClick={() => { setConfirmDelete(false); setDeleteWord(""); setDeleteError(""); }}
-                  className="rounded-full border-[1.5px] border-line px-4 py-2 text-[15px] font-semibold text-soft">Cancel</button>
-              </div>
             </div>
           )}
         </div>

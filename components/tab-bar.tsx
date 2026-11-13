@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
-import { Avatar, Flower } from "@/components/ui";
+import { Avatar, Flower, UnreadFlower } from "@/components/ui";
 import { LiveLocation } from "@/components/live-trip-prompt";
 
 /** Fired once the World tab has marked the Fo Concierge watch as seen, so the dot can go. */
@@ -90,7 +90,7 @@ export function TabBar({ myName, myId, avatarUrl, liveLocation }: { myName: stri
             <Link key={t.href} href={t.href} aria-label={t.label} className="relative flex h-[46px] items-center justify-center">
               <TabIcon href={t.href} on={on} myName={myName} myId={myId} avatarUrl={avatarUrl} />
               {((t.href === "/chats" && chatDot) || (t.href === "/world" && watchDot)) && (
-                <span className="absolute top-[3px] right-[22%] h-2.5 w-2.5 rounded-full border-[1.5px] border-well bg-pink" />
+                <UnreadFlower size={16} ring="var(--color-well)" className="absolute top-[1px] right-[11%]" />
               )}
             </Link>
           );

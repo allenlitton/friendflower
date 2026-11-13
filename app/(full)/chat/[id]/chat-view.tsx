@@ -5,6 +5,7 @@ import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "rea
 import type { ChatDetail, ChatRead, MeetOptions, MeetPart, MeetState, Message } from "@/lib/types";
 import { Avatar, ErrorNote, PrimaryButton, SecondaryButton } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
+import { MessageBox } from "@/components/message-box";
 import { FriendButton, ReportBlock, useRpc } from "@/components/person-actions";
 import { FindTimeSheet, MeetNote, TimesCard } from "./meet-times";
 
@@ -147,7 +148,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
   const myVenues = venues.filter((x) => x.city_id === homeCity).length ? venues.filter((x) => x.city_id === homeCity) : venues;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col" style={{ height: "100dvh" }}>
+    // Exactly one screen tall (below the status bar), so only the messages scroll and the header stays put.
+    <div className="flex h-[calc(100dvh-env(safe-area-inset-top))] min-h-0 flex-col">
       <div className="flex flex-none items-center gap-[11px] border-b border-line-soft bg-well px-3.5 py-[9px]">
         <Link href="/chats" aria-label="Back" className="flex h-8 w-8 flex-none items-center justify-center rounded-full bg-card text-[20.4px] text-soft">‹</Link>
         <Link href={chat.kind === "direct" && other ? `/people/${other.id}` : "#"} className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -275,7 +277,7 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
       </div>
 
       {chat.can_post ? (
-        <div className="flex flex-none flex-col gap-2 border-t border-line-soft bg-well px-[13px] pt-2 pb-[calc(13px+env(safe-area-inset-bottom))]">
+        <div className="flex flex-none flex-col gap-2 border-t border-line-soft bg-well px-[13px] pt-2 pb-[calc(16px+env(safe-area-inset-bottom))]">
           <div className="flex gap-[7px] overflow-x-auto">
             <button type="button" onClick={() => send("Let's meet — I'm free most evenings this week.")}
               className="rounded-full border-[1.5px] border-gold-line bg-gold-bg px-[13px] py-[7px] text-[15px] font-bold whitespace-nowrap text-gold">Let&apos;s meet…</button>
@@ -288,9 +290,8 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
             <Link href={`/fo?draft=${encodeURIComponent(`Book a table for me and ${others.filter((m) => !m.left).map((m) => m.first_name).join(" and ") || "a friend"}`)}`}
               className="rounded-full border-[1.5px] border-plum-line bg-plum px-[13px] py-[7px] text-[15px] font-bold whitespace-nowrap text-pink">Ask Fo Concierge</Link>
           </div>
-          <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
-            <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Say hello…" maxLength={2000}
-              className="h-11 min-w-0 flex-1 rounded-full border-[1.5px] border-line bg-card px-4 text-[19.2px] outline-none" />
+          <form className="flex items-end gap-2" onSubmit={(e) => { e.preventDefault(); send(draft); }}>
+            <MessageBox value={draft} onChange={setDraft} onSend={() => { if (!busy && draft.trim()) send(draft); }} placeholder="Say hello…" />
             <button type="submit" aria-label="Send" disabled={busy || !draft.trim()}
               className="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-pink text-[20.4px] text-ink hover:bg-pink-deep disabled:opacity-60">↑</button>
           </form>
