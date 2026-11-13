@@ -61,18 +61,33 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
     return byMessage;
   }, [reads, messages, meId, members, receipts]);
 
+  // A bare "read" ping tells the others to re-ask chat_reads(), which checks everyone's setting.
+  // With read receipts off we never send it, so nobody learns when you're reading.
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const pingRead = useCallback(() => {
+    if (receipts) channelRef.current?.send({ type: "broadcast", event: "read", payload: {} });
+  }, [receipts]);
+  // Only count the chat as read while it's actually on screen, not open in a background tab.
+  const markRead = useCallback(async () => {
+    if (document.visibilityState !== "visible") return;
+    await supabase.rpc("mark_read", { p_chat: chat.id });
+    pingRead();
+  }, [supabase, chat.id, pingRead]);
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === "visible") markRead(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [markRead]);
+
   // Live updates: new messages arrive over Supabase Realtime (same privacy rules apply).
   useEffect(() => {
-    // A bare "read" ping tells the others to re-ask chat_reads(), which checks everyone's setting.
-    // With read receipts off we never send it, so nobody learns when you're reading.
-    const pingRead = () => { if (receipts) channel.send({ type: "broadcast", event: "read", payload: {} }); };
     const channel = supabase
       .channel(`chat:${chat.id}`)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chat.id}` },
         (payload) => {
           const m = payload.new as Message;
           setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
-          supabase.rpc("mark_read", { p_chat: chat.id }).then(() => { if (m.sender_id !== meId) pingRead(); });
+          if (m.sender_id !== meId) markRead();
           // Sending a message marks the sender as having read the chat.
           if (m.sender_id !== meId) loadReads();
           if (m.kind === "system") router.refresh();
@@ -89,8 +104,9 @@ export function ChatView({ chat, meId, homeCity, initial, venues, meet, initialT
         })
       .on("broadcast", { event: "read" }, () => { loadReads(); })
       .subscribe((status) => { if (status === "SUBSCRIBED") pingRead(); });
-    return () => { supabase.removeChannel(channel); };
-  }, [supabase, chat.id, meId, router, loadTimes, loadReads, receipts]);
+    channelRef.current = channel;
+    return () => { channelRef.current = null; supabase.removeChannel(channel); };
+  }, [supabase, chat.id, meId, router, loadTimes, loadReads, pingRead, markRead]);
 
   useEffect(() => { bottom.current?.scrollIntoView({ block: "end" }); }, [messages.length]);
 
