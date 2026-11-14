@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { requireProfile } from "@/lib/session";
-import type { ChatDetail, MeetOptions, MeetState, Message } from "@/lib/types";
+import type { ChatDetail, ChatRead, MeetOptions, MeetState, Message } from "@/lib/types";
 import { ChatView } from "./chat-view";
 
 export default async function ChatPage({ params, searchParams }: PageProps<"/chat/[id]">) {
@@ -26,6 +26,7 @@ export default async function ChatPage({ params, searchParams }: PageProps<"/cha
     if (!venues.some((x) => x.id === v.id)) venues.push({ ...v, city_id: home, cities: { short_name: homeCity?.short_name ?? "" } });
   }
   await supabase.rpc("mark_read", { p_chat: id });
+  const { data: reads } = await supabase.rpc("chat_reads", { p_chat: id });
 
   // Shared days and suggested times only exist in 1:1 chats.
   const [{ data: meet }, { data: times }] = chat.kind === "direct"
@@ -42,6 +43,8 @@ export default async function ChatPage({ params, searchParams }: PageProps<"/cha
       meet={(meet ?? null) as MeetOptions | null}
       initialTimes={(times ?? []) as MeetState[]}
       initialDraft={draft}
+      initialReads={(reads ?? []) as ChatRead[]}
+      receipts={profile.show_read_receipts}
     />
   );
 }
