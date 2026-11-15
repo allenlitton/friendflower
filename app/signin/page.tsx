@@ -18,7 +18,11 @@ export default function SignInPage() {
         Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
       <WebOnly>
-        <p className="mt-2 text-center font-logo text-[14.5px] font-bold text-pink">Coming soon to the iOS App Store</p>
+        <p className="mt-2 text-center font-logo text-[14.5px] font-bold">
+          <a className="text-pink underline-offset-2 hover:underline" href="https://apps.apple.com/app/id6825094065" target="_blank" rel="noopener noreferrer">
+            Download on the iOS App Store
+          </a>
+        </p>
       </WebOnly>
       <div className="mt-3 flex flex-col items-center gap-2 text-center text-[14.5px] leading-relaxed text-[#b9b2a7]">
         <p>
