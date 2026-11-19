@@ -15,6 +15,12 @@ const config: CapacitorConfig = {
     contentInset: "never",
     backgroundColor: "#0d0c0b",
   },
+  plugins: {
+    // Native Sign in with Apple and Google. The others aren't bundled.
+    SocialLogin: {
+      providers: { apple: true, google: true, facebook: false, twitter: false },
+    },
+  },
 };
 
 export default config;
