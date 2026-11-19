@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireProfile } from "@/lib/session";
-import type { Person } from "@/lib/types";
+import type { Person, PersonInterest } from "@/lib/types";
+import { PersonInterests } from "@/components/person-interests";
 import { dateRange, gradientFor, initials, liveDistanceLabel, shortDate } from "@/lib/format";
 import { SectionLabel, PrimaryButton, Tag } from "@/components/ui";
 import { ChatRailButton, FriendButton, ReportBlock, SayHello } from "@/components/person-actions";
@@ -9,9 +10,13 @@ import { ChatRailButton, FriendButton, ReportBlock, SayHello } from "@/component
 export default async function PersonPage({ params }: PageProps<"/people/[id]">) {
   const { id } = await params;
   const { supabase, profile } = await requireProfile();
-  const { data } = await supabase.rpc("person", { p_id: id });
+  const [{ data }, { data: tagData }] = await Promise.all([
+    supabase.rpc("person", { p_id: id }),
+    supabase.rpc("person_interests", { p_id: id }),
+  ]);
   const p = data as Person | null;
   if (!p) notFound();
+  const interests = (tagData as PersonInterest[] | null) ?? [];
 
   const degShort = p.is_me ? "you" : p.degree === 1 ? "1°" : "2°";
   const nextTrip = p.trips.find((t) => t.starts_on > (p.now?.until ?? ""));
@@ -134,6 +139,8 @@ export default async function PersonPage({ params }: PageProps<"/people/[id]">) 
           )}
 
           {p.bio && <p className="text-[17.4px] leading-[1.55] text-body">{p.bio}</p>}
+
+          <PersonInterests interests={interests} />
 
           {cities.length > 0 && (
             <div>

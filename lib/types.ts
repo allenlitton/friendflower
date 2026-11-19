@@ -177,3 +177,8 @@ export type Trip = {
   deliver_space: "little" | "some" | "lot" | null;
   trip_flights: { id: string; direction: "in" | "out"; leg: number; flight_no: string; flight_date: string }[];
 };
+
+/** An interest/hobby tag (see supabase/migrations/20261118000030_interests.sql). */
+export type Interest = { id: string; name: string };
+/** A tag on someone's profile; `shared` when you have it too. */
+export type PersonInterest = Interest & { shared: boolean };
