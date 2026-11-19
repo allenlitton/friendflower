@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Capacitor } from "@capacitor/core";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { doodleFromPhoto, squarePhoto } from "@/lib/image";
 import type { City, Neighbourhood, Profile } from "@/lib/types";
@@ -161,7 +162,10 @@ export function ProfileEditor({
     if (mode === "onboarding") {
       const { error } = await supabase.rpc("complete_onboarding");
       if (error) { setSaving(false); return setError(error.message); }
-      const invite = localStorage.getItem("ff_invite");
+      // An invite carried through sign-in, or (new iPhone app installs) one opened
+      // from this network just before the App Store; see app/api/invite.
+      const invite = localStorage.getItem("ff_invite")
+        ?? (Capacitor.isNativePlatform() ? await fetch("/api/invite").then((r) => r.json()).then((j) => j.code as string | null).catch(() => null) : null);
       if (invite) {
         await supabase.rpc("redeem_invite", { p_code: invite });
         localStorage.removeItem("ff_invite");

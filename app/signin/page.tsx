@@ -3,6 +3,7 @@ import { SignInForm } from "./sign-in-form";
 import { NewsletterForm } from "./newsletter-form";
 import { WebOnly } from "./web-only";
 import { Flower } from "@/components/ui";
+import { APP_STORE_URL } from "@/lib/app-store";
 
 export default function SignInPage() {
   return (
@@ -19,7 +20,7 @@ export default function SignInPage() {
       </p>
       <WebOnly>
         <p className="mt-2 text-center font-logo text-[14.5px] font-bold">
-          <a className="text-pink underline-offset-2 hover:underline" href="https://apps.apple.com/app/id6825094065" target="_blank" rel="noopener noreferrer">
+          <a className="text-pink underline-offset-2 hover:underline" href={APP_STORE_URL} target="_blank" rel="noopener noreferrer">
             Download on the iOS App Store
           </a>
         </p>

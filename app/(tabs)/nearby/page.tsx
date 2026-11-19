@@ -5,6 +5,7 @@ import type { CirclePerson } from "@/lib/types";
 import { dateRange, todayISO } from "@/lib/format";
 import { NearbyGrid } from "./nearby-grid";
 import { PrimaryButton } from "@/components/ui";
+import { InviteFriendsButton } from "@/components/invite-sheet";
 
 export default async function NearbyPage({ searchParams }: PageProps<"/nearby">) {
   const { supabase, profile } = await requireProfile();
@@ -18,6 +19,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
         <div className="font-display text-[30px]">Where are you based?</div>
         <p className="text-[16.2px] text-muted">Add the city you live in, or a trip, to see who you know there.</p>
         <PrimaryButton href="/you/edit">edit profile</PrimaryButton>
+        <InviteFriendsButton code={profile.invite_code} className="mt-4 max-w-[400px]" />
       </div>
     );
   }
@@ -48,6 +50,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
           <Link href="/trips?add=1" className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-3.5 py-3 text-center text-[15.6px] font-semibold text-pink">
             + Add a trip to San Francisco or New York
           </Link>
+          <InviteFriendsButton code={profile.invite_code} className="mt-2" />
         </div>
       </div>
     );
@@ -67,6 +70,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
       lenses={lenses}
       offerLive={isNow && profile.show_distance && !profile.share_live_location}
       footer={
+        <>
         <Link href={`/places?city=${lens.cityId}`}
           className="mt-2.5 flex items-center gap-3 rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-[13px] hover:border-[#5a534b]">
           <span className="flex h-[34px] w-[34px] flex-none items-center justify-center rounded-[11px] bg-[#2b2118] text-[18px]">☕</span>
@@ -76,6 +80,8 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
           </div>
           <span className="text-[20.4px] text-pink">›</span>
         </Link>
+        <InviteFriendsButton code={profile.invite_code} className="mt-2.5" />
+        </>
       }
     />
   );
