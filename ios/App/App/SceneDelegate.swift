@@ -18,6 +18,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
+
+        // Cold start from a tapped friendflower.app link (e.g. an invite).
+        if let url = connectionOptions.userActivities.first(where: { $0.activityType == NSUserActivityTypeBrowsingWeb })?.webpageURL {
+            openUniversalLink(url, in: bridgeVC)
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -26,6 +31,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb, let url = userActivity.webpageURL,
+           let bridgeVC = window?.rootViewController as? CAPBridgeViewController {
+            openUniversalLink(url, in: bridgeVC)
+        }
+    }
+
+    /// Universal Links (see app/.well-known/apple-app-site-association): load the tapped
+    /// friendflower.app page in the app's web view, e.g. /invite/<code>, which adds the
+    /// friend and opens their profile. The web view may not exist yet on a cold start.
+    private func openUniversalLink(_ url: URL, in bridgeVC: CAPBridgeViewController, attempts: Int = 50) {
+        guard url.scheme == "https", url.host == "friendflower.app" || url.host == "www.friendflower.app" else { return }
+        guard let webView = bridgeVC.webView else {
+            guard attempts > 0 else { return }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.openUniversalLink(url, in: bridgeVC, attempts: attempts - 1)
+            }
+            return
+        }
+        // Wait for the start page's first load so it doesn't replace ours.
+        if webView.url == nil && attempts > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.openUniversalLink(url, in: bridgeVC, attempts: attempts - 1)
+            }
+            return
+        }
+        webView.load(URLRequest(url: url))
     }
 }
 

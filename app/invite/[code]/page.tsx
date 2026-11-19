@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Avatar, Flower } from "@/components/ui";
 import { AcceptInvite } from "./accept-invite";
@@ -9,6 +10,16 @@ export default async function InvitePage({ params }: PageProps<"/invite/[code]">
     supabase.rpc("invite_preview", { p_code: code }),
     supabase.auth.getUser(),
   ]);
+
+  // Already signed in (e.g. the link opened the app): add them straight away, no button.
+  // Someone still mid-sign-up finishes onboarding first; the invite they carried
+  // through sign-in (ff_invite) is redeemed when their profile is saved.
+  if (inviter && user) {
+    const { data: me } = await supabase.from("profiles").select("onboarded_at").eq("id", user.id).maybeSingle();
+    if (!me?.onboarded_at) redirect("/");
+    const { data: inviterId } = await supabase.rpc("redeem_invite", { p_code: code });
+    redirect(inviterId ? `/people/${inviterId}` : "/");
+  }
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-4 px-7 text-center">
@@ -23,7 +34,7 @@ export default async function InvitePage({ params }: PageProps<"/invite/[code]">
       <p className="max-w-[300px] text-[16.8px] leading-normal text-muted">
         Mutual connections are magical. Keep track of where in the world your friends are, and meet friends of friends wherever you are.
       </p>
-      <AcceptInvite code={code} valid={!!inviter} signedIn={!!user} />
+      <AcceptInvite code={code} valid={!!inviter} />
     </main>
   );
 }
