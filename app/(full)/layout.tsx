@@ -1,6 +1,7 @@
 import { requireProfile } from "@/lib/session";
 import { Presence } from "@/components/tab-bar";
 import { PushSetup } from "@/components/push-setup";
+import { InviteHandoff } from "@/components/invite-handoff";
 
 // Full-screen pages (profile, chat, edit) — no tab bar.
 export default async function FullLayout({ children }: LayoutProps<"/">) {
@@ -9,6 +10,7 @@ export default async function FullLayout({ children }: LayoutProps<"/">) {
     <main className="flex min-h-0 flex-1 flex-col">
       <Presence liveLocation={profile.share_live_location && profile.show_distance} />
       <PushSetup />
+      <InviteHandoff />
       {children}
     </main>
   );
