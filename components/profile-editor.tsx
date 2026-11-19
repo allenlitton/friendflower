@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { Capacitor } from "@capacitor/core";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { doodleFromPhoto, squarePhoto } from "@/lib/image";
-import type { City, Neighbourhood, Profile } from "@/lib/types";
+import type { City, Interest, Neighbourhood, Profile } from "@/lib/types";
 import { Card, ErrorNote, Flower, Pill, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
 import { Sheet } from "@/components/sheet";
 import { turnOnLiveDistance } from "@/components/live-location";
 import { CityPicker } from "@/components/city-picker";
+import { InterestsEditor } from "@/components/interests-editor";
 
 type Place = { id: string; city_name: string; years: string | null; kind: "lived" | "grew_up" };
 type School = { id: string; grad_year: number; level: string; schools: { name: string } };
@@ -21,7 +22,7 @@ const LEVELS = [
 ];
 
 export function ProfileEditor({
-  mode, profile, cities, neighbourhoods, places: initialPlaces, schools: initialSchools, hasPhone,
+  mode, profile, cities, neighbourhoods, places: initialPlaces, schools: initialSchools, hasPhone, interests,
 }: {
   mode: "onboarding" | "edit";
   profile: Profile;
@@ -30,6 +31,7 @@ export function ProfileEditor({
   places: Place[];
   schools: School[];
   hasPhone: boolean;
+  interests: Interest[];
 }) {
   const router = useRouter();
   const supabase = useMemo(() => supabaseBrowser(), []);
@@ -319,6 +321,9 @@ export function ProfileEditor({
         <input className="field" placeholder="Facebook name" value={facebook} maxLength={80} onChange={(e) => setFacebook(e.target.value)} />
       </div>
       <div className="mt-1.5 text-[13.8px] text-faint">Shown on your profile.</div>
+
+      <SectionLabel className="mt-[18px]">Interests</SectionLabel>
+      <InterestsEditor initial={interests} />
 
       <SectionLabel className="mt-[18px]">Bio</SectionLabel>
       <textarea className="field" maxLength={500} value={bio} onChange={(e) => setBio(e.target.value)}
