@@ -220,6 +220,10 @@ export function ProfileEditor({
             ))}
           </div>
         )}
+        <div className="mt-3 rounded-xl bg-well px-3 py-2.5 text-[13.8px] leading-snug text-soft">
+          Please upload a photo that shows your authentic self and how you&apos;d like to be presented to friends of friends!
+          No shirtless photos, please. Imagine you&apos;re dressed and meeting someone at a cafe.
+        </div>
         <label className={`mt-3 flex h-11 cursor-pointer items-center justify-center rounded-[13px] text-[16.2px] font-bold ${avatarUrl ? "text-pink" : "bg-pink text-ink"}`}>
           {avatarUrl ? "Use a different photo" : "Upload a real photo of you"}
           <input type="file" accept="image/*" className="hidden" onChange={pickPhoto} />
