@@ -231,6 +231,9 @@ static void join_task(void *arg) {
   sta.sta.threshold.authmode = pass[0] ? WIFI_AUTH_WEP : WIFI_AUTH_OPEN;
   esp_wifi_set_config(WIFI_IF_STA, &sta);
   esp_wifi_start();
+  // No modem sleep: some routers stop delivering frames to a sleeping device,
+  // which leaves it "connected" but unable to reach anything.
+  esp_wifi_set_ps(WIFI_PS_NONE);
   esp_wifi_connect();
   EventBits_t bits = xEventGroupWaitBits(s_events, GOT_IP | JOIN_FAILED, pdFALSE, pdFALSE, pdMS_TO_TICKS(JOIN_TIMEOUT_MS));
   s_joining = false;
@@ -257,3 +260,10 @@ void net_start(net_state_cb_t cb) {
 }
 
 bool net_online(void) { return s_events && (xEventGroupGetBits(s_events) & GOT_IP); }
+
+// Drop and rejoin the network; the disconnect handler above reconnects.
+void net_kick(void) {
+  if (s_joining || !net_online()) return;
+  ESP_LOGW(TAG, "nothing gets through, rejoining Wi-Fi");
+  esp_wifi_disconnect();
+}

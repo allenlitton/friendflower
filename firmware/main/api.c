@@ -30,10 +30,12 @@ static const char *TAG = "api";
 #endif
 #define REFRESH_MS 60000
 #define POLL_MS 3000
+#define KICK_AFTER 3 // failed requests in a row before rejoining Wi-Fi
 
 static api_cb_t s_cb;
 static char s_secret[65];
 static volatile bool s_refresh_now;
+static int s_failures;
 static QueueHandle_t s_jobs;
 
 static void load_secret(void) {
@@ -105,7 +107,10 @@ static int http(const char *method, const char *path, const char *type, const vo
   }
   int status = esp_http_client_perform(c) == ESP_OK ? esp_http_client_get_status_code(c) : -1;
   esp_http_client_cleanup(c);
-  if (status < 0) ESP_LOGW(TAG, "%s failed", path);
+  if (status < 0) {
+    ESP_LOGW(TAG, "%s failed", path);
+    if (++s_failures >= KICK_AFTER) { s_failures = 0; net_kick(); }
+  } else s_failures = 0;
   return status;
 }
 
