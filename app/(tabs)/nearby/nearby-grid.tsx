@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
 import type { CirclePerson, Units } from "@/lib/types";
 import type { Lens } from "@/lib/whereabouts";
 import { dateRange, degreeWord, gradientFor, initials, liveDistanceLabel, shortDate } from "@/lib/format";
@@ -12,6 +12,14 @@ import { turnOnLiveDistance } from "@/components/live-location";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
 const FILTERS = ["Nearby", "Online", "1st degree", "2nd degree", "Travellers"] as const;
+type Filter = (typeof FILTERS)[number];
+const FILTER_TIPS: Record<Filter, string> = {
+  "Nearby": "See all friends and friends of friends in your current city",
+  "Online": "See friends and friends of friends in your current city who are online right now",
+  "1st degree": "See only your direct friends in your current city",
+  "2nd degree": "See friends of your friends in your current city — one introduction away",
+  "Travellers": "See friends and friends of friends who are visiting your current city",
+};
 const EXTRAS = ["Saved friends", "Verified", "Same school", "Leaving soon"] as const;
 
 export function NearbyGrid({ people, error, me, units, lens, lenses, footer, offerLive }: {
@@ -20,10 +28,11 @@ export function NearbyGrid({ people, error, me, units, lens, lenses, footer, off
   lens: Lens; lenses: Lens[]; footer: ReactNode;
 }) {
   const router = useRouter();
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("Nearby");
+  const [filter, setFilter] = useState<Filter>("Nearby");
   const [extras, setExtras] = useState<string[]>([]);
   const [moreOpen, setMoreOpen] = useState(false);
   const [travelOpen, setTravelOpen] = useState(false);
+  const rowRef = useRef<HTMLDivElement>(null);
 
   const soon = new Date(); soon.setDate(soon.getDate() + 3);
   const soonISO = soon.toISOString().slice(0, 10);
@@ -52,11 +61,14 @@ export function NearbyGrid({ people, error, me, units, lens, lenses, footer, off
 
       {offerLive && <LiveOffer myId={me.id} />}
 
-      <div className="flex flex-none gap-[7px] overflow-x-auto px-5 pt-[11px] pb-[9px]">
-        {FILTERS.map((f) => <Pill key={f} on={filter === f} onClick={() => setFilter(f)}>{f}</Pill>)}
-        <Pill on={moreOpen || extras.length > 0} onClick={() => setMoreOpen(!moreOpen)}>
-          {extras.length ? `Filters · ${extras.length}` : "Filters"} <span className="text-[10.8px] opacity-80">▾</span>
-        </Pill>
+      <div className="relative flex-none">
+        <div ref={rowRef} className="flex gap-[7px] overflow-x-auto px-5 pt-[11px] pb-[9px]">
+          {FILTERS.map((f) => <Pill key={f} on={filter === f} onClick={() => setFilter(f)}>{f}</Pill>)}
+          <Pill on={moreOpen || extras.length > 0} onClick={() => setMoreOpen(!moreOpen)}>
+            {extras.length ? `Filters · ${extras.length}` : "Filters"} <span className="text-[10.8px] opacity-80">▾</span>
+          </Pill>
+        </div>
+        <FilterTip rowRef={rowRef} index={FILTERS.indexOf(filter)} filter={filter} />
       </div>
       {moreOpen && (
         <div className="mx-5 mb-2.5 rounded-2xl border-[1.5px] border-line bg-card px-3.5 py-[13px]">
@@ -187,6 +199,58 @@ function LiveOffer({ myId }: { myId: string }) {
           {busy ? "Finding you…" : "Turn on"}
         </button>
         <button type="button" onClick={dismiss} className="text-[15px] font-semibold text-muted">Not now</button>
+      </div>
+    </div>
+  );
+}
+
+const TIP_KEY = "ff_filter_tips_dismissed";
+const TIP_WIDTH = 224;
+const readTips = () => {
+  try { return localStorage.getItem(TIP_KEY) ?? "[]"; } catch { return "[]"; }
+};
+
+/** A small speech bubble above and just right of the selected filter, explaining what it shows. Each can be closed for good. */
+function FilterTip({ rowRef, index, filter }: { rowRef: RefObject<HTMLDivElement | null>; index: number; filter: Filter }) {
+  const saved = useSyncExternalStore(noSubscribe, readTips, () => JSON.stringify(FILTERS));
+  const [closed, setClosed] = useState<string[]>([]);
+  const [pos, setPos] = useState<{ left: number; top: number; tail: number } | null>(null);
+  let dismissed: string[] = [];
+  try { dismissed = JSON.parse(saved); } catch {}
+  const hidden = dismissed.includes(filter) || closed.includes(filter);
+
+  useLayoutEffect(() => {
+    const row = rowRef.current;
+    if (!row || hidden) return;
+    const place = () => {
+      const chip = row.children[index] as HTMLElement | undefined;
+      if (!chip) return;
+      const anchor = chip.offsetLeft - row.scrollLeft + chip.offsetWidth * 0.6;
+      const left = Math.max(12, Math.min(anchor - 18, row.clientWidth - TIP_WIDTH - 12));
+      setPos({ left, top: chip.offsetTop - 8, tail: Math.max(12, Math.min(anchor - left, TIP_WIDTH - 24)) });
+    };
+    place();
+    row.addEventListener("scroll", place, { passive: true });
+    window.addEventListener("resize", place);
+    return () => { row.removeEventListener("scroll", place); window.removeEventListener("resize", place); };
+  }, [rowRef, index, hidden]);
+
+  if (hidden || !pos) return null;
+  const close = () => {
+    setClosed([...closed, filter]);
+    try { localStorage.setItem(TIP_KEY, JSON.stringify([...new Set([...dismissed, filter])])); } catch {}
+  };
+
+  return (
+    <div role="note" className="absolute z-20 -translate-y-full" style={{ left: pos.left, top: pos.top, width: TIP_WIDTH }}>
+      <div className="relative flex items-start gap-1.5 rounded-xl border-[1.5px] border-plum-line bg-plum py-2 pr-1.5 pl-3 shadow-[0_6px_18px_rgba(0,0,0,.45)]">
+        <span className="flex-1 text-[13.8px] leading-snug text-[#f3d6df]">{FILTER_TIPS[filter]}</span>
+        <button type="button" onClick={close} aria-label={`Close ${filter} tip`}
+          className="-mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[15px] leading-none text-plum-text hover:bg-white/10 hover:text-white">
+          ✕
+        </button>
+        <span aria-hidden className="absolute -bottom-[6px] h-[10px] w-[10px] rotate-45 border-r-[1.5px] border-b-[1.5px] border-plum-line bg-plum"
+          style={{ left: pos.tail - 5 }} />
       </div>
     </div>
   );
