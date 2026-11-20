@@ -3,7 +3,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { Capacitor } from "@capacitor/core";
-import { PrimaryButton } from "@/components/ui";
+import { Flower, PrimaryButton } from "@/components/ui";
 import { APP_STORE_URL, isIOSBrowser } from "@/lib/app-store";
 
 type Where = "unknown" | "app" | "ios-web" | "web";
@@ -63,5 +63,34 @@ export function AcceptInvite({ code, valid }: { code: string; valid: boolean }) 
     <PrimaryButton onClick={join} disabled={where !== "web"} className="max-w-[320px]">
       join friend flower
     </PrimaryButton>
+  );
+}
+
+/**
+ * Signed-in visitor on an iPhone, iPad or Mac (already added as friends on the server).
+ * - In the iPhone app: open the inviter's profile.
+ * - iPhone/iPad Safari: straight to the App Store, so they get the app.
+ * - Mac: open the profile on the web.
+ */
+export function SignedInInvite({ next }: { next: string }) {
+  const router = useRouter();
+  const where = useSyncExternalStore(noSubscribe, detect, (): Where => "unknown");
+
+  useEffect(() => {
+    if (detect() === "ios-web") window.location.replace(APP_STORE_URL);
+    else router.replace(next);
+  }, [next, router]);
+
+  return (
+    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-7 text-center">
+      <Flower size={83} stroke="#fff" strokeWidth={2.1} />
+      {where === "ios-web" && (
+        <div className="flex w-full max-w-[320px] flex-col items-center gap-3">
+          <h1 className="font-display text-[34px] leading-[1.1]">you&apos;re friends!</h1>
+          <PrimaryButton href={APP_STORE_URL}>get the app</PrimaryButton>
+          <a href={next} className="text-[14.4px] text-pink underline-offset-2 hover:underline">Continue on the web</a>
+        </div>
+      )}
+    </main>
   );
 }

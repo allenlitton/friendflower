@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Avatar, Flower } from "@/components/ui";
-import { AcceptInvite } from "./accept-invite";
+import { AcceptInvite, SignedInInvite } from "./accept-invite";
 
 export default async function InvitePage({ params }: PageProps<"/invite/[code]">) {
   const { code } = await params;
@@ -18,7 +19,13 @@ export default async function InvitePage({ params }: PageProps<"/invite/[code]">
     const { data: me } = await supabase.from("profiles").select("onboarded_at").eq("id", user.id).maybeSingle();
     if (!me?.onboarded_at) redirect("/");
     const { data: inviterId } = await supabase.rpc("redeem_invite", { p_code: code });
-    redirect(inviterId ? `/people/${inviterId}` : "/");
+    const next = inviterId ? `/people/${inviterId}` : "/";
+    // An iPhone could be the app or Safari, which look the same to the server
+    // (iPads can also say "Macintosh"). Let the browser decide: the app opens
+    // the profile, Safari goes to the App Store so they can get the app.
+    const ua = (await headers()).get("user-agent") ?? "";
+    if (!/iPhone|iPad|iPod|Macintosh/.test(ua)) redirect(next);
+    return <SignedInInvite next={next} />;
   }
 
   return (
