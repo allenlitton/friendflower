@@ -205,16 +205,32 @@ function LiveOffer({ myId }: { myId: string }) {
 }
 
 const TIP_KEY = "ff_filter_tips_dismissed";
-const TIP_WIDTH = 224;
+const TIP_MAX_WIDTH = 330;
+const TIP_GAP = 9;
 const readTips = () => {
   try { return localStorage.getItem(TIP_KEY) ?? "[]"; } catch { return "[]"; }
 };
+/** Height of the phone's status bar / notch area, so the bubble never slides under it. */
+const safeTop = () => {
+  const probe = document.createElement("div");
+  probe.style.cssText = "position:fixed;top:0;visibility:hidden;padding-top:env(safe-area-inset-top)";
+  document.body.appendChild(probe);
+  const px = parseFloat(getComputedStyle(probe).paddingTop) || 0;
+  probe.remove();
+  return px;
+};
 
-/** A small speech bubble above and just right of the selected filter, explaining what it shows. Each can be closed for good. */
+type TipPos = { left: number; top: number; width: number; tail: number; below: boolean };
+
+/**
+ * A see-through speech bubble above and just right of the selected filter, explaining what it shows.
+ * If there isn't room above (under the status bar), it drops just below the filter row instead. Each can be closed for good.
+ */
 function FilterTip({ rowRef, index, filter }: { rowRef: RefObject<HTMLDivElement | null>; index: number; filter: Filter }) {
   const saved = useSyncExternalStore(noSubscribe, readTips, () => JSON.stringify(FILTERS));
   const [closed, setClosed] = useState<string[]>([]);
-  const [pos, setPos] = useState<{ left: number; top: number; tail: number } | null>(null);
+  const [pos, setPos] = useState<TipPos | null>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
   let dismissed: string[] = [];
   try { dismissed = JSON.parse(saved); } catch {}
   const hidden = dismissed.includes(filter) || closed.includes(filter);
@@ -224,33 +240,48 @@ function FilterTip({ rowRef, index, filter }: { rowRef: RefObject<HTMLDivElement
     if (!row || hidden) return;
     const place = () => {
       const chip = row.children[index] as HTMLElement | undefined;
-      if (!chip) return;
+      const tip = tipRef.current;
+      if (!chip || !tip) return;
+      const width = Math.min(TIP_MAX_WIDTH, row.clientWidth - 24);
+      tip.style.width = `${width}px`;
+      const height = tip.offsetHeight;
       const anchor = chip.offsetLeft - row.scrollLeft + chip.offsetWidth * 0.6;
-      const left = Math.max(12, Math.min(anchor - 18, row.clientWidth - TIP_WIDTH - 12));
-      setPos({ left, top: chip.offsetTop - 8, tail: Math.max(12, Math.min(anchor - left, TIP_WIDTH - 24)) });
+      const left = Math.max(12, Math.min(anchor - 18, row.clientWidth - width - 12));
+      const aboveTop = chip.offsetTop - TIP_GAP - height;
+      const below = row.getBoundingClientRect().top + aboveTop < safeTop() + 6;
+      setPos({
+        left, width, below,
+        top: below ? chip.offsetTop + chip.offsetHeight + TIP_GAP : aboveTop,
+        tail: Math.max(14, Math.min(anchor - left, width - 24)),
+      });
     };
     place();
     row.addEventListener("scroll", place, { passive: true });
     window.addEventListener("resize", place);
     return () => { row.removeEventListener("scroll", place); window.removeEventListener("resize", place); };
-  }, [rowRef, index, hidden]);
+  }, [rowRef, index, hidden, filter]);
 
-  if (hidden || !pos) return null;
+  if (hidden) return null;
   const close = () => {
     setClosed([...closed, filter]);
     try { localStorage.setItem(TIP_KEY, JSON.stringify([...new Set([...dismissed, filter])])); } catch {}
   };
 
   return (
-    <div role="note" className="absolute z-20 -translate-y-full" style={{ left: pos.left, top: pos.top, width: TIP_WIDTH }}>
-      <div className="relative flex items-start gap-1.5 rounded-xl border-[1.5px] border-plum-line bg-plum py-2 pr-1.5 pl-3 shadow-[0_6px_18px_rgba(0,0,0,.45)]">
+    <div ref={tipRef} role="note" className="absolute z-20"
+      style={pos ? { left: pos.left, top: pos.top, width: pos.width } : { visibility: "hidden", left: 0, top: 0 }}>
+      <div className="relative flex items-start gap-1.5 rounded-xl border-[1.5px] border-plum-line bg-[rgba(42,31,39,.78)] py-2 pr-1.5 pl-3 shadow-[0_6px_18px_rgba(0,0,0,.35)] backdrop-blur-md">
         <span className="flex-1 text-[13.8px] leading-snug text-[#f3d6df]">{FILTER_TIPS[filter]}</span>
         <button type="button" onClick={close} aria-label={`Close ${filter} tip`}
           className="-mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full text-[15px] leading-none text-plum-text hover:bg-white/10 hover:text-white">
           ✕
         </button>
-        <span aria-hidden className="absolute -bottom-[6px] h-[10px] w-[10px] rotate-45 border-r-[1.5px] border-b-[1.5px] border-plum-line bg-plum"
-          style={{ left: pos.tail - 5 }} />
+        {pos && (
+          <svg aria-hidden width="14" height="8" viewBox="0 0 14 8"
+            className={`absolute ${pos.below ? "-top-[8px] rotate-180" : "-bottom-[8px]"}`} style={{ left: pos.tail - 7 }}>
+            <path d="M0 0 L7 7 L14 0" fill="rgba(42,31,39,.78)" stroke="var(--color-plum-line)" strokeWidth="1.5" />
+          </svg>
+        )}
       </div>
     </div>
   );
