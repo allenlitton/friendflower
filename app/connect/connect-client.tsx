@@ -6,7 +6,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import { parseVCard } from "@/lib/vcard";
 import { hasNativeContacts, readNativeContacts } from "@/lib/native-contacts";
 import type { Mini } from "@/lib/types";
-import { Avatar, Card, ErrorNote, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
+import { Avatar, Card, ErrorNote, Flower, PrimaryButton, SecondaryButton, SectionLabel } from "@/components/ui";
 import { InviteButton } from "@/components/invite-button";
 import { FindFriend } from "@/components/find-friend";
 
@@ -30,17 +30,25 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
   const native = useSyncExternalStore(noSubscribe, hasNativeContacts, () => false);
   const browserPicker = typeof navigator !== "undefined" && "contacts" in navigator;
   const canPick = native || browserPicker;
+  // Right after someone creates their profile in the iPhone app, a pop-up asks to sync contacts.
+  const [promptClosed, setPromptClosed] = useState(false);
+  const showPrompt = welcome && native && stats.uploaded === 0 && !result && !promptClosed;
 
   async function send(values: string[]) {
     if (!values.length) return setError("We didn't find any phone numbers or emails there.");
     setBusy(true);
     setError("");
-    const res = await fetch("/api/contacts", { method: "POST", body: JSON.stringify({ contacts: values }) });
-    const json = await res.json();
-    setBusy(false);
-    if (!res.ok) return setError(json.error);
-    setResult(json);
-    router.refresh();
+    try {
+      const res = await fetch("/api/contacts", { method: "POST", body: JSON.stringify({ contacts: values }) });
+      const json = await res.json();
+      if (!res.ok) return setError(json.error);
+      setResult(json);
+      router.refresh();
+    } catch {
+      setError("We couldn't reach Friend Flower. Check your connection and try again.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function pick() {
@@ -83,6 +91,10 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
 
   return (
     <div className="mt-4 flex flex-col gap-3.5">
+      {showPrompt && (
+        <ContactSyncPrompt busy={busy} error={error} onSync={pick}
+          onClose={() => { setPromptClosed(true); setError(""); }} />
+      )}
       <FindFriend inviteCode={inviteCode} myName={myName} />
       <Card className="p-[15px]">
         <div className="flex items-center gap-3">
@@ -162,6 +174,44 @@ export function ConnectClient({ welcome, inviteCode, myName, stats, suggestions 
       </div>
 
       {welcome && <PrimaryButton href="/nearby" className="mt-2">{result || stats.uploaded ? "see who's nearby" : "skip for now"}</PrimaryButton>}
+    </div>
+  );
+}
+
+/**
+ * The pop-up bubble shown once, right after a new person saves their profile in the iPhone app,
+ * asking to sync their contacts so mutual friends can be matched. iOS's own permission prompt follows.
+ */
+function ContactSyncPrompt({ busy, error, onSync, onClose }: {
+  busy: boolean; error: string; onSync: () => void; onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(6,5,4,.6)] px-6 backdrop-blur-[2px]"
+      onClick={busy ? undefined : onClose}>
+      <div role="dialog" aria-modal aria-labelledby="sync-title"
+        className="relative w-full max-w-[360px] rounded-[22px] border-[1.5px] border-plum-line bg-[rgba(42,31,39,.92)] px-[22px] pt-6 pb-5 text-center shadow-[0_12px_40px_rgba(0,0,0,.5)] backdrop-blur-md"
+        onClick={(e) => e.stopPropagation()}>
+        <button type="button" onClick={onClose} disabled={busy} aria-label="Close"
+          className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full text-[15px] text-plum-text hover:bg-white/10 hover:text-white">
+          ✕
+        </button>
+        <div className="flex justify-center"><Flower size={44} /></div>
+        <h2 id="sync-title" className="mt-3 font-display text-[28px] leading-[1.1]">Find friends you already know</h2>
+        <p className="mt-2.5 text-[15.6px] leading-normal text-[#f3d6df]">
+          Sync your contacts and we&apos;ll match you with people who have each other&apos;s number — that&apos;s where the
+          mutual friend magic happens.
+        </p>
+        <p className="mt-2.5 text-[13.8px] leading-normal text-plum-text">
+          🔒 Private: only phone numbers and emails are read, scrambled into codes, and the originals thrown away.
+          Nobody — including us — can see your contacts.
+        </p>
+        {error && <div className="mt-3 text-left"><ErrorNote>{error}</ErrorNote></div>}
+        <PrimaryButton className="mt-4" onClick={onSync} disabled={busy}>{busy ? "matching…" : "sync my contacts"}</PrimaryButton>
+        <button type="button" onClick={onClose} disabled={busy}
+          className="mt-2 h-10 w-full text-[15px] font-semibold text-plum-text hover:text-white">
+          not now
+        </button>
+      </div>
     </div>
   );
 }
