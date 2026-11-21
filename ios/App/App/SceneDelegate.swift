@@ -39,7 +39,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     /// Universal Links (see app/.well-known/apple-app-site-association): load the tapped
     /// friendflower.app page in the app's web view, e.g. /invite/<code>, which adds the
-    /// friend and opens their profile. The web view may not exist yet on a cold start.
+    /// friend and opens their profile, or /auth/confirm?token_hash=… from the sign-in
+    /// email, which signs the app in. The web view may not exist yet on a cold start.
     private func openUniversalLink(_ url: URL, in bridgeVC: CAPBridgeViewController, attempts: Int = 50) {
         guard url.scheme == "https", url.host == "friendflower.app" || url.host == "www.friendflower.app" else { return }
         guard let webView = bridgeVC.webView else {
