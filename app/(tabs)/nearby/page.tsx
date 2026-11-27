@@ -24,7 +24,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
     );
   }
 
-  // The live map only runs in launched cities (San Francisco and New York for now).
+  // The live map only runs in launched cities (San Francisco, New York and Bali for now).
   if (!lens.isLaunched) {
     const liveTrips = lenses.filter((l) => l.isLaunched && l.kind === "trip");
     return (
@@ -35,7 +35,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
         <div className="mt-4 rounded-[18px] border-[1.5px] border-gold-line bg-gold-bg p-[15px]">
           <div className="text-[17.4px] font-semibold text-gold">The live map isn&apos;t in {lens.cityName} yet</div>
           <p className="mt-1.5 text-[15.6px] leading-normal text-body">
-            For now it runs in San Francisco and New York. Your friends can still see you&apos;re in {lens.cityName} on their
+            For now it runs in San Francisco, New York and Bali. Your friends can still see you&apos;re in {lens.cityName} on their
             World page, and you can see where your friends are on yours.
           </p>
         </div>
@@ -48,7 +48,7 @@ export default async function NearbyPage({ searchParams }: PageProps<"/nearby">)
             </Link>
           ))}
           <Link href="/trips?add=1" className="rounded-2xl border-[1.5px] border-dashed border-[#3a352e] px-3.5 py-3 text-center text-[15.6px] font-semibold text-pink">
-            + Add a trip to San Francisco or New York
+            + Add a trip to San Francisco, New York or Bali
           </Link>
           <InviteFriendsButton code={profile.invite_code} className="mt-2" />
         </div>
