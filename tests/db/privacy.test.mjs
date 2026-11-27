@@ -23,7 +23,13 @@ before(async () => {
       p_user: id, p_items: JSON.stringify([{ kind: "phone", hash: `${name}-phone-hash`.padEnd(64, "0").replace(/[^0-9a-f]/g, "a") }]),
     }));
   }
+  // Nearby (circle_in_city) only lists people with live distance on, so turn it on
+  // for everyone whose absence below should be down to something else.
+  await db.query(`update public.profiles set share_live_location = true where id <> $1`, [U.stranger]);
 });
+
+const setLive = (who, on) =>
+  as(db, U[who], () => db.query(`update public.profiles set share_live_location = $2 where id = $1`, [U[who], on]));
 
 const hashOf = (name) => `${name}-phone-hash`.padEnd(64, "0").replace(/[^0-9a-f]/g, "a");
 const upload = (who, names) =>
@@ -82,6 +88,19 @@ test("visitors show as visiting, and hidden trips stay hidden", async () => {
   sf = await as(db, U.arren, () => rpc(db, "circle_in_city", { p_city: "san-francisco" }));
   assert.equal(sf.find((p) => p.first_name === "Kenji"), undefined);
   await as(db, U.kenji, () => db.query(`update public.trips set visibility = 'fof' where user_id = $1`, [U.kenji]));
+});
+
+test("Nearby leaves out people who haven't turned live distance on", async () => {
+  const names = async () =>
+    (await as(db, U.arren, () => rpc(db, "circle_in_city", { p_city: "san-francisco" }))).map((p) => p.first_name);
+  assert.ok((await names()).includes("Barbara"));
+  await setLive("barbara", false);
+  assert.ok(!(await names()).includes("Barbara"), "live distance off means off Nearby");
+  assert.ok((await names()).includes("Priya"), "others still show");
+  const b = await as(db, U.arren, () => rpc(db, "person", { p_id: U.barbara }));
+  assert.equal(b.degree, 2, "they still have a profile");
+  assert.equal(b.live_on, false);
+  await setLive("barbara", true);
 });
 
 test("raw tables never expose other people or contact data", async () => {
