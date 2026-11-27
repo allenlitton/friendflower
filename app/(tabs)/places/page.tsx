@@ -7,7 +7,8 @@ export default async function PlacesPage({ searchParams }: PageProps<"/places">)
   const { supabase, profile } = await requireProfile();
   const sp = await searchParams;
   const lenses = await myLenses(supabase, profile);
-  const { data: launched } = await supabase.from("cities").select("id, name, short_name").eq("is_launched", true).order("name");
+  // Places opens in more cities than the live map does (has_places vs is_launched).
+  const { data: launched } = await supabase.from("cities").select("id, name, short_name").eq("has_places", true).order("name");
   const cityId = (typeof sp.city === "string" && sp.city) || currentLens(lenses)?.cityId || launched?.[0]?.id || "san-francisco";
 
   const [{ data: venues }, { data: chats }, { data: nbs }] = await Promise.all([
