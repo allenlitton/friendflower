@@ -259,7 +259,7 @@ export function ProfileEditor({
 
         {homeCity && !homeLaunched && (
           <div className="text-[13.8px] leading-snug text-faint">
-            The live map is only in San Francisco and New York for now. Friends will still see you&apos;re here on their World page, and you can add trips.
+            The live map is only in San Francisco, New York and Bali for now. Friends will still see you&apos;re here on their World page, and you can add trips.
           </div>
         )}
       </div>
